@@ -353,10 +353,10 @@ It can be seen that the Mos of the final FLMO does not change much compared with
 
 The above manual slicing method is tedious for molecules with complex structures, because not only the definition of each molecular slice needs to be given manually, but also the correspondence between the atomic number of each slice and the total system needs to be given in the ``&DATABASE`` domain. In contrast, a more convenient approach is to use the following automatic slicing method.
 
-利用FLMO计算开壳层单重态（自动分片）
+Calculation of open-shell-layer singlet states using FLMO (automatic binning)
 --------------------------------------------
 
-研究单分子磁体以及某些催化体系等，常遇到所谓反铁磁耦合的态，一般由两个自旋相反的电子以开壳层的形式占据在不同的原子中心（开壳层单重态），但也可能涉及多个单电子。BDF可以结合FLMO方法计算开壳层单重态。例如，下述算例采用FLMO方法计算一个含有Cu(II)和氮氧稳定自由基的体系的自旋破缺基态：
+The study of single-molecule magnets, as well as certain catalytic systems, etc., often encounters so-called antiferromagnetic coupled states, which generally consist of two electrons of opposite spin occupying different atomic centers in the form of open-shell layers (open-shell layer singlet states), but may also involve multiple single electrons.BDF can be combined with the FLMO method to calculate open-shell layer singlet states. For example, the following example uses the FLMO method to calculate the spin-broken ground state of a system containing Cu(II) and nitrogen-oxygen stabilized radicals.
 
 .. code-block::
 
@@ -424,9 +424,11 @@ The above manual slicing method is tedious for molecules with complex structures
         # Otherwise Boys is better
   $end
 
-FLMO计算目前不支持简洁输入。这个算例， ``autofrag`` 模块用于对分子自动分片，并产生FLMO计算的基本输入。BDF先根据 ``compass`` 模块中的分子结构与 ``autofrag`` 的参数定义信息产生分子片段，以及分子片段定域化轨道计算的输入文件。然后用分子片段的定域轨道组装整体分子的pFLMO (primitive Fragment Local Molecular Orbital) 作为全局SCF计算的初始猜测轨道，再通过全局SCF计算，在保持每一步迭代轨道都保持定域的前提下，得到整体分子的开壳层单重态。在计算中，为了输出简洁，分子片段计算输出保存为 ``${BDFTASK}.framgmentN.out`` , **N** 为片段编号，标准输出只打印整体分子计算的输出。
+FLMO calculations do not currently support concise input. In this example, the ``autofrag`` module is used to automatically fragment the molecule and generate the basic input for the FLMO calculation. BDF first generates the molecular fragments based on the molecular structure in the ``compass`` and the parameter definition information of ``autofrag`` , as well as the input file for the molecular fragment localization orbital calculation. 
+Then the pFLMO (primitive Fragment Local Molecular Orbital) of the whole molecule is assembled with the domain-fixed orbital of the fragment as the initial guess orbital for the global SCF calculation, and then the open-shell layer singlet state of the whole molecule is obtained by the global SCF calculation while keeping the domain-fixed orbital at each iteration step. In the calculation, the output of the molecular fragment calculation 
+is saved as ``${BDFTASK}.framgmentN.out`` , **N** is the fragment number, and the standard output prints only the output of the overall molecular calculation for the sake of output brevity.
 
-输出会给出分子分片的信息，
+The output will give information about the molecular fragmentation that
 
 .. code-block::
 
@@ -443,7 +445,8 @@ FLMO计算目前不支持简洁输入。这个算例， ``autofrag`` 模块用�
    
     Generate BDF input file ....
 
-这里可以看出，我们产生了两个分子片段，指定了分子片 **1** 由17个原子组成，自旋多重度指认为2，分子片 **2** 由9个原子组成，自旋多重度也指认为2，但自旋方向和分子片 **1** 相反，也即beta电子比alpha电子多一个，而不是alpha电子比beta电子多一个。随后会分别计算2个分子片，提示信息如下（假设环境变量 ``OMP_NUM_THREADS`` 设为4）：
+Here it can be seen that we have generated two molecular fragments, specifying that molecular slice **1** consists of 17 atoms with a spin multiplicity of 2, and that molecular slice **2** consists of 9 atoms with a spin multiplicity of 2, but with the opposite spin direction as molecular slice **1** , i.e. one more beta electron than alpha electron, instead of one more alpha electron than beta electron. 
+The 2 molecular slices are then calculated separately, with the following message (assuming the environment variable ``OMP_NUM_THREADS`` is set to 4)：
 
 .. code-block:: bdf
 
@@ -459,9 +462,10 @@ FLMO计算目前不支持简洁输入。这个算例， ``autofrag`` 模块用�
   
   Starting global calculation ...
 
-这要注意计算资源的设置。总的计算资源是进程数（Number of parallel processes）与每个进程的线程数（Number of OpenMP threads per process）的乘积，其中进程数是通过 ``autofrag`` 模块的 ``nprocs`` 关键词设定的，而总的计算资源是通过环境变量 ``OMP_NUM_THREADS`` 设定的，每个进程的线程数由程序自动通过总的计算资源除以进程数来得到。
+This care of the computational resource settings. The total computational resources are the product of the number of parallel processes and the number of OpenMP threads per process, where the number of processes is set by the ``nprocs`` keyword of the ``autofrag`` module, and the total computational resources are This takes care of the computational resource settings. 
+The total computational resources are the product of the number of parallel pset by the environment variable ``OMP_NUM_THREADS`` , and the number of threads per process is automatically obtained by dividing the total computational resources by the number of processes.
 
-整体分子的计算输出类似普通的SCF计算，但采用了分块对角化Fock矩阵的方法以保持轨道的定域性。
+The computational output of the overall numerator is similar to a normal SCF calculation, but with a chunked diagonalized Fock matrix to keep the orbit definite.
 
 .. code-block:: bdf
 
@@ -494,7 +498,7 @@ FLMO计算目前不支持简洁输入。这个算例， ``autofrag`` 模块用�
    block norm :   8.589840290871769E-003
 
 
-迭代开始会给出轨道伸展 (**Mos**) 的信息， 数字越小，轨道定域性越好。SCF收敛后会再次打印 **Mos** 。 从布居分析的结果，
+The orbital stretch (**Mos**)  information is given at the beginning of the iteration, the smaller the number, the better the orbital fixity.  **Mos** is printed again after the SCF converges. From the results of the Bourget analysis, 
 
 .. code-block:: bdf
 
