@@ -1,20 +1,23 @@
-大体系的iOI-SCF计算及FLMO方法
+iOI-SCF calculation for large systems and the FLMO method
 ========================================
 
-对于大体系（例如原子数大于300的体系），传统SCF计算方法常常不再适用，原因除了每步Fock矩阵构建时间变长以外，还包括以下因素：
+For large systems (e.g., systems with atomic numbers larger than 300), the traditional SCF calculation methods are often no longer applicable because, in addition to the longer construction time of the Fock matrix at each step
+The reasons for this are the following factors：
 
- * Fock矩阵对角化时间占计算总时间的比例增加。当体系足够大时，每步Fock矩阵的构建时间与体系大小的平方成正比，但Fock矩阵对角化时间和体系大小的三次方成正比，因此对于特别大（如上千个原子）的体系，Fock矩阵对角化占总计算时间的比例将相当可观。
- * 大体系的局部稳定波函数更多，导致大体系SCF计算收敛到用户期望的态的概率降低。换言之，SCF可能收敛到很多个不同的解，其中只有一个是用户想要的，因此增加了用户判断SCF解是否是自己期望的解，以及（如果收敛到非期望的解时）重新提交计算等时间开销。
- * 大体系的SCF收敛比小体系更加困难，需要更多的迭代步数，甚至完全不能收敛。这除了是因为上述的局部稳定解变多以外，也有一部分原因是因为一般的基于原子密度的SCF初猜的质量随着体系增大而变差。
+ * The Fock matrix diagonalization time increases as a percentage of the total calculation time. When the system is large enough, the construction time of the Fock matrix per step is proportional to the square of the system size. The Fock matrix diagonalization time is proportional to the square of the system size, but the Fock matrix diagonalization time is proportional to the third power of the system size, so for particularly large systems (e.g., thousands of protons), the Fock Therefore, for particularly large systems (e.g., thousands of elements), the Fock matrix diagonalization will account for a significant proportion of the total computation time.
+ * The greater number of locally stable wave functions in large systems leads to a lower probability of convergence of the SCF calculation to the user's desired state for large systems. In other words, the SCF may converge to many different solutions, only one of which is the user's desired one, thus increasing the probability that the user can determine whether the SCF solution is his or her desired one, and (if it converges) the probability of convergence to the user's desired state. Therefore, it increases the time overhead for the user to determine whether the SCF solution is the desired one and to resubmit the computation (if it converges to a non-desired solution).
+ * The convergence of the SCF for large systems is more difficult than for small systems, requiring more iterative steps or even failing to converge at all. This is not only because the above the number of locally stable solutions becomes larger, but also partly because the mass of the general atomic density-based SCF first guess becomes worse as the system increases The quality of the general atomic density-based SCFs deteriorates as the system increases.
  
-针对以上问题，一种解决方案是将体系分为若干片段（该过程称为分片；这些片段彼此之间可以重叠），对每个片段分别做SCF，再把所有片段的收敛的波函数汇总，作为总体系SCF计算的初猜。BDF的FLMO方法 (Fragment localized molecular orbital) 即属于一种基于分片的方法，其中每个片段的SCF收敛后，程序对每个片段的波函数进行局域化，再用所得的局域轨道产生总体系计算的初猜。相比不依赖局域轨道的分片方法，这样做会带来一些额外的好处：
+One solution to this problem is to divide the system into segments (a process called binning; these segments can overlap with each other) and do a separate SCF for each segment.
+BDF's FLMO method (Fragment localized molecular orbital) is a fragmentation-based method, in which the SCF of each fragment is converged and the converged wave function of each fragment is localized. The resulting local orbital is then used to generate a first guess for the total system calculation. This provides some additional benefits over a slice based approach that does not rely on local orbits.
 
- * SCF迭代可以在局域轨道基上进行，在局域轨道基下Fock矩阵无需进行全对角化，而只需进行块对角化，即转动轨道使得占据-空块为零即可，该步骤的计算量较全对角化小。
- * 局域轨道基下的Fock矩阵的占据-空块非常稀疏，可以利用这种稀疏性进一步减小块对角化的计算量。
- * 用户可以在进行全局SCF计算之前就指定某个局域轨道的占据数，从而选择性地得到该局域轨道占据或未占据的电子态，例如计算由一个Fe(II)和一个Fe(III)组成的金属团簇，可以通过指定Fe 3d轨道的占据数来控制哪个Fe收敛到二价组态，哪个Fe收敛到三价组态。在当前的BDF版本里实际还支持另外一种做法，即直接指定原子的形式氧化态和自旋态（见下）。出于便捷性考虑，一般建议用户直接通过原子的形式氧化态和自旋态来指定收敛到哪个电子态。
- * SCF计算直接得到收敛的局域轨道，而不是像一般的SCF计算那样只得到正则轨道。如果用户需要得到收敛的局域轨道来进行波函数分析等，那么FLMO方法相比传统的先得到正则轨道再进行局域化的做法而言，可以节省很多计算时间，也可以规避大体系局域化迭代次数多、容易不收敛的问题。
+ * The SCF iteration can be performed on the local orbital basis, where the Fock matrix does not need to be fully diagonalized, but only block diagonalized, i.e., the orbit is rotated so that the occupied-empty block is zero, a step that is less computationally intensive than the full diagonalization.
+ * The occupied-empty blocks of the Fock matrix in the local orbital basis are very sparse, and this sparsity can be exploited to further reduce the computational effort of block diagonalization.
+ * The user can specify the occupation number of a local orbital before the global SCF calculation, and thus selectively obtain the occupied or unoccupied electronic states of that local orbital.
+   For example, to calculate a metal cluster consisting of one Fe(II) and one Fe(III), one can control which Fe converges to the divalent group and which Fe converges to the trivalent group by specifying the occupation number of Fe 3d orbitals. In the current version of BDF another approach is actually supported, i.e. the direct specification of the formal oxidation and spin states of the atoms (see below). For convenience reasons, it is generally recommended that the user specify which electronic state to converge to directly by the formal oxidation and spin states of the atom.
+ * The SCF calculation yields the converged local orbitals directly, instead of just the regular orbitals as in the normal SCF calculation. If the user needs to obtain convergent local orbitals for wave function analysis, etc., then the FLMO method can save a lot of computational time compared to the traditional approach of obtaining the regular orbitals first and then performing localization, and can also avoid the problem of large systems with many iterations of localization that tend to be non-convergent.
 
-FLMO已被用于获得分子的定域化轨道、iOI-SCF、FLMO-MP2、O(1)-NMR等方法，还可以计算开壳层的单重态，用于研究单分子磁体等问题。
+FLMO has been used to obtain the localized orbitals of molecules, iOI-SCF, FLMO-MP2, O(1)-NMR, and other methods, and also to calculate the singlet states of open-shell layers for the study of single-molecule magnets and other problems.
 
 计算分片定域分子轨道FLMO（手动分片）
 --------------------------------------------
