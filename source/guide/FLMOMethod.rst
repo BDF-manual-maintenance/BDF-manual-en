@@ -19,11 +19,11 @@ BDF's FLMO method (Fragment localized molecular orbital) is a fragmentation-base
 
 FLMO has been used to obtain the localized orbitals of molecules, iOI-SCF, FLMO-MP2, O(1)-NMR, and other methods, and also to calculate the singlet states of open-shell layers for the study of single-molecule magnets and other problems.
 
-计算分片定域分子轨道FLMO（手动分片）
+Calculating the Fractionated Domain Molecular Orbital FLMO (Manual Fractionation)
 --------------------------------------------
 
-为了使用户对FLMO有个直观的了解，我们给出一个FLMO的计算示例。这里，我们要通过FLMO方法计算1,3,5,7-辛四烯 :math:`\ce{C8H10}` 分子的定域化轨道。
-我们先计算4个分子片，每个分子片是由中心原子、缓冲区原子和链接H原子组成。因分子结构较简单，这里的分子片是通过手动分片得到的，即每个分子片的中心原子为一个C=C双键及与其相连的所有氢原子，缓冲区原子为和该C=C双键直接相连的C=C双键及其所带的氢原子，也即分子片1和分子片4为1,3-丁二烯，分子片2和分子片3为1,3,5-己三烯。分子片SCF计算收敛后，通过Boys定域化方法得到分子片定域轨道。所有分子片计算完成后，再用四个分子片的定域轨道合成整体分子的pFLMO (primitive Fragment Localized Molecular Orbital)。利用pFLMO做初始猜测，计算整个 :math:`\ce{C8H10}` 分子，并得到定域化的FLMO。输入示例如下：
+In order to give the user an intuitive understanding of FLMO, we give an example of FLMO calculation. Here, we want to calculate the domains of the 1,3,5,7-octatetraene :math:`\ce{C8H10}` molecule by the FLMO method.
+We first calculate 4 molecular slices, each consisting of a central atom, a buffer atom and a linked H-atom. Because of the simple molecular structure, the molecular slices are obtained by manual slicing, i.e., the central atom of each molecular slice is a C=C double bond and all hydrogen atoms attached to it, and the buffer atoms are the C=C double bonds directly linked to the C=C double bond and the hydrogen atoms attached to them, i.e., 1,3-butadiene for slice 1 and slice 4, and 1,3,5-hexatriene for slice 2 and slice 3. After the convergence of the SCF calculation, the molecular slices were used to obtain the molecular slices domain orbitals by the Boys domainization method. After all the molecular slices were calculated, the pFLMO (primitive Fragment Localized Molecular Orbital) of the whole molecule was synthesized from the four molecular slices. The pFLMO is used as an initial guess to calculate the entire :math:`\ce{C8H10}` molecule and to obtain the localized FLMO. input example is as follows
 
 .. code-block:: bdf
 
@@ -252,13 +252,12 @@ FLMO has been used to obtain the localized orbitals of molecules, iOI-SCF, FLMO-
    10 11 12 13 14 15 16 17 18 
   &END
 
-在输入中，我们给出了注释。每个分子片的计算由 ``compass``、 ``xuanyuan`` 、 ``scf`` 及 ``localmo`` 四个模块构成。分别做预处理、积分计算、SCF计算和分子轨道定域化四个步骤，并通过在localmo模块后插入Shell命令
-``cp $BDF_WORKDIR/$BDFTASK.flmo $BDF_TMPDIR/fragment*``
-将存储定域轨道的文件 **$BDFTASK.flmo** 拷贝到 **$BDF_TMPDIR** 所在的目录备用。4个分子片段算完后是整体分子的计算，输入从
-``# Whole Molecule calculation``
-开始。在 ``compass`` 中，有关键词 ``Nfragment 4`` ，提示要读入4个分子片，分子片信息在 ``&DATABASE`` 域中定义。
+In the input, we give the annotations. The calculation of each molecular slice consists of four modules:  ``compass``、 ``xuanyuan`` 、 ``scf`` 及 ``localmo`` . The four steps of preprocessing, integration calculation, SCF calculation and molecular orbitals localization are done respectively, and the file
+ **$BDFTASK.flmo** , where the domain orbitals are stored, is copied to **$BDF_TMPDIR** by inserting the shell ``cp $BDF_WORKDIR/$BDFTASK.flmo $BDF_TMPDIR/fragment*`` after the localmo module.
+After the 4 molecular fragments are calculated, the whole molecule calculation is done, and the input starts from
+``# Whole Molecule calculation`` . In the compass, there is the keyword Nfragment 4, which prompts to read in 4 molecule fragments, and the molecule fragment information is defined in the ``&DATABASE`` field.
 
-整体分子的SCF计算，首先会读入4个分子片的定域轨道，构建pFLMO，并给出轨道伸展系数 Mos (molecular orbital spread，某个定域轨道的Mos越大代表该定域轨道越离域，反之则代表该定域轨道越局域)，如下：
+The SCF calculation for the whole molecule starts by reading in the four molecular slices of the fixed-domain orbitals, constructing the pFLMO, and giving the orbital stretch factor Mos (molecular orbital spread, where a larger Mos for a given fixed-domain orbital means that the fixed-domain orbital is more off-domain, and vice versa), as follows.
 
 .. code-block:: bdf
 
@@ -308,7 +307,7 @@ FLMO has been used to obtain the localized orbitals of molecules, iOI-SCF, FLMO-
    Prepare FLMO time :       0.03 S      0.02 S       0.05 S
    Finish FLMO-SCF initial ...
 
-可以看出，整体分子的pFLMO最大 Mos都小于2.6，不论占据或是虚轨道，pFLMO都是定域的。利用pFLMO做整体分子的初始猜测，进入SCF迭代，利用分块对角化方法保持对轨道的最小扰动，输出如下：
+It can be seen that the maximum Mos of pFLMO for the whole molecule is less than 2.6, and the pFLMO is fixed-domain regardless of the occupied or imaginary orbitals. The initial guess of the overall molecule is made by using pFLMO, and it enters the SCF iteration, using the block diagonalization method to keep the minimum perturbation of the orbitals, and the output is as follows.
 
 .. code-block:: bdf
 
@@ -337,7 +336,7 @@ FLMO has been used to obtain the localized orbitals of molecules, iOI-SCF, FLMO-
    block diag       0.017      0.000      0.017
     block norm :    3.6831175797520882E-005
 
-SCF收敛后，系统会再一次打印分子轨道的Mos信息，
+After the SCF converges, the system prints the Mos information of molecular orbitals once again.
 
 .. code-block:: bdf
 
@@ -350,9 +349,9 @@ SCF收敛后，系统会再一次打印分子轨道的Mos信息，
     Write FLMO coef into scratch file ...               214296
     Reorder orbital via orbital energy ...                    1                    1
 
-可以看出，最终FLMO的Mos与pFLMO相比变化不大，保持了很好的定域性。
+It can be seen that the Mos of the final FLMO does not change much compared with the pFLMO and maintains a good domain fixation.
 
-以上的手动分片方法对于结构较复杂的分子来说比较繁琐，因为不仅需要手动给出每个分子片的定义，还需要在 ``&DATABASE`` 域中给出每个分子片和总体系的原子序号的对应关系。相比之下，更加方便的方法是使用以下的自动分片方法。
+The above manual slicing method is tedious for molecules with complex structures, because not only the definition of each molecular slice needs to be given manually, but also the correspondence between the atomic number of each slice and the total system needs to be given in the ``&DATABASE`` domain. In contrast, a more convenient approach is to use the following automatic slicing method.
 
 利用FLMO计算开壳层单重态（自动分片）
 --------------------------------------------
