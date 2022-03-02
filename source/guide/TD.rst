@@ -713,7 +713,9 @@ Since the single to triplet state jump is dipole-barred, the oscillator strength
 Spin-flip TDDFT calculation
 ----------------------------------------------------------
 
-BDF不仅能从单重态出发计算三重态，还可以从自旋多重度更高的 **2S+1** 重态（S = 1/2, 1, 3/2, ...）出发，向上翻转自旋计算 **2S+3** 重态；自旋上翻的 **TDDFT/TDA** 给出的是双占据轨道的alpha电子到未占据的beta轨道跃迁态，标记为 ``CV(1)`` 激发。与基态为闭壳层单重态的情形不同，此时BDF计算的是 **2S+3** 重态的 :math:`M_S = S+1` 组分，因此当基态不是闭壳层单重态时，该计算可以称之为自旋翻转的TDDFT计算。自旋向上翻转的TDDFT计算的输入文件格式与基态为闭壳层单重态、计算三重态激发态时完全相同，例如以下输入文件以二重态为参考态，计算四重态激发态：
+The BDF can calculate the triplet state not only from a single heavy state, but also from a **2S+1** heavy state with higher spin multiplicity (S = 1/2, 1, 3/2, ...), and upward spin-flip the **2S+3** heavy state; the spin-up **TDDFT/TDA** gives the alpha electron to unoccupied beta orbital lepton state of the double-occupied orbital, labeled as ``CV(1)`` excitation. 
+Unlike the case where the ground state is a closed-shell single heavy state, the BDF calculation at this point is for the :math:`M_S = S+1` component of the **2S + 3** heavy state, so when the ground state is not a closed-shell single heavy state, the calculation can be called a spin-flip TDDFT calculation. 
+The input file format for the spin-up TDDFT calculation is exactly the same as when the ground state is a closed-shell single heavy state and the triplet excited state is calculated, e.g., the following input file calculates the quadruplet excited state with the duplex state as the reference state.
 
 .. code-block:: bdf
 
@@ -731,9 +733,10 @@ BDF不仅能从单重态出发计算三重态，还可以从自旋多重度更�
    1
   $end
 
-此外，BDF还可以从三重态出发，向下翻转自旋计算单重态，这时需要设置 ``isf`` 为 ``-1``。当然，也可以从自旋多重度更高的态向下翻转计算自旋多重度少2的态。要注意的是，自旋下翻的 **TDDFT/TDA** 只能正确描述从开壳层占据的alpha轨道到开壳层占据的beta轨道跃迁的电子态，标记为 **OO(ab)** 跃迁，其它跃迁类型的态都有自旋污染问题。
+In addition, the BDF can start from a triplet state and flip the spin down to calculate a single heavy state, which requires setting ``isf`` to ``-1``. Of course, it is also possible to flip down from a state with a higher spin multiplicity to calculate a state with a spin multiplicity of 2 less. 
+Note that the spin-down **TDDFT/TDA** can only correctly describe electronic states that leap from the alpha orbital occupied by the open-shell layer to the beta orbital occupied by the open-shell layer, labeled as **OO(ab)** leap, while all other leap types of states have spin contamination problems.
 
-从三重态出发，向下反转自旋计算单重态，输入为：
+Starting from the triplet state and reversing the spin downward to calculate the singlet state, the input is
 
 .. code-block::
 
@@ -746,7 +749,7 @@ BDF不仅能从单重态出发计算三重态，还可以从自旋多重度更�
    H   1  0.9   2 109.0
    end geometry 
 
-输出为：
+The output is
 
 .. code-block::
 
@@ -759,22 +762,22 @@ BDF不仅能从单重态出发计算三重态，还可以从自旋多重度更�
     3   A    3   A    0.5166 eV       2399.85 nm   0.0000  -1.9935  54.0% OO(ab):   A(   6 )->   A(   6 )   2.712 0.999    9.1225
     4   A    4   A    2.3121 eV        536.24 nm   0.0000  -0.9994  99.9% OV(ab):   A(   6 )->   A(   7 )   4.671 0.872   10.9180
 
-这里，前三个态都是 **OO(ab)** 类型的激发态，其中第1个态和第3个态基本是纯的单重态（D<S^2>约等于-2，即激发态的<S^2>约等于0），第2个态基本是纯的三重态（D<S^2>约等于0）；第四个态是 **OV(ab)** 类型的激发态，有自旋污染问题（D<S^2>约等于-1，即激发态的<S^2>约等于1，介于单重态和三重态之间），其激发能不可靠。
-
+Here, the first three states are **OO(ab)** type excited states, where the first and the third states are basically pure singlet states (D is approximately equal to -2, i.e., the excited state is approximately equal to 0), and the second state is basically pure triplet state (D is approximately equal to 0); the fourth state is an **OV(ab)** type excited state with spin contamination problem (D is approximately equal to -1, i.e., the excited state is approximately equal to 1, between singlet and triplet states), and its excitation energy is not reliable.
 
 .. warning::
 
-   * BDF目前只支持自旋翻转的TDA，而不支持自旋翻转的TDDFT。但以闭壳层单重态为参考态计算三重态激发态不受此限制。
+   * BDF currently only supports spin-flipped TDA, but not spin-flipped TDDFT, but the calculation of triplet excited states with closed-shell singlet states as reference states is not subject to this restriction.
 
 
-用iVI方法计算UV-Vis和XAS光谱
+Calculation of UV-Vis and XAS spectra by iVI method
 -------------------------------------------------------
 
-以上各算例是基于Davidson方法求解的TDDFT激发态。为了用Davidson方法求出某一个激发态，一般需要同时求解比它能量更低的所有激发态，因此当目标激发态的能量很高时（例如在计算XAS光谱时），Davidson方法需要的计算资源过多，在有限的计算时间和内存的限制下无法求得结果。此外，用户使用Davidson方法时，必须在计算之前就指定求解的激发态数目，然而很多时候用户在计算之前并不知道自己需要的激发态是第几个激发态，而只知道自己需要的激发态的大致能量范围等信息，这就使得用户必须经过一系列试错，先设定较少的激发态数目进行计算，如果发现没有算出自己需要的态，再增加激发态的数目、重算，直至找到自己需要的态为止。显然这样会无端消耗用户的精力以及机时。
+The above examples are based on the TDDFT excited states solved by Davidson's method. In order to solve for an excited state with the Davidson method, it is generally necessary to solve for all excited states with lower energies than it. Therefore, when the energy of the target excited state is very high (e.g., when calculating the XAS spectrum), the Davidson method requires too many computational resources to obtain a result with limited computation time and memory. In addition, when using the Davidson method, the user must specify the number of excited states to be solved before the calculation, 
+however, many times the user does not know the number of excited states he needs before the calculation, but only the approximate energy range of the excited states he needs, etc. This makes the user have to go through a series of trial and error, first set a small number of excited states for the calculation, and if he finds that If you find that you do not have the state you need, you can increase the number of excited states and recalculate until you find the state you need. Obviously, this will consume the user's energy and time for no reason.
 
-BDF的iVI方法为以上问题提供了一种解决方案。在iVI方法中，用户可以指定感兴趣的激发能范围（比如整个可见区，或者碳的K-edge区域），而无需估计该范围内有多少个激发态；程序可以计算出激发能处于该范围内的所有激发态，一方面无需像Davidson方法那样计算比该范围的能量更低的激发态，另一方面可以确保得到该能量范围内的所有激发态，没有遗漏。以下举两个算例：
+BDF's iVI method provides a solution to this problem. In the iVI method, the user can specify the excitation energy range of interest (e.g., the entire visible region, or the K-edge region of carbon) without having to estimate how many excited states are in that range; the program can calculate all excited states in that range, without having to calculate excited states at energies lower than that range as in the Davidson method, on the one hand, and ensure that all excited states in that energy range are obtained On the other hand, it ensures that all excited states in the energy range are obtained without missing any. Two examples of calculations are given below.
 
-（1）计算DDQ自由基阴离子在400-700 nm范围内的吸收光谱（X-TDDFT，wB97X/LANL2DZ）
+（1）Calculation of the absorption spectrum of the DDQ radical anion in the 400-700 nm range（X-TDDFT，wB97X/LANL2DZ）
 
 .. code-block:: bdf
 
@@ -835,7 +838,7 @@ BDF的iVI方法为以上问题提供了一种解决方案。在iVI方法中，�
    2048
   $end
 
-因该分子属于 :math:`\rm C_{2v}` 点群，共有4个不可约表示（A1，A2，B1，B2），程序分别在4个不可约表示下求解TDDFT问题。以A1不可约表示为例，iVI迭代收敛后，程序输出如下信息：
+Since the molecule belongs to the :math:`\rm C_{2v}` point group, there are four integrable representations (A1, A2, B1, B2), and the program solves the TDDFT problem under each of the four integrable representations. Take A1 integrable representation as an example, after convergence of iVI iterations, the program outputs the following information.
 
 .. code-block::
 
@@ -866,9 +869,9 @@ BDF的iVI方法为以上问题提供了一种解决方案。在iVI方法中，�
        CV(bb):   A1(  20 )->  A2(   5 )  c_i: -0.1121  Per:  1.3%  IPA:    11.748 eV  Oai: 0.3581
        CV(bb):   B1(  18 )->  B2(   6 )  c_i:  0.2040  Per:  4.2%  IPA:    13.866 eV  Oai: 0.4328
 
-可以看到程序在此不可约表示下计算出了17个激发态，但其中只有一个激发态（激发能0.106 au = 2.89 eV）在用户指定的波长区间（400-700 nm）内，因而完全收敛（表现为残差 (residual) 很小）；其余激发态在远未收敛之前，程序即知道其不在用户感兴趣的范围内，因而不再尝试收敛这些激发态（表现为残差很大），由此节省了很多计算量。
+It can be seen that the program computes 17 excited states under this integrable representation, but only one of them (excitation energy 0.106 au = 2.89 eV) is within the user-specified wavelength interval (400-700 nm), and thus converges completely (in the form of small residuals); the rest of the excited states are known to be outside the user-interest range far before they converge, so the program does not try to converge anymore. The remaining excited states are known to be out of the user's range of interest well before they converge, and no further attempts are made to converge them (as indicated by the large residuals), thus saving much computational effort.
 
-所有4个不可约表示均计算完成后，程序照常将各不可约表示的计算结果汇总：
+After all four integrable representations have been calculated, the program summarizes the results of each integrable representation as usual.
 
 .. code-block::
 
@@ -879,7 +882,7 @@ BDF的iVI方法为以上问题提供了一种解决方案。在iVI方法中，�
       3  A2    1  A1    2.8862 eV    429.58 nm   0.0000   0.0000  92.6% CO(bb):  A1(  20 )->  A2(   4 )   8.586 0.526    0.4677
       4  B1    1  B2    3.0126 eV    411.55 nm   0.0000   0.0000  63.5% CO(bb):  B2(   4 )->  A2(   4 )   8.195 0.820    0.5942
 
-（2）计算乙烯的碳K-edge XAS光谱（sf-X2C，M06-2X/uncontracted def2-TZVP）
+（2）Calculation of carbon K-edge XAS spectra of ethylene（sf-X2C，M06-2X/uncontracted def2-TZVP）
 
 .. code-block:: bdf
 
@@ -921,7 +924,7 @@ BDF的iVI方法为以上问题提供了一种解决方案。在iVI方法中，�
    275 285 # default unit: eV
   $end
 
-由实验得知碳的K-edge吸收在280 eV附近，因此这里的能量范围选为275-285 eV。计算得到该能量区间内共有15个激发态：
+The K-edge absorption of carbon is experimentally known to be around 280 eV, so the energy range here is chosen to be 275-285 eV. 15 excited states are calculated in this energy interval.
 
 .. code-block::
 
@@ -943,24 +946,25 @@ BDF的iVI方法为以上问题提供了一种解决方案。在iVI方法中，�
      14   A   15   A  284.1224 eV      4.36 nm   0.0008   0.0000  98.2%  CV(0):   A(   7 )->   A(  96 ) 287.601 0.707    6.9920
      15   A   16   A  284.4174 eV      4.36 nm   0.0000   0.0000  93.7%  CV(0):   A(   3 )->   A(  93 ) 289.434 0.509    7.2869
 
-但由激发态成分可以看出，只有激发能为280.8642 eV和280.8973 eV的两个激发态为C 1s到价层轨道的激发，其余激发均为价层轨道到非常高的Rydberg轨道的激发，也即对应于价层电子电离的背景吸收。
+However, it can be seen from the composition of the excited states that only the two excited states with excitation energies of 280.8642 eV and 280.8973 eV are excitations from the C 1s to the valence orbitals, while the rest of the excitations are excitations from the valence orbitals to the very high Rydberg orbitals, i.e., background absorption corresponding to valence electron ionization.
 
-高斯展宽的吸收光谱的绘制
+Plotting of absorption spectra with Gaussian widening
 -------------------------------------------------------
 
-以上各计算得到的仅是各个激发态的激发能和振子强度，而用户常常需要得到理论预测的吸收谱的峰形，这就需要把每个激发态的吸收按一定的半峰宽进行高斯展宽。在BDF中，这是通过Python脚本plotspec.py（位于$BDFHOME/sbin/下，其中$BDFHOME是BDF的安装路径）来实现的。用户需要在TDDFT计算完成以后，手动从命令行调用plotspec.py。例如假设我们已经用BDF计算得到了C60分子的TDDFT激发态，对应的输出文件为C60.out，则可以运行
+The above calculations yield only the excitation energies and oscillator intensities for each excited state, while the user often needs to obtain the theoretically predicted peak shape of the absorption spectrum, which requires a Gaussian widening of the absorption of each excited state by a certain half-peak width. In BDF, this is done with the Python script plotspec.py 
+(located under $BDFHOME/sbin/, where $BDFHOME is the BDF installation path). For example, suppose we have calculated the TDDFT excited state of the C60 molecule using BDF, and the corresponding output file is C60.out, then we can run
 
 .. code-block:: bash
 
   $BDFHOME/sbin/plotspec.py C60.out
 
-或者
+or
 
 .. code-block:: bash
 
   $BDFHOME/sbin/plotspec.py C60
 
-该脚本会在屏幕上输出以下信息：
+The script will output the following on the screen.
 
 .. code-block::
 
@@ -970,7 +974,7 @@ BDF的iVI方法为以上问题提供了一种解决方案。在iVI方法中，�
    - Singlet absorption spectrum, spin-allowed
   plotspec.py: exit successfully
 
-并产生两个文件，一个是C60.stick.csv，包含所有激发态的吸收波长和摩尔消光系数，可以用来作棒状图：
+and produces two files, one for C60.stick.csv, containing the absorption wavelengths and molar extinction coefficients for all excited states, which can be used to make stick graphs.
 
 .. code-block::
 
@@ -988,7 +992,7 @@ BDF的iVI方法为以上问题提供了一种解决方案。在iVI方法中，�
   164.778366,548.752301,
   160.167663,780.089056,
 
-另一个是C60.spec.csv，包含高斯展宽后的吸收谱（默认的展宽FWHM为0.5 eV）：
+The other is C60.spec.csv, which contains the absorption spectrum after Gaussian broadening (the default broadening FWHM is 0.5 eV).
 
 .. code-block::
 
@@ -1003,9 +1007,9 @@ BDF的iVI方法为以上问题提供了一种解决方案。在iVI方法中，�
   999.000000,0.000000,
   1000.000000,0.000000,
 
-这两个文件可以用Excel、Origin等作图软件打开并作图。
+These two files can be opened and plotted with Excel, Origin, and other plotting software.
 
-可以用命令行参数控制作图范围、高斯展宽的FWHM等。示例：
+The command line parameters can be used to control the plotting range, the Gaussian broadening FWHM, etc. Example.
 
 .. code-block::
 
@@ -1025,9 +1029,9 @@ BDF的iVI方法为以上问题提供了一种解决方案。在iVI方法中，�
   # where the wavelength is sampled at an interval of 5 nm:
    $BDFHOME/sbin/plotspec.py -emi wavelength=600-1200nm interval=5 filename.out
 
-如果不带命令行参数运行$BDFHOME/sbin/plotspec.py，可以列出所有的命令行参数及用法，这里不予赘述。
+If you run $BDFHOME/sbin/plotspec.py without command line arguments, you can list all command line arguments and their usage, which will not be repeated here.
 
-激发态结构优化
+Excited State Structure Optimization
 -------------------------------------------------------
 
 BDF不仅支持TDDFT单点能（即给定分子结构下的激发能）的计算，还支持激发态的结构优化、数值频率等计算。为此需要在 ``$tddft`` 模块之后添加 ``$resp`` 模块用于计算TDDFT能量的梯度，并在 ``$compass`` 模块后添加 ``$bdfopt`` 模块，利用TDDFT梯度信息进行结构优化和频率计算（详见 :ref:`结构优化与频率计算<GeomOptimization>` ）。
