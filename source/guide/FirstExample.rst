@@ -1,13 +1,13 @@
 .. _FirstExample:
 
-第一个算例 :math:`\ce{H2O}` 分子的RHF计算
+First example :math:`\ce{H2O}` RHF calculation for H2O molecules
 ================================================
-Hartree-Fock是量子化学最基本算法。本小节，我们将通过一个水分子的Hartree-Fock计算例子，引导用户完成一个BDF计算并分析输入与输出信息。这里，我们先给出BDF的简洁输入，为了使用户理解BDF的简洁输入与高级输入模式的区别，我们也会给出每个简洁输入对应的高级输入文件。
+Hartree-Fock is the most basic algorithm in quantum chemistry. In this subsection, we will guide the user through a BDF calculation and analyze the input and output information by using an example of Hartree-Fock calculation for a water molecule. Here, we first give the concise inputs to the BDF, and in order to understand the difference between the concise and advanced input modes of the BDF, we also give the advanced input file for each concise input.
 
 
-准备输入
+Preparing Inputs
 -------------------------------------------------------
-首先准备水分子单点能量Hartree-Fock计算的输入文件，命名为 ``h2o.inp``, 输入内容如下：
+First, prepare the input file for the Hartree-Fock calculation of the single-point energy of water molecules, named ``h2o.inp``, with the following input：
 
 .. code-block:: bdf 
 
@@ -22,14 +22,14 @@ Hartree-Fock是量子化学最基本算法。本小节，我们将通过一个�
     R1=1.0     # input bond length with the default unit angstrom
     End geometry
 
-输入解读如下：
- - 第一行必须以 ``#!`` 开始，跟着一个名为 ``bdf.sh`` 字符串，这个可以是任意的字母和数组字成字符串，不能包含除 ``.`` 外的特殊字符。第一行是系统保留行，用户可以利用这个字符串来标记计算任务。
- - 第二行 ``HF/3-21G`` 是BDF的计算参数控制行， ``HF`` 是Hartree-Fock的缩写， ``3-21G`` 指定计算使用 ``3-21G`` 基组。关键参数控制行可以是连续的多行。
- - 第三行为空行，可忽略。这里输入是为了区分不同的输入内容，增强输入的可读性，建议用户保留。
- - 第四行与第十行分别为 ``Geometry`` 和 ``End geometry`` ，标记分子几何结构输入的起始与中止，坐标的默认单位是埃 (Angstrom)。
- - 第五行到第九行用内坐标的模式输入了水分子的结构。(详见 :ref:`分子结构的内坐标格式输入<Internal-Coord>`)
+The input is interpreted as follows.：
+ - The first line must start with ``#!`` followed by a string named ``bdf.sh``, this can be any letter and array of words into a string, can not contain special characters other than ``.`` in addition to the special characters. The first line is the system reservation line, the user can use this string to mark the calculation task.
+ - The second line, ``HF/3-21G`` is the calculation parameter control line for the BDF. ``HF`` stands for Hartree-Fock, and ``3-21G`` specifies that the calculation uses the ``3-21G`` basis group. The key parameter control line can be multiple consecutive lines.
+ - The third row is an empty line and can be ignored. It is entered here to distinguish between different inputs and to enhance the readability of the input, and is recommended to be kept by the user.
+ - The fourth and tenth lines are ``Geometry`` and ``End geometry`` , respectively, marking the start and end of the molecular geometry input, and the default unit of coordinates is angstrom.
+ - The fifth through ninth lines enter the structure of the water molecule in the internal coordinate mode. (See :ref:`Internal coordinate format for molecular structure input <Internal-Coord>` for details)
 
-这个简单的输入对应的BDF高级输入为：
+This simple input corresponds to the advanced BDF input as follows：
 
 .. code-block:: bdf 
 
@@ -47,82 +47,82 @@ Hartree-Fock是量子化学最基本算法。本小节，我们将通过一个�
   $end
   
   $scf
-  RHF       # 限制性Hartree-Fock方法
-  Charge    # 分子的电荷设置为0，默认计算中性分子，电荷为零
+  RHF       # Restrictive Hartree-Fock Method
+  Charge    # The charge of the molecule is set to 0, and the default calculation is for neutral molecules with zero charge
     0    
-  Spinmulti # 自旋多重度 2S+1，偶数电子体系默认计算单重态
+  Spinmulti # spin-multiplicity 2S+1，the default calculation is for double electron system
     1    
   $end
 
-从高级输入可以看出，BDF将按顺序执行模块 **COMPASS** ， **XUANYUAN** 和 **SCF** 完成水分子的单点能量计算。
-**COMPASS** 用于读入分子结构，基函数等基本信息，判断分子的对称性，将分子转动到标准取向(Standard orientation，详见 :ref:`BDF对群论的使用小节<Point-Group>`)，产生对称匹配轨道等，
-并将这些信息存入BDF的执行目录下的文件 ``h2o.chkfil`` 。 **COMPASS** 中的关键词
+As can be seen from the advanced input, BDF will execute the modules **COMPASS** ， **XUANYUAN** and **SCF** in order to complete the single-point energy calculation of the water molecule.
+**COMPASS** is used to read in the basic information such as molecular structure, basis functions, etc., determine the symmetry of the molecule, rotate the molecule to the standard orientation (Standard orientation，see :ref:`the BDF use of group theory <Point-Group>`)，generate the symmetry-adapted orbitals, etc.,
+and store such information into the ``h2o.chkfil`` 。 The keywords in **COMPASS** are
 
- * ``Geometry`` 到 ``End geometry`` 之间定义的分子结构;
- * ``Basis`` 定义基组为 ``3-21G``;
+ * The molecular structure defined between ``Geometry`` and ``End geometry``;
+ * ``Basis`` defines the basis group as ``3-21G``;
 
-执行完 **COMPASS** 模块后，BDF利用 **XUANYUAN** 模块计算单、双电子积分。由于BDF默认采用的是 **重复计算双电子积分的SCF** 方法，即 **Integral Direct SCF** 。
+After executing the **COMPASS** module, BDF uses the **XUANYUAN** module to calculate the single and double electron integrals. Since the BDF defaults to the SCF method of **repeated calculation of double electron integrals**, i.e. **Integral Direct SCF** 。
 
-最后，BDF执行 **SCF** 模块，完成基于Hartree-Fock的自洽场计算。
+Finally, the BDF executes the **SCF** module to complete the Hartree-Fock based self-consistent field calculation.
 
- * ``RHF`` 指定使用限制性Hartree-Fock方法;
- * ``Charge`` 指定体系的电荷为0;
- * ``Spinmulti`` 指定体系的自旋多重度为1。
+ * The ``RHF`` specifies the use of the restricted Hartree-Fock method;
+ * ``Charge`` specifies that the charge of the system is 0;
+ * ``Spinmulti`` specifies that the spin multi of the system is 1.
 
-这里 ``RHF`` 是必须输入的关键词， ``Charge`` 和 ``Spinmulti`` 对于限制性方法可以忽略。
+Here ``RHF`` is a mandatory keyword, and ``Charge`` and ``Spinmulti`` can be ignored for the restricted method.
 
-执行计算
+Performing the calculation
 -------------------------------------------------------
-执行计算，需要准备一个Shell脚本，命名为 ``run.sh`` ,放入 输入文件 ``h2o.inp`` 所在的目录。内容如下：
+To perform the calculation, a shell script named ``run.sh`` is prepared and placed in the directory where the input file ``h2o.inp`` is located. The contents are as follows.
 
 .. code-block:: shell
 
     #!/bin/bash
 
-    # 设置BDF的安装目录
+    # Set the BDF installation directory 
     export BDFHOME=/home/bsuo/bdf-pkg-pro
-    # 设置BDF的临时文件存放目录
+    # Set the BDF temporary file storage directory
     export BDF_TMPDIR=/tmp/$RANDOM
 
-    # 设置可用堆区内存不受限，如果在超算环境计算，可能会受系统管理的限制
+    # Set the available heap memory to be unrestricted, which may be limited by system administration if computing in a supercomputing environment
     ulimit -s unlimitted
-    # 设定可用计算时间不受限，如果在超算环境计算，可能会受系统管理的限制
+    # Set the available computation time to be unlimited, which may be limited by system administration if computing in a supercomputing environment
     ulimit -t unlimitted
 
-    # 设置OpenMP并行线程数
+    # Set the number of OpenMP parallel threads
     export OMP_NUM_THREADS=4
-    # 设置OpenMP可用堆区内存大小
+    # Set the OpenMP availale heap memory size
     export OMP_STACKSIZE=1024M
 
-    # 执行BDF计算，注意，默认输出会打印至标准输出
+    # Perform BDF calculations, note that the default output is printed to standard output
     $BDFHOME/sbin/bdfdrv.py -r h2o.inp 
 
-以上是 ``Bash Shell`` 脚本，定义了一些基本的环境变量，并利用 ``$BDFHOME/sbin/bdfdrv.py`` 执行计算。脚本中定义的环境变量有：
+The above is a ``Bash Shell`` script that defines some basic environment variables and executes the calculation using ``$BDFHOME/sbin/bdfdrv.py``. The environment variables defined in the script are：
 
- * ``BDFHOME`` 变量指定BDF的安装目录；
- * ``BDF_TMPDIR`` 变量指定BDF运行时临时文件存放目录；
- * ``ulimit -s unlimitted`` 设定程序可用的Stack区内存不受限；
- * ``ulimit -t unlimitted`` 设定程序执行时间不受限；
- * ``export OMP_NUM_THREADS=4`` 设定可用4个OpenMP线程执行并行计算；
- * ``export OMP_STACKSIZE=1024M`` 设定OpenMP可用的Stack区内存为1024兆字节。
+ * ``BDFHOME`` ariable specifies the directory where BDF is installed.
+ * ``BDF_TMPDIR`` variable specifies the BDF runtime temporary file storage directory.
+ * ``ulimit -s unlimitted`` sets the available stack area memory for the program to be unlimitted.
+ * ``ulimit -t unlimitted`` sets the program execution time to be unlimited.
+ * ``export OMP_NUM_THREADS=4`` sets the number of OpenMP threads available for parallel computation.
+ * ``export OMP_STACKSIZE=1024M`` sets the available Stack area memory for OpenMP to be 1024 megabytes.
 
-执行计算的命令为
+The command to perform the calculation is
 
 .. code-block:: shell
 
     $ ./run.sh h2o.inp &>h2o.out&
 
-由于BDF将默认输出打印到标准输出，这里我们用了Linux的重定向命令，将标准输出定向到文件 ``h2o.out`` 。
+Since BDF prints the default output to the standard output, we use the Linux redirect command here to redirect the standard output to the file ``h2o.out`` 。
 
-计算结果分析
+Analysis of the calculation results
 -------------------------------------------------------
-计算结束后，将得到 ``h2o.out`` , ``h2o.chkfil`` , ``h2o.scforb`` 等文件。
+After the computation, the files ``h2o.out`` , ``h2o.chkfil`` , ``h2o.scforb`` will be obtained.
  
- * ``h2o.out`` 是文本文件，用户可读，存储BDF输出打印信息；
- * ``h2o.chkfil`` 是二进制文件，用户不可读，用于在BDF不同模块间传递数据；
- * ``h2o.scforb`` 是文本文件，用户可读，存储了 ``scf`` 自洽迭代的分子轨道因子、轨道能等信息，主要用于重启动或作为其他scf计算的初始猜测轨道。
+ * ``h2o.out`` is a text file, user readable, storing the BDF output printing information.
+ * ``h2o.chkfil`` is a binary file, not user readable, used to pass data between different modules of the BDF; ``h2o.chkfil`` is a binary file, not user readable, used to pass data between different modules of the BDF.
+ * ``h2o.scforb`` is a text file, user-readable, storing information on molecular orbital factors, orbital energies, etc. for self-consistent iterations of ``scf``, mainly used for restarting or as initial guess orbits for other scf calculations.
 
-如果输入文件采用的是BDF简洁输入模式， ``h2o.out`` 中首先会给出一些基本的用户设置信息,
+If the input file is in BDF simple input mode, ``h2o.out`` will first give some basic user setup information,
 
 .. code-block:: bdf 
 
@@ -150,16 +150,16 @@ Hartree-Fock是量子化学最基本算法。本小节，我们将通过一个�
 
   |============================================================|
 
-这里，
+Here, the
 
- * ``Input BDF Keywords`` 给出了一些基本控制参数； 
- * ``Basis set`` 给出计算所用基组；
- * ``Wavefunction, Charges and spinmulti`` 给出了体系电荷、总的核电荷数和自旋多重度(2S+1)；
- * ``Energy method`` 给出能量计算方法；
- * ``Accleration method`` 给出双电子积分计算加速方法；
- * ``Potential energy surface method`` 给出势能面计算方法，这里是单点能量计算。
+ * ``Input BDF Keywords`` gives some basic control parameters.
+ * ``Basis set`` gives the basis set used for the calculation.
+ * ``Wavefunction, Charges and spinmulti`` gives the system charges, total nuclear charges and spin multiplicity (2S+1).
+ * ``Energy method`` gives the energy calculation method.
+ * ``Accleration method`` gives the two-electron integral calculation acceleration method.
+ * ``Potential energy surface method`` gives the potential energy surface calculation method, here it is a single point energy calculation.
 
-随后，系统执行 **COMPASS** 模块，会给出如下提示：
+Subsequently, the system executes the **COMPASS**module, which gives the following prompt：
 
 .. code-block:: 
   
@@ -171,7 +171,7 @@ Hartree-Fock是量子化学最基本算法。本小节，我们将通过一个�
     |************************************************************|
 
 
-然后打印输入的分子结构的笛卡尔坐标，单位为 **Bohr** ，以及每种类型原子的基函数详细信息
+The Cartesian coordinates of the input molecular structure in **Bohr** are then printed, as well as details of the basis functions for each type of atom
 
 .. code-block:: 
 
@@ -212,7 +212,7 @@ Hartree-Fock是量子化学最基本算法。本小节，我们将通过一个�
                  0.824547   0.218613E+01    0.904691    0.000000
                  0.183192   0.707447E+00    0.000000    1.000000
 
-随后，自动判断分子对称性，并根据用户设置决定是否转动为标准取向模式，
+Subsequently, the molecular symmetry is automatically determined and the rotation to the standard orientation mode is decided according to the user settings.
 
 .. code-block:: 
 
@@ -248,8 +248,7 @@ Hartree-Fock是量子化学最基本算法。本小节，我们将通过一个�
     
     |----------------------------------------------------------------------------------|
 
-细心的用户可能已经注意到，这里的水分子的坐标与输入的不一样。最后， **COMPASS** 会产生对称匹配轨道（Symmetry adapted orbital），并给出偶极矩和四极矩所属
-的不可约表示，打印 ``C(2v)`` 点群的乘法表，给出总的基函数数目和每个不可约表示对称匹配轨道数目。
+Careful users may have noticed that the coordinates of the water molecules here are different from the ones entered. Finally, **COMPASS** generates symmetry adapted orbital and gives the integrable representations to which the dipole and quadrupole moments belong, printing a multiplication table for the ``C(2v)`` point group, giving the total number of basis functions and the number of symmetry adapted orbital for each integrable representation.
 
 .. code-block:: 
 
@@ -286,13 +285,13 @@ Hartree-Fock是量子化学最基本算法。本小节，我们将通过一个�
       Norb  :      7         0         4         2
     |--------------------------------------------------|
 
-这里， ``C(2v)`` 点群有4个一维不可约表示，标记为 ``A1, A2, B1, B2`` , 分别有 ``7, 0, 4, 2`` 个对称匹配的轨道。
+Here, the ``C(2v)`` point group has 4 one-dimensional integrable representations, labeled ``A1, A2, B1, B2`` , with ``7, 0, 4, 2`` symmetrically matched orbitals, respectively.
 
 .. attention::
 
-    不同的量子化学软件，可能会采用不同的分子标准取向，导致某些分子轨道在不同程序中标记为不同的不可约表示。
+    Different quantum chemistry software may use different molecular standard orientations, resulting in some molecular orbitals being labeled with different integrable representations in different programs.
 
-最后， ``COMPASS`` 计算正常结束，会给出如下输出：
+Finally, the ``COMPASS`` calculation ends normally, giving the following output.
 
 .. code-block:: 
 
@@ -309,10 +308,10 @@ Hartree-Fock是量子化学最基本算法。本小节，我们将通过一个�
 
 .. note::
 
-    BDF的每个模块执行，都会有开始执行和执行结束后打印时间信息，方便用户具体定位哪个计算模块出错。
+    For each module execution of BDF, there will be informaton about the start of the execution and the time printed after the end of the execution, so that it is convenient for the user to locate exactly which calculation module has made an error.
 
 
-本算例计算执行的第二个模块是 **XUANYUAN** ， 该模块主要用于计算单、双电子积分。如果不特别指定，BDF默认采用直接计算双电子积分构造Fock矩阵的算法。这里， **XUANYUAN** 模块只计算和保存单电子积分及需要做积分预筛选的特殊双电子积分。如果用户在 ``compass`` 模块指定了 :ref:`Saorb<compass.saorb>` 关键词，双电子积分将被计算并保存到硬盘。 **XUANYUAN** 模块的输出比较简单，一般不需要特别关注。这里，我们给出最关键的输出：
+The second module executed in this example is **XUANYUAN**, which is mainly used to calculate single and double electron integrals. Here, the **XUANYUAN** module only calculates and stores single-electron integrals and special double-electron integrals that require pre-screening of the integrals. If not specified, the BDF defaults to the direct calculation of the double electron integral to construct the Fock matrix. If user write in ``compass`` module the key word :ref:`Saorb<compass.saorb>`，double electron integral will be calculated and stored. The output of the **XUANYUAN** module is relatively simple and does not require special attention. Here, we give the most critical output.
 
 .. code-block:: 
 
@@ -337,9 +336,9 @@ Hartree-Fock是量子化学最基本算法。本小节，我们将通过一个�
      Timing caluclate K2 integrals.
      CPU:       0.00 SYS:       0.00 WALL:       0.00
     
-从输出我们看到单电子重叠、动能与核吸引积分被计算，还计算了偶极矩和四极矩积分。由于输入要求默认的积分直接SCF计算（Direct SCF），双电子积分计算被忽略。
+From the output we see that the single-electron overlap, kinetic and nuclear attraction integrals are computed, and also the dipole and quadrupole moment integrals are computed. The two-electron integral calculation is ignored because the input requires the default integration to be calculated directly by SCF (Direct SCF).
 
-最后，BDF调用 **SCF** 模块执行 **RHF** 自洽场计算。需要关注的信息有：
+Finally, the BDF invokes the **SCF** module to perform the **RHF** self-consistent field calculation. Information of interest are:
 
 .. code-block:: 
 
@@ -351,8 +350,8 @@ Hartree-Fock是量子化学最基本算法。本小节，我们将通过一个�
      Num. of alpha electrons :       5
      Num. of beta  electrons :       5
 
-这里给出了核电荷数、总电子数、赝势计算的芯电子数、自旋多重度、alpha及beta电子数等信息，用户应当检查电子态是否正确。
-然后， ``scf`` 模块先计算原子，并产生分子计算的初始猜测密度矩阵，
+The nuclear charge number, the total electron number, the core electron number for the pseudopotential calculation, the spin multiplicity, and the alpha and beta electron numbers are given here, and the user should check that the electronic states are correct. 
+Then, the ``scf`` module first calculates the atoms and generates the initial guess density matrix for the molecular calculations.
 
 .. code-block:: 
 
@@ -365,13 +364,13 @@ Hartree-Fock是量子化学最基本算法。本小节，我们将通过一个�
     
      Superposition of atomic densities as initial guess.
 
-检查处理基函数可能的线性相关问题，
+checking for possible linear correlations in the treatment of the basis functions.
 
 .. code-block:: 
 
      Check basis set linear dependence! Tolerance =   0.100000E-04
 
-随后进入SCF迭代，8次迭代收敛后关闭 **DIIS** 和 **Level shift** 等加速收敛方法并重新计算能量，
+It then proceeds to the SCF iterations, where after 8 iterations of convergence the accelerated convergence methods such as **DIIS** and **Level shift** are turned off and the energies are recalculated.
 
 .. code-block:: 
 
@@ -390,7 +389,7 @@ Hartree-Fock是量子化学最基本算法。本小节，我们将通过一个�
       Label              CPU Time        SYS Time        Wall Time
      SCF iteration time:         0.017 S        0.017 S        0.000 S
 
-最后打印不同项的能量贡献和维里比。
+Finally, the energy contributions and the Viry ratios of the different terms are printed.
 
 .. code-block:: 
 
@@ -405,18 +404,18 @@ Hartree-Fock是量子化学最基本算法。本小节，我们将通过一个�
        E_xc  =                 0.00000000
       Virial Theorem      2.003738
 
-根据维里定律(Virial Theorem)，对于非相对论系统，系统的总势能的绝对值是电子的动能的2倍，这里的维里比是 ``2.003738`` 。 系统的能量为：
+According to the Virial Theorem, the absolute value of the total potential energy of the system is two times the kinetic energy of the electron for a non-relativistic system, where the Virial ratio is ``2.003738``. The energy of the system is：
 
- * ``E_tot`` 是系统总能量，即 ``E_ele`` + ``E_nn`` ;
- * ``E_ele`` 是电子能量，即 ``E_1e`` + ``E_ee`` + ``E_xc`` ;
- * ``E_nn``  是原子核排斥能;
- * ``E_1e``  是单电子能量，即 ``E_ne`` + ``E_kin`` ;
- * ``E_ne``  是原子核对电子的吸引能;
- * ``E_kin`` 是电子动能;
- * ``E_ee`` 是双电子能，包括库伦排斥和交换能；
- * ``E_xc`` 是交换相关能，DFT计算时不为0.
+ * ``E_tot`` is the total energy of the system, i.e., ``E_ele`` + ``E_nn`` ;
+ * ``E_ele`` is the electron energy, i.e. ``E_1e`` + ``E_ee`` + ``E_xc`` ;
+ * ``E_nn``  is the nuclear repulsion energy;
+ * ``E_1e``  is the single electron energy, i.e. ``E_ne`` + ``E_kin`` ;
+ * ``E_ne``  is the energy of attraction of the nucleus to the electron;
+ * ``E_kin`` is the electron kinetic energy;
+ * ``E_ee`` is the two-electron energy, including Coulomb repulsion and exchange energy.
+ * ``E_xc`` is the exchange-related energy, which is not 0 for DFT calculation.
 
-能量打印后输出的是轨道的占据情况、轨道能、HUMO-LOMO能量和能隙等信息，如下所示：
+The output of the energy printout is the occupancy of the orbitals, the orbital energy, the HUMO-LOMO energy and the energy gap, as shown below.
 
 .. code-block:: 
 
@@ -454,15 +453,15 @@ Hartree-Fock是量子化学最基本算法。本小节，我们将通过一个�
      Alpha   LUMO energy:       0.24980046 au       6.79741929 eV  Irrep: A1      
      HOMO-LUMO gap:       0.72483814 au      19.72385767 eV
 
-这里
+Here
 
- * ``[Final occupation pattern: ]`` 给出的是轨道占据情况。由于我们进行的是限制性Hartree-Fock计算，占据情况只给出了Alpha轨道的信息，按照不可约表示分别给出。从这个例子可以看出，A1轨道的前3个、B1和B2轨道的第1个分别有1个电子占据。由于本算例是RHF，alpha与beta轨道是一样的，所以A1表示有3个双占据轨道，B1和B2表示分别有1个双占据轨道。
- * ``[Orbital energies:]`` 按照不可约表示分别给出轨道能；
- * ``Alpha   HOMO energy:`` 按照单位 au 和 eV 给出了HOMO轨道能；该轨道所属的不可约表示，这里是B2；
- * ``Alpha   LUMO energy:`` 按照单位 au 和 eV 给出了LUMO轨道能；该轨道所属的不可约表示，这里是A1；
- * ``HOMO-LUMO gap:`` 给出HOMO和LUMO轨道的能差。
+ * ``[Final occupation pattern: ]``gives the orbital occupation. Since we are performing a restricted Hartree-Fock calculation, the occupation is given only for the Alpha orbit, which is given separately according to the integrable representation. From this example, it can be seen that the first 3 of the A1 orbitals and the 1st of the B1 and B2 orbitals are occupied by 1 electron each. Since this example is an RHF, the alpha and beta orbitals are the same, so A1 indicates 3 double-occupied orbitals, and B1 and B2 indicate 1 double-occupied orbital each.
+ * ``[Orbital energies:]`` The orbital energies are given separately according to the integrable representation.
+ * ``Alpha   HOMO energy:`` gives the HOMO orbital energy in units au and eV; the integrable representation to which the orbital belongs, in this case B2.
+ * ``Alpha   LUMO energy:`` the LUMO orbital energy is given in units of au and eV; the integrable representation to which the orbital belongs, in this case A1.
+ * ``HOMO-LUMO gap:`` gives the energy difference between the HOMO and LUMO orbitals.
 
-为了减少输出行数，BDF默认不打印轨道成分及分子轨道系数，只按照不可约表示分类给出部分轨道占据数和轨道能信息，如下：
+In order to reduce the number of output lines, BDF does not print the orbital composition and molecular orbital coefficients by default, but only gives the partial orbital occupation and orbital energy information according to the integrable representation. Only partial orbital occupancies and orbital energy information are given according to the integrable representation categories, as follows.
 
 .. code-block:: 
 
@@ -489,7 +488,7 @@ Hartree-Fock是量子化学最基本算法。本小节，我们将通过一个�
         Energy      -0.47504    1.78424
         Occ No.      2.00000    0.00000
              
-**SCF** 模块最后打印的是Mulliken和Lowdin布居分析的结果，分子的偶极矩信息。
+The **SCF** module finally prints the results of Mulliken and Lowdin Bourdin analysis, with information on the dipole moments of the molecules.
 
 .. code-block:: 
 
@@ -515,9 +514,8 @@ Hartree-Fock是量子化学最基本算法。本小节，我们将通过一个�
        Totl:   -0.0000     0.0000    -2.3684
 
 .. hint:: 
-    1. 在 **SCF** 模块输入中加入 ``iprtmo`` 关键词，值设置为 ``2`` ，可以输出分子轨道的详细信息；
-    2. 在 **SCF** 模块输入中加入 ``molden`` 关键词，可以将分子轨道和占据输出为molden格式的文件，
-    可用第三方程序做可视化（如 `GabEdit <http://gabedit.sourceforge.net/>`_， `JMol <http://jmol.sourceforge.net>`_，
+    1. add the ``iprtmo`` keyword to the input of the **SCF** module with a value of ``2`` to output detailed information about the molecular orbitals.
+    2. add the ``molden`` keyword to the input of the **SCF** module to output the molecular orbitals and occupancies as a molden format file, which can be used by third-party programs for visualization or wave function analysis（such as `GabEdit <http://gabedit.sourceforge.net/>`_， `JMol <http://jmol.sourceforge.net>`_，
     `Molden <https://www.theochem.ru.nl/molden/>`_，`Multiwfn <http://sobereva.com/multiwfn/>`_），
-    进行 :ref:`波函数分析<1e-prop>` ，或计算 :ref:`单电子性质<1e-prop>` 。
+    to calculate :ref:`wavefunction analysis <1e-prop>` ，or calculate :ref:`single electron property <1e-prop>` 。
 
