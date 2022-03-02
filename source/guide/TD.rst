@@ -1034,9 +1034,9 @@ If you run $BDFHOME/sbin/plotspec.py without command line arguments, you can lis
 Excited State Structure Optimization
 -------------------------------------------------------
 
-BDF不仅支持TDDFT单点能（即给定分子结构下的激发能）的计算，还支持激发态的结构优化、数值频率等计算。为此需要在 ``$tddft`` 模块之后添加 ``$resp`` 模块用于计算TDDFT能量的梯度，并在 ``$compass`` 模块后添加 ``$bdfopt`` 模块，利用TDDFT梯度信息进行结构优化和频率计算（详见 :ref:`结构优化与频率计算<GeomOptimization>` ）。
+BDF supports not only the calculation of TDDFT single point energies (i.e., excitation energies for a given molecular structure), but also structure optimization of excited states, numerical frequencies, etc. For this purpose, the ``$tddft`` module is required. For this purpose, a ``$resp`` module is added after the ``$tddft`` module to calculate the gradient of the TDDFT energy, and a ``$bdfopt`` module is added after the $compass module to use the TDDFT gradient information for structure optimization and frequency calculation (see  :ref:`结构优化与频率计算<GeomOptimization>` for details).
 
-以下是在B3LYP/cc-pVDZ水平下优化丁二烯第一激发态结构的算例：
+The following is an example of calculations to optimize the structure of the first excited state of butadiene at the B3LYP/cc-pVDZ level.
 
 .. code-block:: bdf
 
@@ -1102,9 +1102,9 @@ BDF不仅支持TDDFT单点能（即给定分子结构下的激发能）的计算
      # one root is calculated in the $TDDFT block
   $end
 
-注意上述算例中， ``$resp`` 模块的关键词 ``iroot`` 的意义和前述 ``$tddft`` 模块的关键词 ``iroot`` 的意义不同。前者指的是计算第几个激发态的梯度，后者则指的是每个不可约表示一共计算多少个激发态。
+Note that in the above example, the meaning of the keyword ``iroot`` in the ``$resp`` module is different from the meaning of the keyword ``iroot`` in the ``$tddft`` module above. The former refers to calculating the gradient of the first excited state, and the latter refers to how many excited states are calculated for each irreducible representation.
 
-结构优化收敛后，在主输出文件中输出收敛的结构：
+After convergence of the structure optimization, the converged structure is output in the main output file.
 
 .. code-block::
 
@@ -1127,7 +1127,7 @@ BDF不仅支持TDDFT单点能（即给定分子结构下的激发能）的计算
       Current values  :  0.5550E-04   0.1545E-03   0.3473E-03   0.1127E-02
       Geom. converge  :     Yes          Yes          Yes          Yes
 
-此外可以从 ``.out.tmp`` 文件的最后一个TDDFT模块的输出里读取激发态平衡结构下的激发能，以及激发态的总能量、主要成分：
+In addition, the excitation energy in the excited state equilibrium structure can be read from the output of the last TDDFT module in the ``.out.tmp`` file, as well as the total energy of the excited state and the main components.
 
 .. code-block::
 
@@ -1141,17 +1141,15 @@ BDF不仅支持TDDFT单点能（即给定分子结构下的激发能）的计算
 
       1  Bu    1  Bu    5.1695 eV    239.84 nm   0.6576   0.0000  89.9%  CV(0):  Bg(   1 )->  Au(   2 )   4.574 0.874    0.0000
 
-其中，激发态平衡结构下的激发能对应的波长（240 nm）即为丁二烯的荧光发射波长。
+The wavelength (240 nm) corresponding to the excitation energy in the excited state equilibrium structure is the fluorescence emission wavelength of butadiene.
 
-基于sf-X2C/TDDFT-SOC的自旋轨道耦合计算
+Spin-orbit coupling calculation based on sf-X2C-TDDFT-SOC
 ----------------------------------------------------------
 
-相对论效应包括标量相对论和自旋轨道耦合（spin-orbit coupling, SOC）。相对论计算需要使用 **针对相对论效应优化的基组，
-并选择合适的哈密顿** 。BDF支持全电子的sf-X2C/TDDFT-SOC计算，这里sf-X2C指用无自旋的精确二分量（eXact Two-Component, X2C）哈密顿考虑标量相对论效应，TDDFT-SOC指基于TDDFT计算自旋轨道耦合。注意虽然TDDFT是激发态方法，但TDDFT-SOC不仅可以用来计算SOC对激发态能量、性质的贡献，也可以用来计算SOC对基态能量、性质的贡献。
+Relativistic effects include scalar relativity and spin-orbit coupling (SOC). The relativistic calculations require the use of **basis sets optimized for relativistic effects and the selection of a suitable Hamiltonian**. 
+sf-X2C-TDDFT-SOC calculations are supported by BDF for all-electron sf-X2C, where sf-X2C refers to the scalar relativistic effects considered with spinless exact two-component (eXact Two-Component, X2C) Hamiltonians, and TDDFT-SOC refers to the spin-orbit coupling calculations based on TDDFT. TDDFT calculation of spin-orbit coupling. Note that although TDDFT is an excited state method, TDDFT-SOC can be used to calculate not only the contribution of SOC to the excited state energy and properties, but also the contribution of SOC to the ground state energy and properties.
 
-以基态为单重态的分子为例，完成sf-X2C/TDDFT-SOC计算需要按顺序调用三次TDDFT计算模块。其中，第一次执行利用R-TDDFT，计算单重态，
-第二次利用SF-TDDFT计算三重态，最后一次读入前两个TDDFT计算的波函数，用态相互作用（State interaction, SI）方法
-计算这些态的自旋轨道耦合。这从下面 :math:`\ce{CH2S}` 分子的sf-X2C/TDDFT-SOC计算的高级输入可以清楚地看出。
+Taking a molecule with a single heavy ground state as an example, the TDDFT calculation module needs to be called three times in sequence to complete the sf-X2C-TDDFT-SOC calculation. Among them, the first execution utilizes R-TDDFT and calculates the single heavy state, the second uses SF-TDDFT to calculate the triplet state, and the last reads in the wave functions of the first two TDDFT calculations and calculates the spin-orbit coupling of these states using the state interaction (SI) method. This can be clearly seen from the advanced input of the sf-X2C-TDDFT-SOC calculation for the :math:`\ce{CH2S}` molecule below.
 
 .. code-block:: bdf
 
@@ -1243,17 +1241,16 @@ BDF不仅支持TDDFT单点能（即给定分子结构下的激发能）的计算
 
 .. warning:: 
 
-  * 计算必须按照isf=0,isf=1的顺序进行。当SOC处理不考虑基态（即 ``ifgs=0`` ）时，计算的激发态数 ``iroot`` 越多，结果越准；当考虑基态（即 ``ifgs=1`` ）时， ``iroot`` 太多反倒会令精度降低，具体表现为低估基态能量，此时 ``iroot`` 的选取没有固定规则，对于一般体系以几十为宜。
+  * The calculations must be performed in the order isf=0,isf=1. When SOC processing does not consider the ground state(i.e., ``ifgs=0``), the more excited states ``iroot``, the more accurate the result; when considering the ground state(i.e., ``ifgs=1``), too many ``iroot`` will reduce the accuracy, which is reflected in the underestimation of the ground state energy, and there is no fixed rule for the selection of ``iroot``.
 
-关键词 ``imatsoc`` 控制要打印哪些SOC矩阵元<A|hso|B>，
+The keyword ``imatsoc`` controls which SOC matrix elements <A|hso|B> are to be printed.
 
-  * ``8`` 表示要打印8组旋量态之间的SOC，下面顺序输入了8行整数数组；
-  * 每一行的输入格式为 ``fileA symA stateA fileB symB stateB``，代表矩阵元 <fileA,symA,stateA|hsoc|fileB,symB,stateB>,其中
-  * ``fileA symA stateA`` 代表文件 ``fileA`` 中的第 ``symA`` 个不可约表示的第 ``stateA`` 个根；例如 ``1 1 1`` 代表第1个TDDFT计算的第1个不可约表示的第1个根； 
-  * ``0 0 0`` 表示基态 
+  * * ``8`` means that the SOCs between 8 sets of spin states are to be printed, and an array of 8 integer rows is entered sequentially below.
+  * The input format for each line is ``fileA symA stateA fileB symB stateB``, representing the matrix element <fileA,symA,stateA|hsoc|fileB,symB,stateB>, where
+  * ``fileA symA stateA`` represents the ``stateA`` root of the integrable representation of ``symA`` in ``fileA``; for example, ``1 1 1`` represents the first root of the integrable representation of the first TDDFT calculation.
+  * ``0 0 0 0`` indicates the ground state
 
-
-耦合矩阵元的打印输出如下，
+The printout of the coupling matrix element is as follows.
 
 .. code-block:: 
 
@@ -1279,14 +1276,14 @@ BDF不仅支持TDDFT单点能（即给定分子结构下的激发能）的计算
    0.0  0.0      0.0000000000      0.0000000000     -0.0000000000     -0.0000000000
    0.0  1.0     -0.0003065905    -67.2888361761     -0.0000000000     -0.0000000000
 
-这里， ``<  0  0  0 |Hso|  2  2  1 >`` 表示矩阵元 ``<S0|Hso|T1>`` , 分别给出其实部ReHso和虚部ImHso。
-由于S0只有一个分量，mi为1。T1（spin S=1）有3个分量（Ms=-1,0,1），用mj对这3个分量编号。
-其中 ``Ms=0`` 的分量与基态的耦合矩阵元的虚部为 ``0.0007155424 au`` 。 
+Here, ``< 0 0 0 |Hso| 2 2 1 >`` denotes the matrix element ``<S0|Hso|T1>`` , which gives its real part ReHso and imaginary part ImHso, respectively.
+Since S0 has only one component, mi is 1. T1 (spin S=1) has 3 components (Ms=-1,0,1), and the 3 components are numbered by mj. 
+The imaginary part of the coupling matrix element between the component with ``Ms=0`` and the ground state is ``0.0007155424 au`` .
 
 .. warning::
-  对比不同程序结果时需要注意：这里给出的是所谓spherical tensor，而不是cartesian tensor，即T1是T_{-1},T_{0},T_{1}，不是Tx,Ty,Tz，两者之间存在酉变换。
+  When comparing the results of different programs, note that the so-called spherical tensor is given here instead of cartesian tensor, i.e.,T1 is T_{-1},T_{0},T_{1}, not Tx,Ty,Tz， and there are you-transformations between them.  
 
-SOC计算结果为，
+The SOC calculation results in that
 
 .. code-block:: 
 
