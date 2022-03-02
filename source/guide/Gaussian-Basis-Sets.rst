@@ -512,57 +512,57 @@ The pseudopotential basis groups are divided into scalar pseudopotential basis g
 
 .. _SelfdefinedBasis:
 
-自定义基组文件
+Custom basis set files
 ------------------------------------------------
-BDF可以使用非内置基组，此时要把基组数据保存在文本格式的基组文件中，放在计算目录下，文件名就是BDF中要引用的基组名。
+The BDF can use non-built-in basis groups, where the basis group data is saved in a text format basis group file, placed in the calculation directory, with the file name is the name of the base group to be referenced in the BDF.
 
 .. warning::
 
-    自定义基组文件的文件名必须 **全部大写** ！但在输入文件中引用时，大小写任意。
+    The file name of the custom base group file must be in **all capital letters** ！However, when referenced in the input file, the case is arbitrary.
 
-例如，在计算目录下创建一个文本文件MYBAS-1（注意：如果在Windows操作系统下创建文本文件，系统可能会隐去扩展名 *.txt* ，因此实际名称是MYBAS-1.txt），内容为：
+For example, create a text file MYBAS-1 in the calculation directory (note: if you create a text file under Windows OS, the system may hide the extension *.txt*, so the actual name is MYBAS-1.txt) with the following contents
 
 .. code-block::
 
-   # This is my basis set No. 1.               # 任意的空行，以及 # 打头的注释行 
+   # This is my basis set No. 1.               # any blank lines and # leading comment lines 
    # Supported elements: He and Al
 
-   ****                                        # 4个星号打头的行，接下来是一个元素的基组
-   He      2    1                              # 元素符号，核电荷数，基函数的最高角动量
-   S      4    2                               # S型GTO基函数，4个原函数收缩成2个
-                  3.836000E+01                 # 4个S型高斯原函数的指数
+   ****                                        # a line beginning with four asterisks, followed by a base group of elements
+   He      2    1                              # element sign, nuclear charge number, highest angular momentum of basis function
+   S      4    2                               # S type GTO basis function, 4 original functions reduced to 2
+                  3.836000E+01                 # exponents of four S-type Gaussian primitive functions
                   5.770000E+00
                   1.240000E+00
                   2.976000E-01
-         2.380900E-02           0.000000E+00   # 两列收缩因子，对应两个收缩的S型GTO基函数
+         2.380900E-02           0.000000E+00   # Two colums of contraction factors, corresponding to two contraction S-type GTO basis functions
          1.548910E-01           0.000000E+00
          4.699870E-01           0.000000E+00
          5.130270E-01           1.000000E+00
-   P      2    2                               # P型GTO基函数，2个原函数收缩成2个
+   P      2    2                               # P type GTO basis function, two original functions are reduced to two 
                   1.275000E+00
                   4.000000E-01
          1.0000000E+00           0.000000E+00
          0.0000000E+00           1.000000E+00
-   ****                       # 4个星号结束He的基组，后面可接另一个元素的基组，或者结束
+   ****                       # four asterisks end the base group of he, followed by the base group of another element, or end 4个星号结束He的基组，后面可接另一个元素的基组，或者结束
    Al     13    2
-   （略）
+   （ellipsis）
 
-在以上的基组中，P函数未作收缩，也可以写成以下形式：
+In the above basis group, the P function is not contracted and can also be written in the following form.
 
 .. code-block::
 
-   （S函数，略）
-   P      2    0              # 0表示非收缩，此时不需要提供收缩因子
+   （S function，ellipsis）
+   P      2    0              # 0 indicates non shrinkage, and the shrinkage factor is not required at this time
                   1.275000E+00
                   4.000000E-01
    ****
-   （略）
+   （ellipsis）
 
-对于赝势基组，还需要在价基函数后提供ECP数据。例如，
+For pseudopotential basis groups, it is also necessary to provide ECP data after the valence basis function. For example
 
 .. code-block::
 
-   ****                                              # 价基函数部分，注释同上
+   ****                                              # for the price basis function, the note is the same as above
    Al     13    2
    S       4    3
               14.68000000
@@ -585,41 +585,41 @@ BDF可以使用非内置基组，此时要把基组数据保存在文本格式�
    D       1    1
                0.19330000
         1.0000000000
-   ECP                     # ECP数据部分
-   Al    10    2    2      # 元素符号，芯电子数，ECP最高角动量，SOECP最高角动量（可选）
-   D potential  4                                    # ECP最高角动量（D函数）的项数
-      2      1.22110000000000     -0.53798100000000  # R的幂，指数，因子（下同）
+   ECP                     # ECP data section
+   Al    10    2    2      # element symbol, number of core electrons, ECP maximum angular momentum, soecp maximum angular momentum（optional）
+   D potential  4                                    # ECP maximum angular momentum（D function）
+      2      1.22110000000000     -0.53798100000000  # R power，exponent，factor（the same below）
       2      3.36810000000000     -5.45975600000000
       2      9.75000000000000    -16.65534300000000
       1     29.26930000000000     -6.47521500000000
-   S potential  5                                    # S投影的项数
+   S potential  5                                    # S number of items projected
       2      1.56310000000000    -56.20521300000000
       2      1.77120000000000    149.68995500000000
       2      2.06230000000000    -91.45439399999999
       1      3.35830000000000      3.72894900000000
       0      2.13000000000000      3.03799400000000
-   P potential  5                                    # P投影的项数
+   P potential  5                                    # P number of items projected
       2      1.82310000000000     93.67560600000000
       2      2.12490000000000   -189.88896800000001
       2      2.57050000000000    110.24810400000000
       1      1.75750000000000      4.19959600000000
       0      6.76930000000000      5.00335600000000
-   P so-potential  5                                 # P SO投影的项数，标量ECP没有这一部分
-      2      1.82310000000000      1.51243200000000  # 标量ECP没有这一部分
-      2      2.12490000000000     -2.94701800000000  # 标量ECP没有这一部分
-      2      2.57050000000000      1.64525200000000  # 标量ECP没有这一部分
-      1      1.75750000000000     -0.08862800000000  # 标量ECP没有这一部分
-      0      6.76930000000000      0.00681600000000  # 标量ECP没有这一部分
-   D so-potential  4                                 # D SO投影的项数，标量ECP没有这一部分
-      2      1.22110000000000     -0.00138900000000  # 标量ECP没有这一部分
-      2      3.36810000000000      0.00213300000000  # 标量ECP没有这一部分
-      2      9.75000000000000      0.00397700000000  # 标量ECP没有这一部分
-      1     29.26930000000000      0.03253000000000  # 标量ECP没有这一部分
+   P so-potential  5                                 # the number of items projected by P so. Scalar ECP does not have this part
+      2      1.82310000000000      1.51243200000000  # Scalar ECP does not have this part
+      2      2.12490000000000     -2.94701800000000  # Scalar ECP does not have this part
+      2      2.57050000000000      1.64525200000000  # Scalar ECP does not have this part
+      1      1.75750000000000     -0.08862800000000  # Scalar ECP does not have this part
+      0      6.76930000000000      0.00681600000000  # Scalar ECP does not have this part
+   D so-potential  4                                 # the number of items of D so projection. Scalar ECP does not have this part
+      2      1.22110000000000     -0.00138900000000  # Scalar ECP does not have this part
+      2      3.36810000000000      0.00213300000000  # Scalar ECP does not have this part
+      2      9.75000000000000      0.00397700000000  # Scalar ECP does not have this part
+      1     29.26930000000000      0.03253000000000  # Scalar ECP does not have this part
    ****
 
-对于标量ECP，SOECP最高角动量为0（可以省略不写），也不需要提供SO投影部分的数据。
+For scalar ECP, the SOECP highest angular momentum is 0 (which can be omitted and not written), and it is not necessary to provide the data for the SO projection part.
 
-把以上数据保存后，就可以在BDF输入文件中调用 ``MYBAS-1`` 基组，这需要通过以下的混合输入模式实现：
+Once the above data is saved, the ``MYBAS-1`` base group can be called in the BDF input file, which is achieved by the following hybrid input mode.
 
 .. code-block:: bdf
 
@@ -632,16 +632,16 @@ BDF可以使用非内置基组，此时要把基组数据保存在文本格式�
 
     $Compass
     Basis
-       mybas-1         # 给出当前目录下基组文件的名字，这里不区分大小写
+       mybas-1         # give the name of the base group file in the current directory. It is not case sensitive here
     $End
 
-自定义基组必须用BDF的混合模式输入。在第二行输入基组设置为 **genbas** , 自定义基组文件名需要在 **COMPASS** 模块使用关键词 ``Basis`` ，值为 ``mybas-1`` ，表示调用名为 ``MYBAS-1`` 的基组文件。
+The custom base group must be entered in BDF's mixed mode. In the second line the input base group is set to **genbas**, and the custom base group file name needs to use the keyword  ``Basis`` in the **COMPASS** module with a value of ``mybas-1``, which means that the base group file named ``MYBAS-1`` is called.
 
-基组的指定
+Basis group designation
 ------------------------------------------------
-**对所有原子使用相同的BDF内置基组**
+**Use the same BDF built-in basis group for all atoms**
 
-简洁输入模式，基组在 ``方法/泛函/基组`` 或者 ``方法/基组`` 中指定。这里 ``基组`` 是前几节所列的BDF内置的基组名称，输入字符大小写不敏感，如下所示：
+In simple input mode, the basis group is specified in ``method/generic/basis group`` or ``method/basis group``. Here, the ``basis groups`` are the BDF built-in ones listed in the previous sections base group names, and the input characters are case-insensitive, as follows.
 
 .. code-block:: bdf
 
@@ -664,7 +664,7 @@ BDF可以使用非内置基组，此时要把基组数据保存在文本格式�
    Cl  0.000   0.000    1.400
    End geometry
 
-如果是高级输入模式，计算采用的基组在 ``compass`` 模块中利用关键词 ``basis`` 指定，例如
+In case of advanced input mode, the basis group used for the calculation is specified in the ``compass`` module using the keyword ``basis``, for example
 
 .. code-block:: bdf
 
@@ -677,16 +677,16 @@ BDF可以使用非内置基组，此时要把基组数据保存在文本格式�
   End geometry
   $end
 
-其中 ``lanl2dz`` 调用内置的LanL2DZ基组（已在 ``basisname`` 文件中注册），不区分大小写。
+where ``lanl2dz`` calls the built-in LanL2DZ basis group (registered in the ``basisname`` basisname file), which is case-insensitive.
 
-**为不同元素指定不同基组** 
+**Specifying different basis groups for different elements** 
 
-简洁输入不支持自定义或者混合基组，必须采用混合输入模式，即在 ``方法/泛函/基组`` 中设置 ``基组`` 为 ``genbas`` , 并添加 **COMPASS** 模块输入，使用 ``basis-block`` ... ``end basis`` 关键词指定基组。
+You have to use the mixed input mode, i.e. set the basis group to ``genbas`` in ``Methods/Generic/Bases``, and add the **COMPASS** module input, specifying the basis group using the ``basis-block`` ... ``end basis`` keyword.
 
-如果对不同元素指定不同名称的基组，需要放在 **COMPASS** 模块的 ``basis-block`` ... ``end basis`` 块中，
-其中第一行是默认基组，之后的行对不同元素指定其它基组，格式为 *元素=基组名* 或者 *元素1,元素2, ...,元素n=基组名* 。
+If you specify a different name for a different element, you need to put it in the **COMPASS** module's ``basis-block`` ... ``end basis`` block.
+where the first line is the default base group and the subsequent lines specify other base groups for different elements in the format *element= base group name * or *element1, element2, ...,element n= base group name* 。
 
-例如，混合输入模式下，对不同原子使用不同基组的示例如下：
+For example, an example of using different basis groups for different atoms in mixed input mode is as follows.
 
 .. code-block:: bdf
 
@@ -705,9 +705,9 @@ BDF可以使用非内置基组，此时要把基组数据保存在文本格式�
   End Basis
   $end
 
-上例中，H使用3-21G基组，而未额外定义的Cl采用默认的LanL2DZ基组。
+In the above example, the 3-21G basis group is used for H, while the default LanL2DZ basis group is used for Cl which is not additionally defined.
 
-如果是高级输入，如下：
+In case of advanced input, the following is used.
 
 .. code-block:: bdf
 
@@ -722,9 +722,9 @@ BDF可以使用非内置基组，此时要把基组数据保存在文本格式�
   End geometry
   $end
 
-**为同种元素的不同原子指定不同基组** 
+**Assigning different basis groups to different atoms of the same element** 
 
-BDF也可以为同一元素中的不同原子指定不同名称的基组，这些原子需要在元素符号后加上任意的数字以示区分。例如，
+The BDF can also assign different base groups with different names to different atoms of the same element, which need to be distinguished by an arbitrary number after the element symbol to distinguish them. For example
 
 
 .. code-block:: bdf
@@ -748,14 +748,14 @@ BDF也可以为同一元素中的不同原子指定不同名称的基组，这�
   End basis
   $end
 
-上例中，H1类型的两个氢原子用cc-pVDZ基组，H2类型的两个氢原子用3-21G基组，碳原子用6-31G基组。需要注意的是，对称等价原子必须使用相同基组，程序将对此进行检查；
-如果对称等价原子必须要使用不同基组，可通过 ``Group`` 设置较低的点群对称性，或者用 ``Nosymm`` 关闭对称性。
+In the above example, the cc-pVDZ group is used for the two hydrogen atoms of type H1, the 3-21G group for the two hydrogen atoms of type H2, and the 6-31G group for the carbon atoms. Note that the symmetry equivalent atoms must use the same basis group, which will be checked by the program;
+if the symmetry equivalent atoms have to use different basis groups, the symmetry can be set to a lower point group symmetry by ``Group`` or turned off with ``Nosymm``.
 
-辅助基组
+Auxiliary basis groups
 ------------------------------------------------
-使用密度拟合近似（RI）的方法需要一个辅助的基组。Ahlrichs系列基组和Dunning相关一致性基组以及其它个别基组有专门优化的辅助基组。BDF中可以在compass中通过 ``RI-J``、 ``RI-K`` 和 ``RI-C`` 关键词指定辅助基组。其中 ``RI-J`` 用于指定库伦拟合基组， ``RI-K`` 用于指定库伦交换拟合基组， ``RI-C`` 用于指定库伦相关拟合基组。BDF支持的辅助基组保存在 ``$BDFHOME/basis_library`` 路径下对应的文件夹中。
+The method using density fitting approximation (RI) requires an auxiliary basis group. the Ahlrichs family of basis groups and the Dunning correlation consistency basis group as well as other individual basis groups have specially optimized auxiliary basis groups. the auxiliary basis groups can be specified in BDF by the ``RI-J``、 ``RI-K`` and ``RI-C`` keywords in compass. 其中 ``RI-J`` 用于指定库伦拟合基组， ``RI-K`` 用于指定库伦交换拟合基组， ``RI-C`` 用于指定库伦相关拟合基组。The auxiliary basis groups supported by BDF are stored in the corresponding folder under the ``$BDFHOME/basis_library`` path。
 
-高级别密度拟合基组可以用在低级别基组上，例如 ``cc-pVTZ/C`` 可以用于在 ``cc-pVTZ`` 上做RI-J，对于没有标配辅助基组的pople系列基组如 ``6-31G**`` 也可以用 ``cc-pVTZ/J`` 做RI-J或RIJCOSX。反之，高级别轨道基组结合低级别的辅助基组则会带来较明显的误差。
+High-level density fitting bases can be used on lower-level bases, e.g. ``cc-pVTZ/C`` can be used to do RI-J on ``cc-pVTZ``，and for pople series bases such as ``6-31G**`` that do not have a standard auxiliary base, ``cc-pVTZ/J`` can be used to do RI-J or RIJCOSX. Conversely, a high-level orbital basis set combined with a low-level auxiliary basis set introduces a more significant error.
 
 .. code-block:: bdf
 
@@ -773,7 +773,7 @@ BDF也可以为同一元素中的不同原子指定不同名称的基组，这�
   End Geometry
   $End
 
-上例中，使用 ``def2-SVP`` 基组计算 :math:`\ce{CH4}` 甲烷分子，同时用def2-SVP标配的库伦拟合基组进行加速计算。
+In the above example, the ``def2-SVP`` basis set was used to calculate the :math:`\ce{CH4}` methane molecule, while the def2-SVP standard Coulomb fitting basis set was used for accelerated calculations.
 
 .. hint::
-    BDF的RI计算功能，用于加速 **MCSCF**、 **MP2** 等波函数计算方法，不推荐用户在 **SCF** 、 **TDDFT** 等计算中使用，用户可以用多级展开库伦势 (MPEC) 方法，MPEC方法不依赖辅助基组，计算速度和精度都与RI方法相当。
+    The RI calculation function of BDF is used to accelerate wave function calculation methods such as **MCSCF**、 **MP2** etc. It is not recommended for users in **SCF** 、 **TDDFT**, etc. The MPEC method does not depend on redundant functions and is comparable to the RI method in terms of computational speed and accuracy. The MPEC method does not depend on the redundancy function and is comparable to the RI method in terms of speed and accuracy.
