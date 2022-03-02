@@ -1,86 +1,85 @@
-高斯基组
+Gaussian basis group
 ================================================
 
-为了求解Hartree-Fock、Kohn-Sham DFT方程，需要把分子轨道展开为单电子基函数的线性组合：
+In order to solve the Hartree-Fock, Kohn-Sham DFT equations, it is necessary to expand the molecular orbitals into linear combinations of single-electron basis functions.
 
 .. math::
     \varphi_{i}(r) = C_{1,i}\chi_{1}(r) + C_{2,i}\chi_{2}(r) + C_{3,i}\chi_{3}(r) + \dots + C_{N,i}\chi_{N}(r)
 
-在量子化学的计算中，基函数只有数学意义，没有物理意义。基函数越多则结果越精确，但是也取决于怎么合理地设置基函数。当基函数无穷多，称为完备集，就达到了完备基组极限（Complete Basis Set Limit, CBS），能够完美展开分子轨道。实际用的是有限基组，达不到CBS，由此导致的计算结果的误差称为基组不完备性误差。
+In quantum chemistry calculations, the basis functions have only mathematical meaning, not physical meaning. The more basis functions there are, the more accurate the result will be, but it also depends on how well the basis functions are set up. The Complete Basis Set Limit (CBS) is reached when there are infinitely many basis functions, which is called a complete set, and the molecular orbitals can be perfectly expanded. The actual use of a finite basis set does not reach the CBS, and the resulting error in the calculation result is called the basis set incompleteness error.
 
-用多少基函数，就会产生多少分子轨道，但是只有占据轨道，以及低阶的非占据轨道（价层空轨道）通常有化学意义。如果基函数取的就是原子轨道，称为原子轨道线性组合（linear combination of atomic orbitals，LCAO），但是这只是结构化学上的概念，实际计算中使用的基函数并不是真实的原子轨道。
+As many basis functions as are used, as many molecular orbitals are produced, but only occupied orbitals, and lower order non-occupied orbitals (valence level empty orbitals) are usually chemically meaningful. If the basis functions are taken to be atomic orbitals, it is called linear combination of atomic orbitals (LCAO), but this is only a concept in structural chemistry, and the basis functions used in actual calculations are not the real atomic orbitals.
 
-量子化学中常用的基函数如下：
+The commonly used basis functions in quantum chemistry are as follows.
 
-#. 高斯轨道（Gauss type orbital, GTO）基函数：因其在数学形式上易于计算双电子积分，绝大多数量子化学程序使用的都是GTO基函数。
-#. Slater轨道（Slater type orbital, STO）基函数：半经验以及少数量子化学程序（如ADF）所用的基函数。难以计算双电子积分，但相对于GTO基函数，它的径向行为更接近于实际原子轨道，因此只需要较少数目的STO就可以达到较多数目GTO的计算结果。
-#. 平面波（Plane wave）：专门适用于周期性计算的基函数，计算孤立体系时比GTO基函数性价比低得多。
-#. 数值原子轨道（Numerical atomic orbital, NAO）基函数：极少程序支持，典型的是Dmol3、Siesta。NAO基函数并没有解析的数学形式，而是通过离散分布的点描述。
+#. Gauss type orbital（GTO）basis functions: Most quantum chemistry programs use GTO basis functions because they are mathematically easy to calculate two-electron integrals.
+#. Slater orbital (Slater type orbital, STO) basis functions: Semi-empirical and used by a few quantum chemistry programs (e.g. ADF). It is difficult to calculate two-electron integrals, but its radial behavior is closer to the actual atomic orbitals than the GTO basis functions, so that only a small number of STOs are needed to achieve a large number of GTO results.
+#. Plane wave: A basis function specifically suitable for periodic calculations and much less cost effective than the GTO basis function for isolated systems.
+#. Numerical atomic orbital (NAO) basis functions: Few programs support them, typically Dmol3, Siesta. NAO basis functions do not have an analytic mathematical form, but are described by discrete distributions of points.
 
-BDF软件早期采用STO基函数，目前主要采用GTO基函数。
+The STO basis function was used in the early days of BDF software, and the GTO basis function is mainly used now.
 
-对于轨道角动量 *L* 高于 *p* 的GTO基函数（如 *d* 、*f* 等GTO基函数），有两种表示方式。
-一种写为笛卡尔函数（也称直角函数）形式：
+For GTO basis functions with orbital angular momentum *L* higher than *p*（e.g., GTO basis functions such as *d* 、*f*, etc.），there are two ways to represent them.
+One is written in the form of a Cartesian function (also called a right-angle function).
 
 .. math::
    N x^{lx} y^{ly} z^{lz} {\rm exp}(-\alpha r^2),  \qquad L=lx+ly+lz
 
-它有 :math:`(L+1)(L+2)/2` 个分量，例如 *d* 函数包含xx，yy，zz，xy，xz，yz。另一种写为球函数（也称球谐函数、纯函数）形式：
+It has :math:`(L+1)(L+2)/2` components, e.g., the *d* function contains xx，yy，zz，xy，xz，yz。The other is written in the form of a spherical function (also called a spherical harmonic function, pure function).
 
 .. math::
    N Y^L_m r^L {\rm exp}(-\alpha r^2)
 
-它有 :math:`2L+1` 个分量，例如 *d* 函数包含-2，-1，0，+1，+2。
+It has :math:`2L+1` components, for example, the *d* function contains -2，-1，0，+1，+2。
 
-笛卡尔函数的优点是容易计算积分，但是存在冗余函数；而球函数恰好与 :math:`(L+1)(L+2)/2` 个磁量子数相对应，
-因此在量子化学程序中通常先在笛卡尔函数下计算积分，然后通过一定的线性关系 :cite:`schlegel1995` ，组合成球函数的积分。
+The advantage of the Cartesian function is that it is easy to calculate the integral, but there are redundant functions; whereas the spherical function corresponds to exactly :math:`(L+1)(L+2)/2` magnetic quantum numbers,
+so in quantum chemistry programs the integral is usually calculated first under the Cartesian function and then combined into the integral of the spherical function by a certain linear relation :cite:`schlegel1995`.
 
 .. attention::
 
-  1. 除Pople型等较早的基组外，大多数现代高斯基组都是在球基函数下优化的。
-  2. 笛卡尔基函数无论在精度上还是在效率上均无优势，尤其是对于全电子相对论计算还会导致数值不稳定，因此在BDF计算中一律采用球基函数。
-  3. 笛卡尔基函数和球基函数会导致不同的结果。如果用其它量子化学程序重复BDF的计算结果，除保证结构、方法、基组相同外，还需检查是否用了球基函数。
+  1. most modern Gaussian basis groups are optimized under spherical basis functions, except for the older basis groups such as Pople type.
+  2. Cartesian basis functions have no advantage in terms of accuracy or efficiency, especially for all-electron relativity calculations, which also lead to numerical instability, so spherical basis functions are always used in BDF calculations. 
+  3. Cartesian and spherical basis functions lead to different results. If the results of BDF calculations are repeated with other quantum chemistry programs, it is necessary to check whether the spherical basis functions are used, in addition to ensuring that the structure, method, and basis group are the same. 
+In the literature, data sets of optimized GTO basis functions for various atoms in different situations have been created and given different names to be called by quantum chemistry programs. These named GTO basis function data sets are called **Gaussian Basis Sets**。
+the Gaussian Basis Sets built into the BDF are mainly from the following Basis Set Repository websites, and the original literature on the various Basis Sets can be found at the corresponding websites.
 
-在很多文献中，人们把各种原子在不同情形下优化好的GTO基函数做成数据集（data set），并赋以不同的名称供量子化学程序调用。这些命名的GTO基函数数据集称为 **高斯基组** （Gaussian Basis Sets）。
-BDF内置的高斯基组主要来自以下基组库网站，各种基组的原始文献可以在相应的网站中找到。
+* Basis Set Exchange :cite:`bse2019` ：All-electron basisets, scalar ECP basisets, can be exported in BDF format（note: ECP basisets have to be manually repositioned for ECP data）。 https://www.basissetexchange.org/
+* Stuttgart/Cologne pseudopotential basis set library: mainly SOECP basis sets, and a few early scalar ECP basis sets. http://www.tc.uni-koeln.de/PP/clickpse.en.html
+* Turbomole basis set library:all-electron basis set, scalar ECP basis set, SOECP basis set. http://www.cosmologic-services.de/basis-sets/basissets.php
+* Dyall Relativistic Basis Group: All-electron relativistic basis group. http://dirac.chem.sdu.dk/basisarchives/dyall/index.html
+* Sapporo basis set library: all-electron basis sets. http://sapporo.center.ims.ac.jp/sapporo/
+* Clarkson University ECP basis group library: SOECP basis group. https://people.clarkson.edu/~pchristi/reps.html
+* ccECP Basis Group Library: Scalar ECP Basis Groups. https://pseudopotentiallibrary.org/
 
-* Basis Set Exchange :cite:`bse2019` ：全电子基组，标量ECP基组，可以输出BDF格式（注意：ECP基组要手动调整ECP数据的位置）。 https://www.basissetexchange.org/
-* Stuttgart/Cologne赝势基组库：主要是SOECP基组，以及少量早期的标量ECP基组。 http://www.tc.uni-koeln.de/PP/clickpse.en.html
-* Turbomole基组库：全电子基组，标量ECP基组，SOECP基组。 http://www.cosmologic-services.de/basis-sets/basissets.php
-* Dyall相对论基组：全电子相对论基组。 http://dirac.chem.sdu.dk/basisarchives/dyall/index.html
-* Sapporo基组库：全电子基组。 http://sapporo.center.ims.ac.jp/sapporo/
-* Clarkson大学ECP基组库：SOECP基组。 https://people.clarkson.edu/~pchristi/reps.html
-* ccECP基组库：标量ECP基组。 https://pseudopotentiallibrary.org/
+In addition, there are individual elements with built-in motifs from the original literature.
 
-此外，有个别元素的内置基组来自原始文献：
+* All-electron basis set Dirac-RPF-4Z and Dirac-aug-RPF-4Z, including s-、p-region elements :cite:`dasilva2014`，d-region elements :cite:`dasilva2014a`，f-region elements :cite:`dasilva2017`
+* Pseudopotential basis group Pitzer-AVDZ-PP、Pitzer-VDZ-PP、Pitzer-VTZ-PP :cite:`pitzer2000`
+* Ce - Lu :cite:`ermler1994`, Fr - Pu :cite:`ermler1991`, Am - Og :cite:`ermler1997,ermler1999` in the pseudopotential basis group CRENBL（Note: the Am - Og basis group on the Basis Set Exchange is wrong!）
+* Am - Og :cite:`ermler1997,ermler1999` in the pseudopotential basis group CRENBS（Note: the Am - Og basis set on Basis Set Exchange is wrong!）
+* Ac, Th, Pa :cite:`dolg2014` ，U :cite:`dolg2009` in the pseudopotential basis group Stuttgart-ECPMDFSO-QZVP
 
-* 全电子基组Dirac-RPF-4Z和Dirac-aug-RPF-4Z，包括s-、p-区元素 :cite:`dasilva2014`，d-区元素 :cite:`dasilva2014a`，f-区元素 :cite:`dasilva2017`
-* 赝势基组Pitzer-AVDZ-PP、Pitzer-VDZ-PP、Pitzer-VTZ-PP :cite:`pitzer2000`
-* 赝势基组CRENBL中的 Ce - Lu :cite:`ermler1994` ，Fr - Pu :cite:`ermler1991` ，Am - Og :cite:`ermler1997,ermler1999` （注意：Basis Set Exchange上的Am - Og基组是错的！）
-* 赝势基组CRENBS中的 Am - Og :cite:`ermler1997,ermler1999` （注意：Basis Set Exchange上的Am - Og基组是错的！）
-* 赝势基组Stuttgart-ECPMDFSO-QZVP中的 Ac, Th, Pa :cite:`dolg2014` ，U :cite:`dolg2009`
-
-BDF用户既可以使用BDF基组库中的标准基组，也可以使用自定义基组。
+BDF users can use either the standard basis sets from the BDF basis set library or custom basis sets.
 
 
 .. _all-e-bas:
 
-全电子基组
+All-electron basis groups
 ------------------------------------------------
 
-全电子基组分为非收缩基组与收缩基组两类。前者既可用于非相对论计算也可用于相对论计算，但主要是相对论计算，而后者又分为非相对论收缩基组和相对论收缩基组。
+All-electron basis groups are divided into two categories: non-shrinking basis groups and shrinking basis groups. The former can be used for both non-relativistic and relativistic calculations, but mainly for relativistic calculations, while the latter is divided into non-relativistic shrinkage basis groups and relativistic shrinkage basis groups.
 
-全电子相对论计算要用到DKH、ZORA、X2C等考虑相对论效应的哈密顿（见 :ref:`相对论效应<relativity>` ），
-此时必须要用专门为相对论计算优化的收缩基组，比如cc-pVnZ-DK系列、SARC、ANO-RCC等等。
-大多数相对论收缩基组把原子核作为点电荷处理，但是有些基组在做收缩时考虑了原子核分布尺寸效应，这对 *s* 、 *p* 基函数的收缩因子影响最为明显。
-相应地，在分子积分的计算中也必须采用 :ref:`有限核模型<finite-nuclear>` 。
+All-electron relativistic calculations use Hamiltonians such as DKH, ZORA, X2C, etc. that take relativistic effects into account（see :ref:`Relativistic effects <relativity>` ），
+when it is necessary to use shrinkage basis groups optimized specifically for relativistic calculations, such as the cc-pVnZ-DK series, SARC, ANO-RCC, etc. 
+Most relativistic shrinkage basis sets treat the nucleus as a point charge, but some do take into account the nucleus distribution size effect when doing the shrinkage, which has the most pronounced effect on the shrinkage factor of the *s* and *p* asis functions.
+Accordingly, a finite nucleus model must also be used in the calculation of molecular integrals. :ref:`finite nucleus model <finite-nuclear>` 。
 
-.. table:: BDF基组库中的标准全电子基组
+.. table:: all electron basis set in BDF basis set library
     :widths: auto
     :class: longtable
 
     +------------------------+-----------------------------+----------------------------------------+------------------------+
-    | 基组类型               | 基组名称                    | 支持的元素                             | 备注                   |
+    | basis set type         | basis set name              | supported element                      | note                   |
     +========================+=============================+========================================+========================+
     | Pople                  | | STO-3G                    | 1- 54                                  |                        |
     |                        | | STO-6G                    |                                        |                        |
@@ -130,7 +129,7 @@ BDF用户既可以使用BDF基组库中的标准基组，也可以使用自定�
     +                        +-----------------------------+----------------------------------------+------------------------+
     |                        | | 6-311++G(3df,3pd)         | 1,  3- 18                              |                        |
     +------------------------+-----------------------------+----------------------------------------+------------------------+
-    | 关联一致               | | aug-cc-pVDZ               | 1- 18, 21- 36                          |                        |
+    | correlate consistency  | | aug-cc-pVDZ               | 1- 18, 21- 36                          |                        |
     |                        | | aug-cc-pVTZ               |                                        |                        |
     |                        | | aug-cc-pVQZ               |                                        |                        |
     |                        | | aug-cc-pV5Z               |                                        |                        |
@@ -170,109 +169,109 @@ BDF用户既可以使用BDF基组库中的标准基组，也可以使用自定�
     |                        | | aug-cc-pwCVQZ             | | Q: 5- 10, 13- 18, 21- 30, 35         |                        |
     |                        | | aug-cc-pwCV5Z             | | 5: 5- 10, 13- 18, 21- 30             |                        |
     +                        +-----------------------------+----------------------------------------+------------------------+
-    |                        | | aug-cc-pVDZ-RIFIT         | 1-  2,  4- 10, 12- 18, 21- 36          | 辅助基组               |
+    |                        | | aug-cc-pVDZ-RIFIT         | 1-  2,  4- 10, 12- 18, 21- 36          | auxiliary basis set    |
     |                        | | aug-cc-pVTZ-RIFIT         |                                        |                        |
     |                        | | aug-cc-pVQZ-RIFIT         |                                        |                        |
     +                        +-----------------------------+----------------------------------------+------------------------+
-    |                        | | aug-cc-pV5Z-RIFIT         | | 5: 1- 10, 13- 18, 21- 36             | 辅助基组               |
+    |                        | | aug-cc-pV5Z-RIFIT         | | 5: 1- 10, 13- 18, 21- 36             | auxiliary basis set    |
     |                        | | aug-cc-pV6Z-RIFIT         | | 6: 1-  2,  5- 10, 13- 18             |                        |
     +                        +-----------------------------+----------------------------------------+------------------------+
-    |                        | | aug-cc-pVTZ-J             | 1,  5-  9, 13- 17, 21- 30, 34          | 辅助基组               |
+    |                        | | aug-cc-pVTZ-J             | 1,  5-  9, 13- 17, 21- 30, 34          | auxiliary basis set    |
     +                        +-----------------------------+----------------------------------------+------------------------+
-    |                        | | aug-cc-pVDZ-DK            | | D: 1- 18, 21- 36                     | 相对论                 |
+    |                        | | aug-cc-pVDZ-DK            | | D: 1- 18, 21- 36                     | relativistic effect    |
     |                        | | aug-cc-pVTZ-DK            | | T: 1- 18, 21- 36, 39- 46             |                        |
     |                        | | aug-cc-pVQZ-DK            | | Q: 1- 18, 21- 36                     |                        |
     |                        | | aug-cc-pV5Z-DK            | | 5: 1-  2,  5- 10, 13- 18, 21- 36     |                        |
     +                        +-----------------------------+----------------------------------------+------------------------+
-    |                        | | aug-cc-pCVDZ-DK           | 3- 18                                  | 相对论                 |
+    |                        | | aug-cc-pCVDZ-DK           | 3- 18                                  | relativistic effect    |
     |                        | | aug-cc-pCVTZ-DK           |                                        |                        |
     |                        | | aug-cc-pCVQZ-DK           |                                        |                        |
     +                        +-----------------------------+----------------------------------------+------------------------+
-    |                        | | aug-cc-pwCVTZ-DK          | | T: 21- 30, 39- 46                    | 相对论                 |
+    |                        | | aug-cc-pwCVTZ-DK          | | T: 21- 30, 39- 46                    | relativistic effect    |
     |                        | | aug-cc-pwCVQZ-DK          | | Q: 21- 30                            |                        |
     |                        | | aug-cc-pwCV5Z-DK          | | 5: 21- 30                            |                        |
     +                        +-----------------------------+----------------------------------------+------------------------+
-    |                        | | aug-cc-pVDZ-DK3           | | D: 55- 56, 87- 88                    | 相对论                 |
+    |                        | | aug-cc-pVDZ-DK3           | | D: 55- 56, 87- 88                    |  relativistic effect    |
     |                        | | aug-cc-pVTZ-DK3           | | T: 49- 56, 81- 88                    |                        |
     |                        | | aug-cc-pVQZ-DK3           | | Q: 49- 56, 81- 88                    |                        |
     |                        | | aug-cc-pwCVDZ-DK3         |                                        |                        |
     |                        | | aug-cc-pwCVTZ-DK3         |                                        |                        |
     |                        | | aug-cc-pwCVQZ-DK3         |                                        |                        |
     +                        +-----------------------------+----------------------------------------+------------------------+
-    |                        | | aug-cc-pVDZ-X2C           | 19- 20, 37- 38, 55- 56, 87- 88         | 相对论                 |
+    |                        | | aug-cc-pVDZ-X2C           | 19- 20, 37- 38, 55- 56, 87- 88         | relativistic effect    |
     |                        | | aug-cc-pVTZ-X2C           |                                        |                        |
     |                        | | aug-cc-pVQZ-X2C           |                                        |                        |
     |                        | | aug-cc-pwCVDZ-X2C         |                                        |                        |
     |                        | | aug-cc-pwCVTZ-X2C         |                                        |                        |
     |                        | | aug-cc-pwCVQZ-X2C         |                                        |                        |
     +                        +-----------------------------+----------------------------------------+------------------------+
-    |                        | | cc-pVDZ-DK                | | D: 1- 18, 21- 36                     | 相对论                 |
+    |                        | | cc-pVDZ-DK                | | D: 1- 18, 21- 36                     |  relativistic effect   |
     |                        | | cc-pVTZ-DK                | | T: 1- 18, 21- 36, 39- 46             |                        |
     |                        | | cc-pVQZ-DK                | | Q: 1- 18, 21- 36                     |                        |
     |                        | | cc-pV5Z-DK                | | 5: 1- 18, 21- 36                     |                        |
     +                        +-----------------------------+----------------------------------------+------------------------+
-    |                        | | cc-pwCVTZ-DK              | | T: 21- 30, 39- 46                    | 相对论                 |
+    |                        | | cc-pwCVTZ-DK              | | T: 21- 30, 39- 46                    |  relativistic effect   |
     |                        | | cc-pwCVQZ-DK              | | Q: 21- 30                            |                        |
     |                        | | cc-pwCV5Z-DK              | | 5: 21- 30                            |                        |
     +                        +-----------------------------+----------------------------------------+------------------------+
-    |                        | | cc-pVDZ-DK3               | | D: 55- 71, 87-103                    | 相对论                 |
+    |                        | | cc-pVDZ-DK3               | | D: 55- 71, 87-103                    |  relativistic effect   |
     |                        | | cc-pVTZ-DK3               | | T: 49- 71, 81-103                    |                        |
     |                        | | cc-pVQZ-DK3               | | Q: 49- 71, 81-103                    |                        |
     |                        | | cc-pwCVDZ-DK3             |                                        |                        |
     |                        | | cc-pwCVTZ-DK3             |                                        |                        |
     |                        | | cc-pwCVQZ-DK3             |                                        |                        |
     +                        +-----------------------------+----------------------------------------+------------------------+
-    |                        | | cc-pVDZ-X2C               | 19- 20, 37- 38, 55- 71, 87-103         | 相对论                 |
+    |                        | | cc-pVDZ-X2C               | 19- 20, 37- 38, 55- 71, 87-103         | relativistic effect    |
     |                        | | cc-pVTZ-X2C               |                                        |                        |
     |                        | | cc-pVQZ-X2C               |                                        |                        |
     |                        | | cc-pwCVDZ-X2C             |                                        |                        |
     |                        | | cc-pwCVTZ-X2C             |                                        |                        |
     |                        | | cc-pwCVQZ-X2C             |                                        |                        |
     +                        +-----------------------------+----------------------------------------+------------------------+
-    |                        | | cc-pVDZ-FW_fi             | 1-2,  5-10, 13-18, 31-36               | 相对论，有限核         |
-    |                        | | cc-pVTZ-FW_fi             |                                        |                        |
+    |                        | | cc-pVDZ-FW_fi             | 1-2,  5-10, 13-18, 31-36               |  relativistic effect,  |
+    |                        | | cc-pVTZ-FW_fi             |                                        |  finite nucleus model  |
     |                        | | cc-pVQZ-FW_fi             |                                        |                        |
     |                        | | cc-pV5Z-FW_fi             |                                        |                        |
     +                        +-----------------------------+----------------------------------------+------------------------+
-    |                        | | cc-pVDZ-FW_pt             | 1-2,  5-10, 13-18, 31-36               | 相对论                 |
+    |                        | | cc-pVDZ-FW_pt             | 1-2,  5-10, 13-18, 31-36               | relativistic effect    |
     |                        | | cc-pVTZ-FW_pt             |                                        |                        |
     |                        | | cc-pVQZ-FW_pt             |                                        |                        |
     |                        | | cc-pV5Z-FW_pt             |                                        |                        |
     +------------------------+-----------------------------+----------------------------------------+------------------------+
     | ANO                    | | ADZP-ANO                  | 1-103                                  |                        |
     +                        +-----------------------------+----------------------------------------+------------------------+
-    |                        | | ANO-DK3                   | 1- 10                                  | 相对论                 |
+    |                        | | ANO-DK3                   | 1- 10                                  |  relativistic effect   |
     +                        +-----------------------------+----------------------------------------+------------------------+
-    |                        | | ANO-R                     | 1- 86                                  | 相对论，有限核         |
-    |                        | | ANO-R0                    |                                        |                        |
+    |                        | | ANO-R                     | 1- 86                                  |  relativistic effect,  |
+    |                        | | ANO-R0                    |                                        | finite nucleus model   |
     |                        | | ANO-R1                    |                                        |                        |
     |                        | | ANO-R2                    |                                        |                        |
     |                        | | ANO-R3                    |                                        |                        |
     +                        +-----------------------------+----------------------------------------+------------------------+
-    |                        | | ANO-RCC                   | 1- 96                                  | 相对论                 |
+    |                        | | ANO-RCC                   | 1- 96                                  | relativistic effect    |
     |                        | | ANO-RCC-VDZ               |                                        |                        |
     |                        | | ANO-RCC-VDZP              |                                        |                        |
     |                        | | ANO-RCC-VTZP              |                                        |                        |
     |                        | | ANO-RCC-VQZP              |                                        |                        |
     +                        +-----------------------------+----------------------------------------+------------------------+
-    |                        | | ANO-RCC-VTZ               | 3- 20, 31- 38                          | 相对论                 |
+    |                        | | ANO-RCC-VTZ               | 3- 20, 31- 38                          | relativistic effect     |
     +------------------------+-----------------------------+----------------------------------------+------------------------+
-    | Ahlrichs               | | Def2系列                  | 全电子非相对论基组与赝势基组的混合，见 :ref:`赝势基组<ecp-bas>` |
+    | Ahlrichs               | | Def2系列                  | 全电子非相对论基组与赝势基组的混合，see :ref:`pseudopotential basis set <ecp-bas>` |
     +                        +-----------------------------+----------------------------------------+------------------------+
     |                        | | jorge-DZP                 | | D: 1-103                             |                        |
     |                        | | jorge-TZP                 | | T: 1-103                             |                        |
     |                        | | jorge-QZP                 | | Q: 1- 54                             |                        |
     +                        +-----------------------------+----------------------------------------+------------------------+
-    |                        | | jorge-DZP-DKH             | | D: 1-103                             | 相对论                 |
+    |                        | | jorge-DZP-DKH             | | D: 1-103                             |relativistic effect    |
     |                        | | jorge-TZP-DKH             | | T: 1-103                             |                        |
     |                        | | jorge-QZP-DKH             | | Q: 1- 54                             |                        |
     +                        +-----------------------------+----------------------------------------+------------------------+
-    |                        | | SARC-DKH2                 | 57- 86, 89-103                         | 相对论                 |
+    |                        | | SARC-DKH2                 | 57- 86, 89-103                         | relativistic effect     |
     +                        +-----------------------------+----------------------------------------+------------------------+
-    |                        | | SARC2-QZV-DKH2            | 57- 71                                 | 相对论                 |
+    |                        | | SARC2-QZV-DKH2            | 57- 71                                 | relativistic effect    |
     |                        | | SARC2-QZVP-DKH2           |                                        |                        |
     +                        +-----------------------------+----------------------------------------+------------------------+
-    |                        | | x2c-SV(P)all              | 1- 86                                  | 相对论                 |
+    |                        | | x2c-SV(P)all              | 1- 86                                  | relativistic effect    |
     |                        | | x2c-SVPall                |                                        |                        |
     |                        | | x2c-TZVPall               |                                        |                        |
     |                        | | x2c-TZVPPall              |                                        |                        |
@@ -285,7 +284,7 @@ BDF用户既可以使用BDF基组库中的标准基组，也可以使用自定�
     |                        | | x2c-QZVPall-2c            |                                        |                        |
     |                        | | x2c-QZVPPall-2c           |                                        |                        |
     +------------------------+-----------------------------+----------------------------------------+------------------------+
-    | Sapporo                | | Sapporo-DZP               | 1- 54                                  | 2012是新版             |
+    | Sapporo                | | Sapporo-DZP               | 1- 54                                  | 2012 newest version    |
     |                        | | Sapporo-TZP               |                                        |                        |
     |                        | | Sapporo-QZP               |                                        |                        |
     |                        | | Sapporo-DZP-2012          |                                        |                        |
@@ -298,26 +297,26 @@ BDF用户既可以使用BDF基组库中的标准基组，也可以使用自定�
     |                        | | Sapporo-TZP-2012-dif      |                                        |                        |
     |                        | | Sapporo-QZP-2012-dif      |                                        |                        |
     +                        +-----------------------------+----------------------------------------+------------------------+
-    |                        | | Sapporo-DKH3-DZP          | 1- 54                                  | 相对论                 |
+    |                        | | Sapporo-DKH3-DZP          | 1- 54                                  | relativistic effect     |
     |                        | | Sapporo-DKH3-TZP          |                                        |                        |
     |                        | | Sapporo-DKH3-QZP          |                                        |                        |
     |                        | | Sapporo-DKH3-DZP-dif      |                                        |                        |
     |                        | | Sapporo-DKH3-TZP-dif      |                                        |                        |
     |                        | | Sapporo-DKH3-QZP-dif      |                                        |                        |
     +                        +-----------------------------+----------------------------------------+------------------------+
-    |                        | | Sapporo-DKH3-DZP-2012     | 19- 86                                 | 相对论，有限核         |
-    |                        | | Sapporo-DKH3-TZP-2012     |                                        |                        |
+    |                        | | Sapporo-DKH3-DZP-2012     | 19- 86                                 | relativistic effect    |
+    |                        | | Sapporo-DKH3-TZP-2012     |                                        | finite nucleus model   |
     |                        | | Sapporo-DKH3-QZP-2012     |                                        |                        |
     |                        | | Sapporo-DKH3-DZP-2012-dif |                                        |                        |
     |                        | | Sapporo-DKH3-TZP-2012-dif |                                        |                        |
     |                        | | Sapporo-DKH3-QZP-2012-dif |                                        |                        |
     +------------------------+-----------------------------+----------------------------------------+------------------------+
-    | 非收缩                 | | UGBS                      | 1- 90, 94- 95, 98-103                  | 相对论                 |
+    | non-contracted         | | UGBS                      | 1- 90, 94- 95, 98-103                  | relativistic effect     |
     +                        +-----------------------------+----------------------------------------+------------------------+
-    |                        | | Dirac-RPF-4Z              | 1-118                                  | 相对论                 |
+    |                        | | Dirac-RPF-4Z              | 1-118                                  | relativistic effect    |
     |                        | | Dirac-aug-RPF-4Z          |                                        |                        |
     +                        +-----------------------------+----------------------------------------+------------------------+
-    |                        | | Dirac-Dyall.2zp           | 1-118                                  | 相对论                 |
+    |                        | | Dirac-Dyall.2zp           | 1-118                                  |relativistic effect    |
     |                        | | Dirac-Dyall.3zp           |                                        |                        |
     |                        | | Dirac-Dyall.4zp           |                                        |                        |
     |                        | | Dirac-Dyall.ae2z          |                                        |                        |
@@ -330,7 +329,7 @@ BDF用户既可以使用BDF基组库中的标准基组，也可以使用自定�
     |                        | | Dirac-Dyall.v3z           |                                        |                        |
     |                        | | Dirac-Dyall.v4z           |                                        |                        |
     +                        +-----------------------------+----------------------------------------+------------------------+
-    |                        | | Dirac-Dyall.aae2z         | | 1-2, 5-10, 13-18, 31-36, 49-54       | 相对论                 |
+    |                        | | Dirac-Dyall.aae2z         | | 1-2, 5-10, 13-18, 31-36, 49-54       | relativistic effect     |
     |                        | | Dirac-Dyall.aae3z         | | 81-86, 113-118                       |                        |
     |                        | | Dirac-Dyall.aae4z         |                                        |                        |
     |                        | | Dirac-Dyall.acv2z         |                                        |                        |
@@ -340,7 +339,7 @@ BDF用户既可以使用BDF基组库中的标准基组，也可以使用自定�
     |                        | | Dirac-Dyall.av3z          |                                        |                        |
     |                        | | Dirac-Dyall.av4z          |                                        |                        |
     +------------------------+-----------------------------+----------------------------------------+------------------------+
-    | 其它                   | | SVP-BSEX                  | 1, 3-10                                |                        |
+    | others                 | | SVP-BSEX                  | 1, 3-10                                |                        |
     +                        +-----------------------------+----------------------------------------+------------------------+
     |                        | | DZP                       | 1, 6-8, 16, 26, 42                     |                        |
     +                        +-----------------------------+----------------------------------------+------------------------+
@@ -359,19 +358,18 @@ BDF用户既可以使用BDF基组库中的标准基组，也可以使用自定�
 
 .. _ecp-bas:
 
-赝势基组
+Pseudopotential basis groups
 ------------------------------------------------
 
-有效芯势（Effective Core Potential, ECP）包括赝势（Pseudopotential, PP）和模型芯势（Model Core Potential, MCP）。
-量子化学计算中的PP与平面波计算中的PP并无本质差别，只不过表示为简明的解析式形式。
-包括BDF在内的大部分量子化学软件都支持PP，而支持MCP的量子化学软件较少，因此在不引起歧义的情况下，ECP与PP两个名称可以混用。
+The Effective Core Potential (ECP) includes the Pseudopotential (PP) and the Model Core Potential (MCP).
+The PP in quantum chemical calculations is not fundamentally different from the PP in plane wave calculations, except that it is expressed in a concise analytic form.
+Most quantum chemistry software, including BDF, supports PP, but fewer quantum chemistry software support MCP, so the names ECP and PP can be used interchangeably without ambiguity.
 
-赝势基组需要结合赝势使用，基函数只描述原子的价层电子。当体系涉及到较重元素时，通常对它们用赝势基组，而其它原子照常用普通基组。这样一方面可以大大节约计算时间，同时还能等效体现出标量相对论效应。Lan系列、Stuttgart系列、cc-pVnZ-PP系列都属于这类基组。
-为了方便调用，一些较轻元素的赝势基组实际上是非相对论全电子基组，如第五周期之前元素的Def2系列基组。
+The pseudopotential basis group needs to be used in conjunction with the pseudopotential, and the basis functions describe only the valence level electrons of the atoms. When heavier elements are involved in the system, the pseudopotential basis group is usually used for them, while the normal basis group is used for the other atoms as usual. The Lan series, the Stuttgart series, and the cc-pVnZ-PP series all belong to this group. For ease of recall, the pseudopotential basis groups of some lighter elements are actually non-relativistic all-electron basis groups, such as the Def2 series of basis groups for elements before the fifth period.
 
 .. _soecp-bas:
 
-根据赝势是否包含旋轨耦合项，赝势基组分为标量赝势基组与旋轨耦合赝势（SOECP）基组两类。
+The pseudopotential basis groups are divided into scalar pseudopotential basis groups and spin-orbit coupled pseudopotential (SOECP) basis groups, depending on whether the pseudopotential contains a spin-orbit coupling term or not.
 
 .. table:: BDF基组库中的标准赝势基组
     :widths: auto
