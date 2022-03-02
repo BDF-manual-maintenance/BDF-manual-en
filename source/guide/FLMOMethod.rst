@@ -527,9 +527,11 @@ The orbital stretch (**Mos**)  information is given at the beginning of the iter
      21O      -0.3128   -0.0008
       Sum:    -0.0000    0.0000
 
-可看出，Cu原子的自旋密度为 **-0.5701**， 9O原子的自旋密度为 **0.6562** ，其符号与预先指定的自旋相符，表明计算确实收敛到了所需要的开壳层单重态。注意此处自旋密度的绝对值小于1，说明Cu和9O上的自旋密度并不是严格定域在这两个原子上的，而是有一部分离域到了旁边的原子上。
+It can be seen that the spin densities of **-0.5701** for Cu and **0.6562** for 9O are consistent with the pre-specified spins, indicating that the calculations do converge to the desired open-shell singlet state.
+Note that the absolute value of the spin density here is less than 1, indicating that the spin densities on Cu and 9O are not strictly localized to these two atoms, but are partially off-domain to the next atom.
 
-在以上算例中， ``autofrag`` 模块输入的写法看似复杂，但是其中的 ``spinocc`` 和 ``radbuff`` 关键词对于FLMO方法而言不是必需的，也即以下写法的输入文件仍能成功运行，只不过不能确保Cu和O的自旋取向是用户指定的取向：
+In the above example, the ``autofrag`` module input looks complicated, but the ``spinocc`` and ``radbuff`` keywords are not necessary for the FLMO method, i.e. the following input file will still work successfully, 
+except that it does not ensure that the spin orientation of Cu and O is the user-specified orientation：
 
 .. code-block::
 
@@ -540,7 +542,9 @@ The orbital stretch (**Mos**)  information is given at the beginning of the iter
    2
   $end
 
-而 ``nprocs`` 表示对各个子体系的SCF计算进行并行化，以上述算例为例，即允许同时计算多个子体系，且任何时刻同时计算的子体系不超过2个。如果省略 ``nprocs`` 关键词，等价于将 ``nprocs`` 设为1，程序会依次计算所有子体系，每个子体系占用8个OpenMP线程，且每次待一个子体系计算结束后再计算下一个子体系。计算结果相比使用 ``nprocs`` 不会有任何区别，只是计算效率可能会有所降低。因此 ``nprocs`` 只影响FLMO计算的效率，而不影响其计算结果，也即以下写法同样可以成功运行，但计算时间可能比写 ``nprocs`` 略长：
+The ``nprocs`` indicates the parallelization of the SCF computation for each subsystem, i.e., multiple subsystems are allowed to be computed at the same time. 
+If the ``nprocs`` keyword is omitted, which is equivalent to setting ``nprocs`` to 1, the program will compute all subsystems in turn, with each subsystem occupying 8 OpenMP threads and waiting for one subsystem to finish before computing the next one. 
+There is no difference in the result compared to using ``nprocs`` , but the efficiency of the calculation may be reduced. Therefore, ``nprocs`` only affects the efficiency of the FLMO computation, not its results, i.e., the following writeup will also run successfully, but the computation time may be slightly longer than writing  ``nprocs`` ：
 
 .. code-block::
 
@@ -549,33 +553,35 @@ The orbital stretch (**Mos**)  information is given at the beginning of the iter
    flmo
   $end
 
-需要注意的是 ``nprocs`` 设置过大或过小，均可能导致计算时间增加。为讨论方便起见，假设在某较大分子的FLMO计算中，环境变量 ``OMP_NUM_THREADS`` 设定为8。则
+Note that setting ``nprocs`` too large or too small may result in an increase in computation time. For the sake of discussion, assume that the environment variable  ``OMP_NUM_THREADS`` is set to 8 for the FLMO calculation of a larger molecule.
 
 .. code-block::
 
   nprocs
    4
 
-表示：
+It indicates that：
 
- 1. 程序开始进行子体系计算时，会同时调用4个并发的BDF进程，每个进程计算一个子体系。如果子体系总数N小于4个，则只调用N个并发的BDF进程。
- 2. 每个BDF进程使用2个OpenMP线程。当子体系总数小于4个时，有的子体系计算可能使用3个或4个OpenMP线程，但整个计算任务同时并发的OpenMP线程数始终不超过8个。
- 3. 在计算刚开始时，整个计算恰好使用8个OpenMP线程，但随着计算接近结束，当只剩余不到4个子体系尚未计算完成时，整个计算所用的OpenMP线程数可能小于8个。
+ 1. When the program starts subsystem computation, it calls 4 concurrent BDF processes simultaneously, each of which computes one subsystem. If the total number of subsystems N is less than 4, then only N concurrent BDF processes are called.
+ 2. Each BDF process uses 2 OpenMP threads. When the total number of subsystems is less than 4, some subsystem computations may use 3 or 4 OpenMP threads, but the number of concurrent OpenMP threads for the entire computation task is never more than 8.
+ 3. At the beginning of the computation, the entire computation uses exactly 8 OpenMP threads, but as the computation nears its end, when less than 4 subsystems remain to be computed, the number of OpenMP threads used for the entire computation may be less than 8.
 
-决定 ``nprocs`` 的最优值的因素主要有两个：
+The optimal value of  ``nprocs`` is determined by two main factors.
 
- 1. 因OpenMP的并行效率一般低于100%，所以如果同时运行4个用时相同的任务，每个任务使用2个OpenMP线程，所用时间一般小于每个任务依次运行，且每个任务使用8个OpenMP线程所用的时间。
- 2. 各个子体系的计算时间并不完全相同，甚至可能存在数倍的差别。仍以同时运行4个任务为例，如某些任务所用时间明显较其他任务长，则同时计算这4个子体系、每个子体系使用2个线程，可能反倒比依次计算、每个子体系使用8个线程更慢，因为当同时计算这4个子体系时，在计算后期一部分计算资源会闲置。这也就是所谓的负载均衡问题。
+ 1. Because the parallel efficiency of OpenMP is generally less than 100%, if four tasks of equal duration are run simultaneously, each using two OpenMP threads, the time spent is generally less than if each task is run in turn and each task uses eight OpenMP threads.
+ 2. The computation times for each subsystem are not identical, and may even differ by a factor of several. If some tasks take significantly longer than others, running 4 tasks at the same time with 2 threads per subsystem may be slower than computing each subsystem sequentially with 8 threads, because some computational resources will be idle later in the computation when the 4 subsystems are being computed simultaneously. This is also known as the load balancing problem.
 
-因此， ``nprocs`` 太小或太大，均有可能导致计算效率降低。一般 ``nprocs`` 设为子体系总数的1/5~1/3左右比较适宜，如在计算前对于系统产生的子体系数目没有一个适当的估计值，也可将 ``nprocs`` 简单地设为1、2等较小的正整数。例外情况是如果已知该计算的各个子体系计算量相仿的话， ``nprocs`` 可以设得大一些，例如在本小节开头的算例中，虽然只有两个子体系，但是其中较小的子体系含有过渡金属原子Cu，而较大的子体系是纯有机体系，因此两个子体系的计算时间相仿，可以同时计算。
+Therefore, if ``nprocs`` too small or too large, the computation may be less efficient. In general, ``nprocs`` is set to about 1/5 to 1/3 of the total number of subsystems. If there is no proper estimate of the number of subsystems generated by the system before the calculation, ``nprocs`` can be simply set to a smaller positive integer such as 1 or 2. 
+The exception is that ``nprocs`` can be made larger if it is known that the various subsystems of the calculation are computationally similar. ``nprocs`` For example, in the example at the beginning of this subsection, although there are only two subsystems, the smaller subsystem contains transition metal atoms Cu and the larger subsystem is purely organic, so both subsystems have similar computation times and can be computed simultaneously.
 
 .. _iOI-Example:
 
-iOI-SCF方法
+iOI-SCF method 
 ----------------------------------------------------------
 
-iOI方法可以看作是FLMO方法的一种改进。在FLMO方法中，即便采用自动分片，用户仍然需要用 ``radcent`` 、 ``radbuff`` 等关键词指定分子片的大小，尽管这两个关键词都有默认值（分别是3.0和2.0），但无论是默认值还是用户指定的值，都不能保证对于当前体系是最优的。如果分子片太小，得到的定域轨道质量太差；如果分子片太大，又会导致计算量太大，以及定域化迭代不收敛。而iOI方法则是从比较小的分子片出发，不断增大、融合分子片，直至分子片刚好达到所需的大小为止，然后进行全局计算。其中每次增大、融合分子片称为一次宏迭代（Macro-iteration）。
-示例如下：
+The iOI method can be considered as an improvement of the FLMO method. In the FLMO method, even if automatic binning is used, the user still needs to specify the size of the molecular slice with the keywords ``radcent`` and ``radbuff`` . Although both keywords have default values (3.0 and 2.0, respectively), neither the default values nor the user-specified values are guaranteed to be optimal for the current system. 
+If the molecular slice is too small, the quality of the obtained fixed-domain orbitals is too poor; if the molecular slice is too large, it leads to too much computation and non-convergence of the fixed-domain iterations. In contrast, the iOI method starts from a relatively small piece of molecule and keeps increasing and fusing the pieces until the piece of molecule reaches the desired size, and then performs the global calculation. Each increase and fusion of molecular slices is called a Macro-iteration. 
+An example is as follows.
 
 .. code-block:: bdf
 
@@ -666,9 +672,10 @@ iOI方法可以看作是FLMO方法的一种改进。在FLMO方法中，即便采
   FLMO
   $end
 
-注意在iOI计算中， ``nprocs`` 关键词的含义和FLMO计算相同，也需要根据分子的大小来选择合适的值，且 ``nprocs`` 的不同取值仍然只是影响计算速度而不影响计算结果。和FLMO计算的区别在于，iOI计算涉及多步宏迭代（见下），每步宏迭代的子体系数目是逐步减小的，因此 ``nprocs`` 的最优取值应当保守一些，例如取为第0步宏迭代子体系数目的1/10~1/5。
+Note that in the iOI calculation, the meaning of the ``nprocs`` keyword is the same as in the FLMO calculation, and the appropriate value needs to be chosen according to the size of the molecule, and the different values of ``nprocs`` still only affect the calculation speed but not the results. The difference with the FLMO calculation is that the iOI calculation involves multiple macro iterations (see below), and the number of subsystems in each macro iteration is decreasing, 
+so the optimal value of ``nprocs`` should be conservative, e.g., 1/10-1/5 of the number of subsystems in the macro iteration at step 0.
 
-程序一开始将该分子分为5个分子片：
+At the beginning of the program, the molecule is divided into 5 molecular slices.
 
 .. code-block:: bdf
 
@@ -689,9 +696,9 @@ iOI方法可以看作是FLMO方法的一种改进。在FLMO方法中，即便采
            5                  14       1         1           N.A.
  --------------------------------------------------------------------
 
-这里SpinAlignment显示为N.A.，是因为所有分子片都是闭壳层的，因此不存在自旋取向的问题。
+Here SpinAlignment is shown as N.A. because all molecular sheets are in closed-shell layer and therefore there is no problem of spin orientation.
 
-之后开始进行子体系计算，
+After that the subsystem calculation starts.
 
 .. code-block:: bdf
 
@@ -713,7 +720,7 @@ iOI方法可以看作是FLMO方法的一种改进。在FLMO方法中，即便采
  Elapsed time of post-processing: 0.10 s
  Total elapsed time of this iteration: 34.28 s
 
-此后程序将这5个分子片进行两两融合，并扩大缓冲区，得到3个较大的子体系。这3个较大的子体系的定义在 ``${BDFTASK}.ioienlarge.out`` 里给出：
+After that the program fuses these 5 molecular sheets two by two and expands the buffer to obtain 3 larger subsystems. The definition of the 3 larger subsystems is given in ``${BDFTASK}.ioienlarge.out`` .
 
 .. code-block:: bdf
 
@@ -730,7 +737,7 @@ iOI方法可以看作是FLMO方法的一种改进。在FLMO方法中，即便采
  Center fragment construction done, total elapsed time 0.01 s
  Subsystem construction done, total elapsed time 0.01 s
 
-也即新的子体系1是由旧的子体系5、3融合（并扩大缓冲区）得到的，新的子体系2是由旧的子体系2、4融合（并扩大缓冲区）得到的，而新的子体系3则直接由旧的子体系1扩大缓冲区而得到。然后以原来5个较小子体系的收敛的定域轨道作为初猜，进行这些较大子体系的SCF计算：
+That is, the new subsystem 1 is obtained by fusing (and expanding the buffer) the old subsystems 5 and 3, the new subsystem 2 is obtained by fusing (and expanding the buffer) the old subsystems 2 and 4, and the new subsystem 3 is obtained directly by expanding the buffer of the old subsystem 1. Then the SCF calculation of these larger subsystems is performed using the converged fixed domain orbits of the original 5 smaller subsystems as the first guess.
 
 .. code-block:: bdf
 
@@ -751,7 +758,8 @@ iOI方法可以看作是FLMO方法的一种改进。在FLMO方法中，即便采
  Elapsed time of post-processing: 0.04 s
  Total elapsed time of this iteration: 33.71 s
 
-此时程序自动判断这些子体系的大小已经足以将体系的LMO收敛到所需精度，因而iOI宏迭代收敛，进行iOI全局计算。iOI全局计算的输出与FLMO全局计算类似，但为了进一步加快Fock矩阵的块对角化，在iOI全局计算里，某些已经收敛的LMO会被冻结，从而降低需要块对角化的Fock矩阵的维度，但也引入了少许误差（一般在 :math:`10^{-6} \sim 10^{-5}` Hartree数量级）。以最后一步SCF迭代为例：
+At this point, the program automatically determines that the size of these subsystems is sufficient to converge the LMO of the system to the required accuracy, so the iOI macro iteratively converges and the iOI global computation is performed. iOI global computation produces an output similar to the FLMO global computation, but to further accelerate the block diagonalization of the Fock matrix, some of the converged LMOs are frozen in the iOI global computation, 
+thus reducing the number of Fock matrices requiring block diagonalization. The dimensionality of the Fock matrix to be diagonalized is reduced, but also introduces a small error (typically of the order of  :math:`10^{-6} \sim 10^{-5}` Hartree). As an example, take the last step of the SCF iteration.
 
 .. code-block:: bdf
 
@@ -800,6 +808,7 @@ iOI方法可以看作是FLMO方法的一种改进。在FLMO方法中，即便采
   Predicted total energy change:      -0.0000000659
     9      0    0.000   -1401.6261867529      -0.0011407955       0.0000016329       0.0000904023    0.0000     16.97
 
-即冻结了47个占据轨道和201个虚轨道。
+That is, 47 occupied and 201 imaginary orbits are frozen.
 
-iOI全局计算SCF收敛后，可以仿照一般SCF计算的输出文件读取能量、布居分析等信息，此处不再赘述。
+After the convergence of the iOI global computation of SCF, the energy and settling analysis information can be read from the output file following the general SCF computation, which is not repeated here.
+
