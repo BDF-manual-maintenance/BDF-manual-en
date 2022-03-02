@@ -1,29 +1,32 @@
 
 .. _TD:
 
-含时密度泛函理论
+Time-dependent Density Generalized Function Theory
 ================================================
 
-BDF支持多种激发态计算方法，其中以基于Kohn-Sham参考态的线性响应含时密度泛函 （TDDFT）方法，以及TDDFT方法的Tamm-Dancoff近似（TDA）为主。与其他量化软件相比，BDF的TDDFT模块独具特色，主要体现在：
+The BDF supports a variety of excited state calculation methods, including the linear response time-density generalized function (TDDFT) method based on the Kohn-Sham reference state, and the Tamm-Dancoff approximation (TDA) of the TDDFT method. Compared with other quantization software, the TDDFT module of BDF is unique.
+The main features are
 
-1. 支持各种自旋翻转（spin-flip）方法；
-2. 支持自旋匹配TDDFT方法X-TDDFT，可以有效解决参考态为开壳层时激发态存在自旋污染的问题，适用于自由基、过渡金属等体系的激发态计算；
-3. 支持芯激发态（core excited state）相关的计算，如计算X射线吸收谱（XAS）。一般的TDDFT算法为了计算一个激发态，常需同时把比该激发态激发能更低的所有态均计算出来，而芯激发态的能量通常很高，这样计算效率太低。BDF所用的iVI方法则可在不计算更低的激发态的情况下，直接计算某个较高的能量区间内的所有激发态，从而节省计算资源；
-4. 支持一阶非绝热耦合矩阵元（first-order non-adiabatic coupling matrix element, fo-NACME，或简称NACME）的计算，尤其是激发态和激发态之间的NACME。NACME主要用于研究非辐射跃迁过程，如用费米黄金规则计算内转换速率常数，或用非绝热动力学研究内转换、光化学反应的过程等等。很多量子化学程序支持基态和激发态之间的NACME，但支持激发态和激发态之间的NACME的程序较少，因此对于激发态到激发态的内转换以及多态光化学反应等过程，BDF相比现有大部分量子化学程序有独特的优势。
+1. support for various spin-flip (spin-flip) methods.
+2. support spin-matching TDDFT method X-TDDFT, which can effectively solve the problem of spin contamination of excited states when the reference state is an open-shell layer, and is suitable for excited state calculation of free radicals, transition metals and other systems.
+3. support core excited state (core excited state) related calculations, such as the calculation of the X-ray absorption spectrum (XAS). The iVI method used in BDF can directly calculate all excited states in a higher energy interval without calculating the lower excited states, thus saving computational resources.
+4. support the calculation of first-order non-adiabatic coupling matrix element (fo-NACME, or NACME for short), especially between excited states and excited states NACME is mainly used to study non-radiative leap processes, such as using Fermi's golden rule NACME is mainly used to study non-radiative leap processes, 
+   such as the calculation of the endoconversion rate constant using Fermi's golden rule, or the study of endoconversion, photochemical processes using non-adiabatic kinetics, etc. Many quantum chemistry programs support NACME between ground and excited states, but fewer programs support NACME between excited and excited states. 
+   Therefore, BDF has a unique advantage over most existing quantum chemistry programs for processes such as excited-to-excited state endoconversions and multi-state photochemical reactions.
 
-除TDDFT之外，BDF还支持利用 :ref:`mom方法<momMethod>` 在SCF水平下计算激发态。
+In addition to TDDFT, BDF also supports the calculation of excited states at the SCF level using the :ref:`mom方法<momMethod>` .
 
 .. danger::
 
-    所有 **SCAN** 家族的泛函（如SCAN0，r2SCAN）都存在“三重态不稳定”问题 :cite:`scan_problem` ，
-    不要用于TDDFT自旋翻转计算（例如对闭壳层体系计算三重激发态）。这种情况推荐用TDA。
+    All general functions of the  **SCAN** family(e.g.,SCAN0，r2SCAN) suffer from the "triplet instability" problem :cite:`scan_problem`,
+    Should not be used for SF-TDDFT calculations(e.g,triple excited states for closed-shell systems). TDA is recommended for this case. 
 
 
-闭壳层体系计算：R-TDDFT
+Closed-shell system calculations：R-TDDFT
 ----------------------------------------------------------
 
-R-TDDFT用于计算闭壳层体系。如果基态计算从RHF出发，TDDFT模块执行的是TDHF计算。
-利用TDDFT计算 :math:`\ce{H2O}` 分子激发能，简洁输入如下：
+R-TDDFT is used to calculate closed-shell systems. If the ground state calculation starts from the RHF, the TDDFT module performs the TDHF calculation. 
+To calculate the excitation energy of :math:`\ce{H2O}` molecules using TDDFT, a concise input is given as follows.
 
 .. code-block:: bdf
 
@@ -38,8 +41,8 @@ R-TDDFT用于计算闭壳层体系。如果基态计算从RHF出发，TDDFT模�
   R1=1.0       # OH bond length in angstrom
   end geometry
 
-这里，关键词 ``TDDFT/B3lyp/cc-pvdz`` 指定执行TDDFT计算，所用泛函为 ``B3lyp`` ，基组为 ``cc-pVDZ`` 。
-与之对应的高级输入为：
+Here, the keyword ``TDDFT/B3lyp/cc-pvdz`` specifies that the TDDFT calculation is performed, the generic function used is ``B3lyp`` , and the basis group is ``cc-pVDZ`` . 
+The corresponding high-level input is
 
 .. code-block:: bdf
 
@@ -68,12 +71,12 @@ R-TDDFT用于计算闭壳层体系。如果基态计算从RHF出发，TDDFT模�
     1       #on default, 10 roots are calculated for each irreps if advanced input used
   $end
 
-完成计算将顺序调用 **COMPASS** , **XUANYUAN** , **SCF** 及 **TDDFT** 四个模块。其中 **SCF** 模块执行RKS计算。
-基于RKS的计算结果，进行后续的 **TDDFT** 计算。
 
-注意因为水分子属于 :math:`\rm C_{2v}` 点群，共有4个不可约表示，而不同不可约表示的激发态是分别求解的，因此视用户需求而定，有以下若干种指定激发态数目的方法，例如：
+The four modules **COMPASS** , **XUANYUAN** , **SCF** and **TDDFT** are called sequentially to complete the computation. The **SCF** module performs the RKS calculation. Based on the results of the RKS calculation, the subsequent **TDDFT** calculation is performed.
 
-（1）每个不可约表示均计算1个激发态：
+Note that since the water molecule belongs to the :math:`\rm C_{2v}` point group, there are 4 integrable representations, and the excited states of different integrable representations are solved separately, so there are several ways to specify the number of excited states depending on the user's requirements, such as
+
+（1）Calculate 1 excited state for each integrable representation.
 
 .. code-block:: bdf
   
@@ -82,7 +85,7 @@ R-TDDFT用于计算闭壳层体系。如果基态计算从RHF出发，TDDFT模�
    1
   $END
 
-此时每个不可约表示计算得到的激发态大概率是该不可约表示下能量最低的激发态，但是这一点无法保证，也就是说有较小的概率会收敛到第二激发态甚至更高的某个激发态。如果要提高得到最低激发态的概率，可以写
+At this time, the excited state calculated by each irreducible representation has a high probability of being the excited state with the lowest energy under the irreducible representation, but this cannot be guaranteed, that is to say, there is a small probability that the excited state will converge to the second excited state or even higher. some excited state. If you want to increase the probability of getting the lowest excited state, you can write
 
 .. code-block:: bdf
   
@@ -91,11 +94,15 @@ R-TDDFT用于计算闭壳层体系。如果基态计算从RHF出发，TDDFT模�
    2
   $END
 
-此时每个不可约表示计算2个激发态，且每个不可约表示下计算得到的第一个激发态是该不可约表示下能量最低的激发态的概率较iroot=1时更高。此外，此时每个不可约表示下计算得到的第二个激发态大概率是该不可约表示下能量第二低的激发态，但满足这一点的概率较“计算得到的第一个激发态是该不可约表示下能量最低的激发态”的概率更低。如果进一步增加iroot，则计算得到的第一个激发态是能量最低的激发态的概率很快趋近于100%，但永远无法严格达到100%。
+At this time, two excited states are calculated for each irreducible representation, and the probability that the first excited state calculated under each irreducible representation is the excited state with the lowest energy under the irreducible representation is higher than when iroot=1. 
+In addition, at this time, the second excited state calculated under each irreducible representation has a high probability of being the excited state with the second lowest energy under the irreducible representation, but the probability of satisfying this point is higher than that of the first excited state calculated under the irreducible representation. 
+The probability of being the excited state with the lowest energy under this irreducible representation is lower. If iroot is increased further, the calculated probability that the first excited state is the one with the lowest energy quickly approaches 100%, but never strictly reaches 100%.
 
-出于类似的原因，不仅当计算1个激发态时常常需要将iroot设为大于1，当计算N（N>1）个激发态时，若想相对可靠地确保这N个激发态是能量最低的N个激发态，也需要将iroot设为大于N。一般而言，当分子满足下述条件之一时，应当将iroot设得较大，例如比所需的激发态数目大至少3个：（1）分子具有近似的点群对称性；（2）分子虽然具有精确的点群对称性，但是受程序限制或者应用户需要，计算在更低的点群下进行，例如在开壳层TDDFT（见下文）计算中，因开壳层TDDFT代码不支持非阿贝尔点群，而改为在最大的阿贝尔子群下进行计算。当分子不属于上述情况之一时，iroot只需比所需的激发态数目略大即可，例如大1~2个。
+For similar reasons, not only is it often necessary to set iroot greater than 1 when calculating 1 excited state, but when calculating N (N > 1) excited states, if you want to relatively reliably ensure that these N excited states are the lowest energy The N excited states of , also need to set iroot greater than N. 
+In general, iroot should be set larger, for example, at least 3 larger than the desired number of excited states, when the molecule satisfies one of the following conditions: (1) the molecule has approximate point group symmetry; (2) the molecule Although it has exact point group symmetry, the calculation is performed at a lower point group due to program limitations or at the user's request, 
+such as in the open-shell TDDFT (see below) calculation, because the open-shell TDDFT code does not support non- Abelian point group, and the calculation is performed under the largest Abelian subgroup instead. When the molecule does not belong to one of the above cases, the iroot only needs to be slightly larger than the desired number of excited states, eg 1-2 larger.
 
-（2）只计算一个B1激发态和一个B2激发态，不计算其他不可约表示下的激发态：
+（2）Counting only one B1 excited state and one B2 excited state, and not counting the excited states in the other integrable representations.
 
 .. code-block:: bdf
 
@@ -106,7 +113,7 @@ R-TDDFT用于计算闭壳层体系。如果基态计算从RHF出发，TDDFT模�
    ...
    End geometry
 
-或者
+or
 
 .. code-block:: bdf
   
@@ -115,9 +122,9 @@ R-TDDFT用于计算闭壳层体系。如果基态计算从RHF出发，TDDFT模�
    0 0 1 1  # 也可输入为 0,0,1,1
   $END
 
-其中nroot关键词表明用户分别对每个不可约表示指定激发态的数目。因程序内部将 :math:`\rm C_{2v}` 点群的不可约表示以A1、A2、B1、B2的顺序排列（见点群相关章节关于各个不可约表示的排序的介绍），因此以上输入表明只计算B1、B2各一个激发态。类似iroot的情形，如需要相对可靠地确保计算得到的是相应不可约表示下能量最低的态，则应当将nroot设得比所需值略大。
+where the nroot keyword indicates the number of excited states specified by the user for each integrable representation. Since the program internally arranges the integrable representations of the :math:`\rm C_{2v}` point group in the order of A1, A2, B1, and B2 (see the section on the ordering of the integrable representations of the point group), the above input indicates that only one excited state each of B1 and B2 is counted.
 
-（3）计算最低的4个激发态，而不限定这些激发态的不可约表示
+（3）Calculate the lowest 4 excited states without limiting the integrable representations of these excited states
 
 .. code-block:: bdf
 
@@ -128,7 +135,7 @@ R-TDDFT用于计算闭壳层体系。如果基态计算从RHF出发，TDDFT模�
    ...
    End geometry
 
-或者
+or
 
 .. code-block:: bdf
   
@@ -137,9 +144,10 @@ R-TDDFT用于计算闭壳层体系。如果基态计算从RHF出发，TDDFT模�
    -4
   $END
 
-此时程序通过初始猜测的激发能来判断各个不可约表示应当求解多少个激发态，但因为初始猜测的激发能排列顺序可能和完全收敛的激发能有一定差异，程序不能严格保证求得的4个激发态一定是能量最低的4个激发态。如用户要求严格保证得到的4个激发态为最低的4个激发态，用户应当令程序计算多于4个激发态，如8个激发态，然后取能量最低的4个。
+In this case, the program uses the initial guessed excitation energy to determine how many excitation states should be solved for each integrable representation, but since the initial guessed order of excitation energy may be different from the fully converged excitation energy, the program cannot strictly guarantee that the 4 excitation states obtained must be the 4 lowest energy states. 
+If the user requires a strict guarantee that the 4 excited states obtained are the lowest 4 excited states, the user should make the program calculate more than 4 excited states, e.g., 8 excited states, and then take the 4 lowest energy states.
 
-Kohn-Sham计算的输出前面已经介绍过，这里我们只关注 **TDDFT** 计算的结果。程序输出会先给出TDDFT计算的设置信息，方便用户检查是否计算的设置，如下：
+The output of the Kohn-Sham calculation has already been described, so here we will only focus on the results of the **TDDFT** calculation. The program output will first give information about the settings of the TDDFT calculation, so that the user can easily check whether the settings are calculated or not, as follows.
 
 .. code-block:: 
 
@@ -181,13 +189,13 @@ Kohn-Sham计算的输出前面已经介绍过，这里我们只关注 **TDDFT** 
       --- END : Information about TDDFT calculation ---   
       -------------------------------------------------   
 
-这里，
+Here,
 
-* ``R-TD-DFT`` 表示正在进行的是基于限制性基态波函数计算的TDDFT；
-* ``isf= 0`` 表示计算不翻转自旋；
-* ``ialda= 0`` 表示使用 ``Full non-collinear Kernel``，这是非自旋翻转TDDFT的默认Kernel。
+* ``R-TD-DFT`` indicates that the TDDFT based on the restricted basis wave function calculation is being performed.
+* ``isf= 0`` indicates that no flipping spin is being computed.
+* ``ialda= 0`` indicates that the ``Full non-collinear Kernel``is used, which is the default Kernel for the non-spin-flipping TDDFT.
 
-下面的输出给出了每个不可约表示计算的根的数目。
+The output below gives the number of roots computed for each non-collinear representation.
 
 .. code-block:: 
 
@@ -197,7 +205,7 @@ Kohn-Sham计算的输出前面已经介绍过，这里我们只关注 **TDDFT** 
     3   B1       1   1
     4   B2       1   1
 
-TDDFT模块还会打印占据轨道，虚轨道等TDDFT计算的活性轨道信息
+The TDDFT module also prints information about occupied orbitals, virtual orbitals, and other active orbitals computed by TDDFT
 
 .. code-block:: 
 
@@ -230,9 +238,8 @@ TDDFT模块还会打印占据轨道，虚轨道等TDDFT计算的活性轨道信�
    23    1   A1    11   0            94.37171    2.81
    24    3   B1     7   0            99.90789    2.86
 
-这里，轨道1-5是占据轨道，6-24是虚轨道，其中，第5个和第6个轨道分别是HOMO和LUMO轨道, 分别属于不可约表示B2和不可约表示A1，
-轨道能分别是-7.62124 eV和1.23186 eV。由于 :math:`\ce{H2O}` 分子有4个不可约表示，TDDFT会对每个不可约表示逐一求解。
-在进入Davidson迭代求解Casida方程之前，系统会估计内存使用情况，
+Here, orbitals 1-5 are occupied orbitals and 6-24 are virtual orbitals, where the 5th and 6th orbitals are HOMO and LUMO orbitals, belonging to integrable representation B2 and integrable representation A1 respectively, with orbital energies of -7.62124 eV and 1.23186 eV respectively. 
+Since the :math:`\ce{H2O}` molecule has 4 irreducible representations, the TDDFT solves for each integrable representation one by one. The system estimates the memory usage before proceeding to the Davidson iteration to solve the Casida equation.
 
 .. code-block:: 
 
@@ -250,12 +257,11 @@ TDDFT模块还会打印占据轨道，虚轨道等TDDFT计算的活性轨道信�
   Estimated mem for dvdson storage (RPA) =           0.042 M          0.000 G
   Estimated mem for dvdson storage (TDA) =           0.017 M          0.000 G
 
-这里，系统统计存储JK算符需要的内存约 0.053MB, 输入设置的内存是512MB (见 ``memjkop`` 关键词 )。
-系统提示RPA计算，即完全的TDDFT计算每次(one pass)可以算1个根，TDA计算每次可以算2个根。由于分子体系小，内存足够。
-分子体系较大时，如果这里输出的允许的每次可算根的数目小于系统设置数目，TDDFT模块将根据最大允许可算根的数目，通过
-多次积分计算构造JK算符，导致计算效率降低，用户需要用 ``memjkop`` 关键词增加内存。
+Here, the system counts about 0.053 MB of memory needed to store the JK operator, and 512 MB of memory for the input setting (see ``memjkop`` keyword). 
+The system suggests that the RPA calculation, i.e., the full TDDFT calculation can count 1 root per pass (one pass) and the TDA calculation can count 2 roots per pass. Since the molecular system is small, there is enough memory. 
+For larger molecular systems, if the number of allowed roots per pass output here is less than the system setting, the TDDFT module will construct the JK operator by multiple integration calculations based on the maximum number of allowed roots, resulting in a decrease in computational efficiency and requiring the user to increase memory with the ``memjkop`` keyword.
 
-Davidson迭代开始计算输出信息如下，
+Davidson iteration starts computing the output information as follows.
 
 .. code-block:: 
 
@@ -297,7 +303,7 @@ Davidson迭代开始计算输出信息如下，
         1        0.0029082582        0.0074085379           0.291E-02           0.741E-02
      No. of converged eigvec:     0
 
-收敛信息如下：
+The convergence information is as follows.
 
 .. code-block:: 
 
@@ -329,7 +335,7 @@ Davidson迭代开始计算输出信息如下，
             0.3446513056
      ------------------------------------------------------------------
   
-从上面输出的第一行可以看出，5次迭代计算收敛。系统随后打印收敛后电子态的信息，
+The first line of the above output shows that the computation converges in 5 iterations. The system then prints the information of the converged electronic state.
 
 .. code-block:: 
 
@@ -338,25 +344,24 @@ Davidson迭代开始计算输出信息如下，
   CV(0):   B1( 1 )->  B1( 2 )  c_i: -0.1265  Per:  1.6%  IPA: 16.941 eV  Oai: 0.6563
   Estimate memory in tddft_init mem:           0.001 M
 
-其中第1行的信息，
+The information in the first line is as follows
 
-* ``No.     1    w=      9.3784 eV`` 表示第一激发态激发能为 ``9.3784 eV``;
-* ``-76.0358398606 a.u.`` 给出第一激发态的总能量;
-* ``f= 0.0767`` 给出第一激发态与基态之间跃迁的振子强度;
-* ``D<Pab>= 0.0000`` 为激发态的<S^2>值与基态的<S^2>值之差（对于自旋守恒跃迁，该值反映了激发态的自旋污染程度；对于自旋翻转跃迁，该值与理论值 ``S(S+1)(激发态)-S(S+1)(基态)`` 之差反映了激发态的自旋污染程度）；
-* ``Ova= 0.5201`` 为绝对重叠积分（absolute overlap integral，取值范围为[0,1]，该值越接近0，说明相应的激发态的电荷转移特征越明显，否则说明局域激发特征越明显）。
+* ``No.     1    w=      9.3784 eV`` means that the first excited state has an excitation energy of ``9.3784 eV``;
+* ``-76.0358398606 a.u.`` gives the total energy of the first excited state;
+* ``f= 0.0767`` gives the intensity of the oscillator of the jump between the first excited state and the ground state;
+* ``D<Pab>= 0.0000`` is the difference between the <S^2> value of the excited state and the <S^2> value of the ground state (for spin-conserving jumps, this value reflects the degree of spin contamination of the excited state; for spin-flip jumps, the difference between this value and the theoretical value ``S(S+1)(excited state) - S(S+1)(ground state)`` reflects the degree of spin contamination of the excited state).
+* ``Ova= 0.5201`` is the absolute overlap integral, which takes values in the range [0,1], the closer the value is to 0, the more pronounced the charge transfer characteristics of the corresponding excited state, otherwise the more pronounced the localized excitation characteristics).
 
-第2行和第3行给出激发主组态信息
+Lines 2 and 3 give information on the excited main group states
 
-* ``CV(0):`` 中CV(0)表示该激发是Core到Virtual轨道激发，0表示是Singlet激发;
-* ``A1(   3 )->  A1(   4 )`` 给出了电子跃迁的占据-空轨道对，电子从A1表示的第3个轨道跃迁到A1表示的第4个轨道，结合上面输出轨道信息，可看出这是HOMO-2到LUMO的激发；
-* ``c_i: 0.9883`` 表示该跃迁在整个激发态里的线性组合系数为0.9883;
-* ``Per: 97.7%`` 表示该激发组态占97.7%；
-* ``IPA:    10.736 eV`` 代表该跃迁所涉及的两个轨道的能量差为10.736 eV；
-* ``Oai: 0.5163`` 表示假如该激发态只有这一个跃迁的贡献，那么该激发态的绝对重叠积分为0.5001，由这一信息可以方便地得知哪些跃迁是局域激发，哪些跃迁是电荷转移激发。
+* ``CV(0):`` where CV(0) means that the excitation is a Core to Virtual orbital excitation and 0 means that it is a Singlet excitation;
+* ``A1( 3 ) -> A1( 4 )`` gives the occupied-vacancy orbital pair for the electron leap from the 3rd orbital of A1 to the 4th orbital of A1, which is the HOMO-2 to LUMO excitation when combined with the above output orbital information.
+* ``c_i: 0.9883`` means that the linear combination factor of this jump in the whole excited state is 0.9883;
+* ``Per: 97.7%`` indicates that this excited state accounts for 97.7% of the total number of excited states.
+* ``IPA: 10.736 eV`` represents the energy difference of 10.736 eV between the two orbitals involved in the jump.
+* ``Oai: 0.5163`` means that if the excited state has only the contribution of this one leap, then the absolute overlap integral of this excited state is 0.5001. From this information, it is convenient to know which leaps are local excitations and which leaps are charge transfer excitations.
 
-
-所有不可约表示求解完后，所有的激发态会按照能量高低排列总结输出，并打印对应的振子强度等信息，
+After all integrable representations have been solved, all excited states are summarized in order of higher or lower energy output.
 
 .. code-block:: 
 
@@ -367,7 +372,7 @@ Davidson迭代开始计算输出信息如下，
     3  A1    2  A1    9.3784 eV    132.20 nm   0.0767   0.0000  97.7%  CV(0):  A1(   3 )->  A1(   4 )  10.736 0.520    2.1850
     4  B1    1  B1   11.2755 eV    109.96 nm   0.0631   0.0000  98.0%  CV(0):  A1(   3 )->  B1(   2 )  12.779 0.473    4.0820
 
-随后还打印了跃迁偶极矩。
+Subsequently, the transition dipole moments also printed.
 
 .. code-block:: 
 
@@ -379,7 +384,7 @@ Davidson迭代开始计算输出信息如下，
        4       0.4778      -0.0000       0.0000       0.0631       0.0631   
 
 
-开壳层体系计算：U-TDDFT
+Calculation of the open-shell layer system：U-TDDFT
 ----------------------------------------------------------
 开壳层体系可以用U-TDDFT计算，例如对于 :math:`\ce{H2O+}` 离子，先进行UKS计算，然后利用U-TDDFT计算激发态。典型的输入为，
 
