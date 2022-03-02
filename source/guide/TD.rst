@@ -386,7 +386,7 @@ Subsequently, the transition dipole moments also printed.
 
 Calculation of the open-shell layer system：U-TDDFT
 ----------------------------------------------------------
-开壳层体系可以用U-TDDFT计算，例如对于 :math:`\ce{H2O+}` 离子，先进行UKS计算，然后利用U-TDDFT计算激发态。典型的输入为，
+The open-shell layer system can be calculated using U-TDDFT, e.g. for :math:`\ce{H2O+}` ions, the UKS calculation is performed first, and then the U-TDDFT calculation is used to calculate the excited state. A typical input is that
 
 .. code-block:: bdf
 
@@ -401,13 +401,13 @@ Calculation of the open-shell layer system：U-TDDFT
     R1=1.0     # OH bond length in angstrom 
     end geometry
 
-这里，关键词
+Here, the keyword
 
-* ``iroot=4`` 指定对每个不可约表示计算4个根；
-* ``charge=1`` 指定体系的电荷为+1；
-* ``group=C(1)`` 指定强制使用C1点群计算。
+* ``iroot=4`` specifies that 4 roots are calculated for each integrable representation.
+* ``charge=1`` specifies that the charge of the system is +1.
+* ``group=C(1)`` specifies that the C1 point group calculation is forced.
 
-与之对应的高级输入为，
+The corresponding high-level input is.
 
 .. code-block:: bdf
 
@@ -444,13 +444,13 @@ Calculation of the open-shell layer system：U-TDDFT
    4
   $end
 
-这个输入要注意的几个细节是：
+A few details to note about this input are
 
-* ``compass`` 模块中利用关键词 ``group`` 强制计算使用 ``C(1)`` 点群;
-* ``scf`` 模块设置 ``UKS`` 计算， ``charge`` 为 ``1`` ， ``spinmulti`` (自旋多重度，2S+1)=2;   
-* ``tddft`` 模块的 ``iroot`` 设定每个不可约表示算4个根，由于用了C1对称性，计算给出水的阳离子的前四个激发态。
+* The ``compass`` module uses the keyword ``group`` to force the calculation to use the ``C(1)`` point group;
+* The ``scf`` module sets the ``UKS`` calculation with ``charge`` of ``1`` and ``spinmulti`` (spin multi, 2S+1) = 2;
+* The ``iroot`` of the ``tddft`` module is set to count 4 roots per integrable representation, and since C1 symmetry is used, the calculation gives the first four excited states of the cation of water.
 
-从以下输出可以看出执行的是U-TDDFT计算：
+The U-TDDFT calculation is performed as can be seen from the following output.
 
 .. code-block:: 
 
@@ -466,7 +466,7 @@ Calculation of the open-shell layer system：U-TDDFT
   SC Excitations 
   RPA: (A-B)(A+B)Z=w2*Z 
 
-计算总结输出的4个激发态为，
+The calculation summarizes the output of the 4 excited states as
 
 .. code-block:: 
 
@@ -477,13 +477,12 @@ Calculation of the open-shell layer system：U-TDDFT
     3   A    4   A   12.0991 eV        102.47 nm   0.0028   1.9312  65.8% CV(bb):   A(   4 )->   A(   6 )  14.637 0.493    9.9032
     4   A    5   A   13.3618 eV         92.79 nm   0.0174   0.0004  97.6% CV(aa):   A(   4 )->   A(   6 )  15.624 0.419   11.1659
 
-其中第3激发态的 ``D<S^2>`` 值较大，表明存在自旋污染问题。
+The third excited state has a large ``D<S^2>`` value, indicating a spin contamination problem.
 
-
-开壳层体系：X-TDDFT（也称SA-TDDFT）
+Open-shell system: X-TDDFT (also called SA-TDDFT)
 ----------------------------------------------------------
-X-TDDFT是一种自旋匹配TDDFT方法，用于计算开壳层体系。
-开壳层体系U-TDDFT三重态耦合的双占据到虚轨道激发态（在BDF中标记为CV(1)）存在自旋污染问题，因而其激发能常被低估。X-TDDFT可以用于解决这一问题。考虑 :math:`\ce{N2+}` 分子，X-TDDFT的简洁计算输入为：
+X-TDDFT is a spin-matched TDDFT method for calculating the open-shell layer system. 
+The open-shell system U-TDDFT triplet state coupled to a double-occupied to imaginary orbital excited state (labeled CV(1) in BDF) suffers from spin contamination and thus its excitation energy is often underestimated. X-TDDFT can be used to solve this problem. Considering :math:`\ce{N2+}` molecules, the concise computational inputs to X-TDDFT are
 
 .. code-block:: bdf
 
@@ -495,7 +494,7 @@ X-TDDFT是一种自旋匹配TDDFT方法，用于计算开壳层体系。
      N 0.00  0.00  1.1164 
    End geometry
 
-高级输入：
+Advanced input
 
 .. code-block:: bdf
 
@@ -529,9 +528,9 @@ X-TDDFT是一种自旋匹配TDDFT方法，用于计算开壳层体系。
      5
     $end
 
-这里， **SCF** 模块要求用 ``ROKS`` 方法计算基态， **TDDFT** 模块将默认采用 **X-TDDFT** 计算。
+Here, the **SCF** module requires the ``ROKS`` method to calculate the ground state, and the **TDDFT** module will default to the **X-TDDFT** calculation.
 
-激发态输出为，
+The excited state output is.
 
 .. code-block:: 
 
@@ -578,12 +577,13 @@ X-TDDFT是一种自旋匹配TDDFT方法，用于计算开壳层体系。
    39 B3g    5 B3g   22.1001 eV         56.10 nm   0.0000   0.0031  99.2%  OV(0):  Ag(   3 )-> B3g(   2 )  23.220 0.204   21.3099
    40 B1g    5 B1g   23.4663 eV         52.84 nm   0.0000   0.0027  99.8%  OV(0):  Ag(   3 )-> B1g(   1 )  25.135 0.283   22.6761
 
-这里，第4、6、7激发态都是CV(1)态。注意SA-TDDFT计算的 ``D<S^2>`` 值是按U-TDDFT的公式计算出来的，可以近似地表明假如用U-TDDFT计算这些态的话，结果的自旋污染程度，但并不代表这些态实际的自旋污染程度，因为SA-TDDFT可以保证所有激发态都严格不存在自旋污染。因此如果SA-TDDFT算得的某个态的 ``D<S^2>`` 值很大，并不能表明该态的结果不可靠，相反表示对于该态而言SA-TDDFT相比U-TDDFT的改进比较大。
+Here, the 4th, 6th and 7th excited states are CV(1) states. Note that the ``D<S^2>`` values calculated by SA-TDDFT are based on the U-TDDFT formula, which gives an approximation of the spin contamination of the results if these states were calculated by U-TDDFT, but does not represent the actual spin contamination of these states, since SA-TDDFT guarantees that all excited states are strictly free of spin contamination. 
+Therefore, a large value of ``D<S^2>`` for a state calculated by SA-TDDFT does not indicate that the result for that state is unreliable, but rather indicates that SA-TDDFT is an improvement over U-TDDFT for that state.
 
-以闭壳层单重态为参考态计算三重态激发态
-----------------------------------------------------------
+Calculation of the triplet excited state using the closed-shell singlet state as the reference state
+------------------------------------------------------------------------------------------------------
 
-从 :math:`\ce{H2O}` 分子闭壳层的基态出发，可以计算三重激发态。简洁输入为：
+Starting from the ground state of the closed-shell layer of the :math:`\ce{H2O}` molecule, the triplet excited state can be calculated. The simple input is.
 
 .. code-block:: bdf
 
@@ -598,7 +598,7 @@ X-TDDFT是一种自旋匹配TDDFT方法，用于计算开壳层体系。
   R1=1.0     # OH bond length in angstrom
   end geometry
 
-注意这里虽然关键词名为spinflip，但该计算并不是一个自旋翻转TDDFT计算，因为其计算的是三重态激发态的 :math:`M_S = 0` 组分而非 :math:`M_S = 1` 组分。对应的高级输入为：
+Note that although the keyword here is named spinflip, this calculation is not a spin-flip TDDFT calculation, since it calculates the :math:`M_S = 0` component of the triplet excited state instead of the :math:`M_S = 1` component. The corresponding high-level inputs are
 
 .. code-block:: bdf
 
@@ -633,7 +633,7 @@ X-TDDFT是一种自旋匹配TDDFT方法，用于计算开壳层体系。
    4
   $end
 
-TDDFT计算快结束时有输出信息如下，
+When the TDDFT calculation is almost finished, there is an output message as follows.
 
 .. code-block::
 
@@ -663,9 +663,9 @@ TDDFT计算快结束时有输出信息如下，
        3       0.0000       0.0000       0.0000       0.0000       0.0000
        4       0.0000       0.0000       0.0000       0.0000       0.0000
 
-其中， ``Spin change: isf=  1`` 提示计算的是自旋多重度比基态大2的态（也即三重态），由于基态是单重态，基态到激发态跃迁是自旋禁阻的，所以振子强度和跃迁偶极矩都是0.
+where ``Spin change: isf=  1`` suggests that the calculation is for a state with a spin multiplet 2 larger than the ground state (i.e., a triplet state), and since the ground state is a single heavy state and the ground to excited state jump is spin-barred, the oscillator strength and jump dipole moment are both 0.
 
-TDDFT **默认只计算与参考态自旋相同的激发态**， 例如，:math:`\ce{H2O}` 分子的基态是单重态，TDDFT值计算单重激发态，如果要同时计算单重态与三重态，输入为：
+TDDFT **only calculates excited states with the same spin as the reference state by default**，For example, the ground state of an :math:`\ce{H2O}` molecule is a single heavy state, and the TDDFT value calculates the single heavy excited state; to calculate both the single heavy state and the triplet state, the input is 
 
 .. code-block::
 
@@ -678,7 +678,7 @@ TDDFT **默认只计算与参考态自旋相同的激发态**， 例如，:math:
    H   1  0.9   2 109.0
    end geometry    
 
-系统会运行两次TDDFT，分别计算单重态和三重态，其中单重态的输出为：
+The system will run TDDFT twice to calculate the single heavy state and triplet state respectively, where the output of the single heavy state is
 
 .. code-block::
 
@@ -693,7 +693,7 @@ TDDFT **默认只计算与参考态自旋相同的激发态**， 例如，:math:
     7  A2    2  A2   22.3252 eV         55.54 nm   0.0000   0.0000  99.8%  CV(0):  B2(   1 )->  B1(   3 )  24.716 0.418   14.2284
     ...
 
-三重态的输出为：
+The output of the triplet state is
 
 .. code-block::
 
@@ -708,9 +708,9 @@ TDDFT **默认只计算与参考态自旋相同的激发态**， 例如，:math:
     7  A2    2  A2   21.8438 eV         56.76 nm   0.0000   2.0000  99.5%  CV(1):  B2(   1 )->  B1(   3 )  24.716 0.418   14.4255
     ...
 
-由于单重态到三重态跃迁是偶极禁阻的，所以振子强度 ``f=0.0000``。
+Since the single to triplet state jump is dipole-barred, the oscillator strength  ``f=0.0000``.
 
-自旋翻转 (spin-flip) TDDFT计算
+Spin-flip TDDFT calculation
 ----------------------------------------------------------
 
 BDF不仅能从单重态出发计算三重态，还可以从自旋多重度更高的 **2S+1** 重态（S = 1/2, 1, 3/2, ...）出发，向上翻转自旋计算 **2S+3** 重态；自旋上翻的 **TDDFT/TDA** 给出的是双占据轨道的alpha电子到未占据的beta轨道跃迁态，标记为 ``CV(1)`` 激发。与基态为闭壳层单重态的情形不同，此时BDF计算的是 **2S+3** 重态的 :math:`M_S = S+1` 组分，因此当基态不是闭壳层单重态时，该计算可以称之为自旋翻转的TDDFT计算。自旋向上翻转的TDDFT计算的输入文件格式与基态为闭壳层单重态、计算三重态激发态时完全相同，例如以下输入文件以二重态为参考态，计算四重态激发态：
