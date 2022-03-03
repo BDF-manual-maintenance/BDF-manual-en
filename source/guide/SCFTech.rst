@@ -1,17 +1,17 @@
-自洽场计算的其它技巧
+Other techniques for self-consistent field calculations
 =====================================
 
-自洽场计算的初始猜测
+Initial Guesses for Self-Consistent Field Calculations
 ------------------------------------------------
-自洽场计算的初始猜测轨道，对计算的收敛性有很大的影响。BDF支持多种初始猜测，如下所示：
+The initial guess track of the self-consistent field calculation has a great impact on the convergence of the calculation. the BDF supports several initial guesses, as follows.
 
-  * Atom : 利用原子密度矩阵组合分子密度矩阵猜测，默认选项。
-  * Huckel : 半经验Huckel方法猜测；
-  * Hcore : 对角化单电子哈密顿猜测；
-  * Readmo : 读入分子轨道做为初始猜测；
---  * Readdm : 读入密度矩阵做为初始猜测。
+  * Atom : Combining molecular density matrix guesses using atomic density matrix, default option.
+  * Huckel : semi-empirical Huckel method guess.
+  * Hcore : diagonalized single-electron Hamiltonian guess.
+  * Readmo : read in molecular orbitals as initial guess.
+--  * Readdm : read in the density matrix as initial guess
 
-BDF默认用Atom猜测。在简洁输入模式下可以使用关键词 ``guess`` 改变BDF的初始猜测，如下所示
+BDF defaults to Atom guesses. The initial guess of the BDF can be changed in concise input mode using the keyword ``guess``, as follows
 
 .. code-block:: bdf
 
@@ -28,7 +28,7 @@ BDF默认用Atom猜测。在简洁输入模式下可以使用关键词 ``guess``
     O       2.2198078005        0.0000024315        0.2188182082
     end geometry
 
-这里，我们在第二行是用了关键词 ``guess=Hcore`` 指定使用 ``Hcore`` 猜测。SCF迭代了18次收敛。
+Here, we use the keyword ``guess=Hcore`` n the second line to specify the use of the Hcore guess. 18 iterations of the SCF converge.
 
 .. code-block:: 
 
@@ -55,9 +55,9 @@ BDF默认用Atom猜测。在简洁输入模式下可以使用关键词 ``guess``
   19    0   0.000 -152.8418195227 -0.000000000  0.000000078  0.000000848  0.0000   0.03
 
 .. warning:: 
-   这个算例分子输入坐标的单位是Bohr，必须使用关键词 ``unit=Bohr`` 指定坐标的长度单位为 ``Bohr`` 。
+   The unit of numerator input for this example is Bohr, and the keyword ``unit=Bohr`` must be used to specify that the length of the coordinates is in ``Bohr`` 。
 
-这个算例对应的高级输入为
+This example corresponds to the advanced input
 
 .. code-block:: bdf
 
@@ -86,11 +86,11 @@ BDF默认用Atom猜测。在简洁输入模式下可以使用关键词 ``guess``
      hcore
    $end
 
-读入初始猜测轨道
+Reading in the initial guess orbitals
 ------------------------------------------------------------------------------------------
-BDF的SCF计算默认采用原子密度矩阵构建分子密度矩阵的方式产生初始猜测轨道。在实际计算中，用户可以读入已收敛的SCF分子轨道，做为当前SCF计算的初始猜测轨道。本算例中，我们先计算一个中性的 :math:`\ce{H2O}` 分子，得到收敛轨道后，做为 :math:`\ce{H2O+}` 离子的初始猜测轨道。
+By default, the SCF calculation in BDF uses the atomic density matrix to construct the molecular density matrix to generate the initial guess orbitals. In practice, the user can read in the converged SCF molecular orbitals as the initial guess orbitals for the current SCF calculation. In this example, we first calculate a neutral :math:`\ce{H2O}` molecule and get the converged orbitals as the initial guess orbitals for the :math:`\ce{H2O+}` ions.
 
-第一步，计算 :math:`\ce{H2O}` 分子，准备输入文件，并命名为 ``h2o.inp`` 。内容如下：
+In the first step, the :math:`\ce{H2O}` molecule is calculated and the input file is prepared and named as ``h2o.inp``. The contents are as follows:
 
 .. code-block:: bdf
 
@@ -105,10 +105,10 @@ BDF的SCF计算默认采用原子密度矩阵构建分子密度矩阵的方式�
     R1=1.0     # OH bond length in angstrom 
     end geometry
 
-执行计算后，工作目录生成可读文件 ``h2o.scforb`` ，保存了SCF计算收敛的轨道.
+After performing the calculation, the working directory generates the readable file ``h2o.scforb``, which holds the convergence orbits of the SCF calculation.
 
 
-第二步，利用 :math:`\ce{H2O}` 分子的收敛轨道做为 :math:`\ce{H2O+}` 离子计算的初始猜测，准备输入文件 h2o+.inp，内容如下：
+In the second step, the convergence orbit of the :math:`\ce{H2O}` molecule is used as an initial guess for the :math:`\ce{H2O+}` ion calculation, and the input file h2o+.inp is prepared, with the following contents.
 
 .. code-block:: bdf
 
@@ -131,12 +131,10 @@ BDF的SCF计算默认采用原子密度矩阵构建分子密度矩阵的方式�
 这里， ``BDF_WORKDIR`` 是执行计算任务的目录， ``BDF_TMPDIR`` 是BDF存储临时文件的目录。
 
 
-把小基组收敛轨道扩展为大基组初始猜测
+Extending small basis group convergence orbits to large basis group initial guesses
 ------------------------------------------------
-初始猜测轨道可以由不同基组产生，同样可以加速计算收敛。这需要对初始猜测轨道文件进行扩展。
-轨道扩展应该采用同组的基组，如cc-pVXZ系列、ANO-RCC系列等基组。
-轨道扩展目前只支持高级输入模式。对于 :math:`\ce{CH3CHO}` 分子，先用cc-pVDZ计算，然后将轨道扩展为cc-pVQZ基组计算的初始猜测轨道，
-输入如下：
+Initial guess orbits can be generated from different basis groups, again to accelerate computational convergence. This requires an extension of the initial guess track file. The track extensions should use the same base group, such as the cc-pVXZ series, ANO-RCC series, and other base groups. The orbital expansion currently supports only the advanced input mode.
+For :math:`\ce{CH3CHO}` molecules, the orbitals are first calculated with cc-pVDZ and then expanded to the initial guess orbitals calculated with the cc-pVQZ basis set with the following inputs.
 
 .. code-block:: bdf
 
@@ -208,10 +206,9 @@ BDF的SCF计算默认采用原子密度矩阵构建分子密度矩阵的方式�
      2
     $end
 
-上面的输入中，先使用 **cc-pVDZ** 基组执行第一个RHF计算，然后利用 expandmo 模块，将第一次 SCF 计算的收敛轨道扩展到 **cc-pVQZ** 基组，
-最后利用 ``guess=readmo`` 做为SCF要读入的初始猜测轨道。
+In the above input, the first RHF calculation is performed using the **cc-pVDZ** basis set, then the convergence track from the first SCF calculation is extended to the **cc-pVQZ** basis set using the expandmo module, and finally ``guess=readmo`` is used as the initial guess track to be read into the SCF.
 
-expandmo模块的输出为，
+The output of the expandmo module is that
 
 .. code-block:: 
 
@@ -261,9 +258,9 @@ expandmo模块的输出为，
         End running module expandmo
     |******************************************************************************|
 
-可以看出，小基组有62个轨道，大基组有285个轨道，expandmo读入了SCF收敛的正则轨道，扩展到大基组并写入临时文件。
+It can be seen that the small base group has 62 tracks and the large base group has 285 tracks. expandmo reads in the regular tracks for SCF convergence, extends them to the large base group and writes them to a temporary file.
 
-第二次SCF计算的输出为，
+The output of the second SCF calculation is that
 
 .. code-block:: 
 
@@ -292,9 +289,9 @@ expandmo模块的输出为，
 
 .. _momMethod:
 
-分子轨道最大占据数(mom)方法计算激发态
+Calculation of excited states by the maximum occupation of molecular orbitals (mom) method
 ------------------------------------------------
-mom（maximum occupation method）是一种ΔSCF方法，可用于计算激发态。
+The mom (maximum occupation method) is a ΔSCF method that can be used to calculate excited states.
                                     
 .. code-block:: bdf
 
@@ -369,13 +366,13 @@ mom（maximum occupation method）是一种ΔSCF方法，可用于计算激发�
       9 2
     $END
 
-这个算例执行了三次SCF计算，
+This example performs three SCF calculations.
 
-* 第一次SCF，利用UKS方法计算甲酰胺分子的基态。输入利用alpha与beta两个关键词，分别指定了alpha和beta轨道的占据情况。甲酰胺分子基态是单重态S0，这里指定的alpha和beta占据情况相同。 ``10 2`` 指定不可约表示A'与A"分别有10个和2个占据轨道。SCF模块将根据构造原理，按照轨道能量由低到高填充电子到轨道上。
-* 第二次SCF，利用UKS与mom方法计算甲酰胺分子的S1态。这里的关键点有：1 利用guess=readmo指定读入上一步UKS的收敛轨道；2 利用alpha、beta关键词设置了每个对称性轨道的占据数；3 设置了变量ifpair，需要和hpalpha，hpbeta联用，用于指定空穴-粒子（hole-particle - HP）轨道对的电子激发情况；4 设置了hpalpha变量，指定激发的HP轨道对。数字1表示激发一对HP轨道，下面的两行指定轨道激发情况，第一列表示在第一个不可约表示中把第10个alpha轨道的电子激发到第11个alpha轨道；第二列元素都为零，表示第二个不可约表示的轨道不做激发； 5 iaufbau变量设置为2，指定要进行mom计算。
-* 第三次SCF，利用UKS方法计算甲酰胺分子的T1态。输入中，我们利用alpha和beta关键词指定轨道占据情况，其中alpha轨道的占据数为 ``11 2`` ，表示对称性为A'和A"的alpha轨道上分别有11和2个电子占据， beta轨道的占据情况为 ``9 2`` 。 因为所要求解的态是给定的轨道占据数下能量最低的态，因此无需指定iaufbau。
+* For the first SCF, the ground state of the formamide molecule is calculated using the UKS method. The input specifies the occupancy of alpha and beta orbitals using the alpha and beta keywords, respectively. The base state of the formamide molecule is the singlet state S0, where the specified alpha and beta occupancies are the same. ``10 2`` The integrable designation indicates that A' and A" have 10 and 2 occupied orbitals, respectively. The SCF module will fill the orbitals with electrons according to the construction principle, from low to high orbital energy.
+* For the second SCF, the S1 state of the formamide molecule is calculated using the UKS and mom methods. The key points here are: 1. the convergent orbitals read into the previous UKS step are specified using guess=readmo; 2. the occupation number of each symmetry orbital is set using alpha, beta keywords; 3. the variable ifpair is set, which needs to be used in conjunction with hpalpha, hpbeta to specify the hole-particle - HP) orbital pairs for electronic excitation; 4. The variable hpalpha is set to specify the HP orbital pairs for excitation. The number 1 indicates the excitation of a pair of HP orbitals, and the following two rows specify the orbital excitation. The first column indicates the excitation of electrons from the 10th alpha orbital to the 11th alpha orbital in the first integrable representation; the elements of the second column are all zero, indicating that no excitation is done for the orbital in the second integrable representation; 5. The iaufbau variable is set to 2, specifying that the mom calculation is to be performed.
+* For the third SCF, the T1 state of the formamide molecule is calculated using the UKS method. In the input, we specify the orbital occupancies using the alpha and beta keywords, where the number of occupancies of the alpha orbital is ``11 2``, indicating 11 and 2 electrons occupying the alpha orbital with symmetries A' and A", respectively, and the occupancy of the beta orbital is ``9 2``. Since the required state for the solution is the lowest energy state for a given number of orbital occupancies, there is no need to specify iaufbau.
 
-这里，第一次SCF计算收敛结果为，
+Here, the first SCF calculation converges to the result that
 
 .. code-block:: 
 
@@ -420,8 +417,7 @@ mom（maximum occupation method）是一种ΔSCF方法，可用于计算激发�
        E_xc  =               -17.75524454
       Virial Theorem      2.003102
 
-可以看出，第一次SCF计算使用了atom猜测，计算得到S0的能量为 -169.8658334023 a.u. 。第二次SCF计算读入了第一次SCF的收敛轨道，
-并使用mom方法做SCF计算，输出文件先提示读入了分子轨道，并给出占据情况，
+It can be seen that the first SCF calculation uses the atom guess and the energy of S0 is calculated to be -169.8658334023 a.u.. The second SCF calculation reads in the convergent orbitals of the first SCF and does the SCF calculation using the mom method, and the output file first indicates that the molecular orbitals were read in and gives the occupation
 
 .. code-block::
 
@@ -443,7 +439,7 @@ mom（maximum occupation method）是一种ΔSCF方法，可用于计算激发�
       0.00
    Alpha      10.00    2.00
 
-这里， ``A'`` 不可约表示的第10个alpha轨道是占据轨道，第11个轨道是空轨道。第二次SCF计算读入了第一次SCF的收敛轨道，并使用mom方法做SCF计算，输入中要求将 ``A'`` 表示的第10个轨道的电子激发到第11个轨道上。输出文件先提示读入了分子轨道，并给出占据情况，
+Here, the 10th alpha orbital of the ``A'``integrable representation is the occupied orbital and the 11th orbital is the empty orbital. The second SCF calculation reads in the converged orbitals of the first SCF and does the SCF calculation using the mom method, where the input asks to excite the electrons of the 10th orbital represented by ``A'`` to the 11th orbital. The output file first suggests that the molecular orbitals were read in and gives the occupation
 
 .. code-block:: 
 
@@ -484,7 +480,7 @@ mom（maximum occupation method）是一种ΔSCF方法，可用于计算激发�
       0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00
       0.00
     
-这里，iden=1为alpha轨道，irep=1指第一个不可约表示，总共有norb=66个轨道，其中，第10个轨道的占据数为0.00，第11个轨道占据数为1.00。经14次SCF迭代，收敛的S1态能量为 -169.6222628003 a.u.,如下所示：
+Here, iden=1 is the alpha orbital and irep=1 refers to the first integrable representation, and there are a total of norb=66 orbitals, where the occupation number of the 10th orbital is 0.00 and the occupation number of the 11th orbital is 1.00. After 14 SCF iterations, the converged S1 state energy is -169.6222628003 a.u., as follows.
 
 .. code-block:: 
 
@@ -536,9 +532,9 @@ mom（maximum occupation method）是一种ΔSCF方法，可用于计算激发�
         0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00
         0.00 0.00 0.00 0.00 0.00 0.00
     
-SCF收敛后再一次打印轨道占据情况，可以看到 **alpha** 轨道中 ``A'``  不可约表示的第10个轨道没有电子占据，第11个轨道有一个电子占据。
+After convergence of SCF, the orbital occupancy is printed again and it can be seen that the 10th orbital in the **alpha** orbital with ``A'``  integrable representation has no electron occupation and the 11th orbital has one electron occupation and the 11th orbital is occupied by one electron.
 
-第三个SCF计算给出了 **T1** 态能量，为 -169.6248370697 a.u.，输出如下：
+The third SCF calculation gives the **T1** state energy as -169.6248370697 a.u. The output is as follows：
 
 .. code-block:: 
 
@@ -580,66 +576,73 @@ SCF收敛后再一次打印轨道占据情况，可以看到 **alpha** 轨道中
 
 .. _SCFConvProblems:
 
-处理自洽场计算的不收敛问题
+Handling Non-Convergence of Self-Consistent Field Calculations
 ------------------------------------------------
-当SCF计算完成后，用户务必检查SCF是否收敛，只有在收敛的前提下才可以使用SCF计算的结果（能量，布居分析，轨道能等）以及进行后续的计算。注意SCF是否收敛不能仅从输出文件末尾有没有报错来判断，因为即便SCF不收敛，程序也不会立刻退出，而只是在SCF迭代的输出之后、SCF能量的输出之前，提示：
+When the SCF calculation is completed, the user must check whether the SCF has converged or not. The user must check the convergence of the SCF and only if it converges can the results of the SCF calculation (energy, Bourget analysis, orbital energy, etc.) be used and subsequent calculations performed. Note that the convergence of the SCF cannot be judged only by the presence or absence of errors at the end of the output file. Because even if the SCF does not converge, 
+the program does not exit immediately, but only after the output of the SCF iterations and before the output of the SCF energy. indicates that
 
 .. code-block::
 
     Warning !!! Total energy not converged!
     
-而即便在这种情况下，程序仍然会在该信息之后打印能量、轨道信息、布居分析结果等，虽然这些结果不能作为正式计算结果使用，但它们对于分析SCF不收敛的原因有一定帮助。
+And even in this case, the program still prints the energy, orbital information, and the results of the booster analysis after this information. Although these results cannot be used as official calculation results, they are useful for analyzing the reasons for the non-convergence of the SCF.
 
-导致SCF不收敛的常见原因包括：
+Common causes of SCF non-convergence include
 
- 1. HOMO-LUMO能隙过小，导致前线轨道的占据情况反复变化。例如两个轨道 :math:`\psi_1` 和 :math:`\psi_2` ，在第N次SCF迭代时 :math:`\psi_1` 为占据轨道， :math:`\psi_2` 为空轨道，然而以这样的轨道占据情况为基础构建Fock矩阵并对角化后，得到的第N+1次SCF迭代的轨道，却是 :math:`\psi_1` 的轨道能较 :math:`\psi_2` 更高，因此电子从 :math:`\psi_1` 轨道转移到 :math:`\psi_2` 轨道。但这样一来，第N+1次SCF迭代的Fock矩阵相比第N次SCF迭代就会发生很大变化，导致在第N+2次SCF迭代时 :math:`\psi_1` 的轨道能较 :math:`\psi_2` 更低，于是轨道占据数又回到了第N次SCF迭代的情形，因而SCF迭代的轨道占据数总是在变化，始终不收敛。这种情况的典型表现为SCF能量交替在两个能量之间振荡（或在一定范围内无规律振荡），振荡幅度在 :math:`10^{-4} \sim 1` Hartree左右，且SCF结束后打印的轨道占据数与预期不符。
- 2. HOMO-LUMO能隙较小，虽然各步迭代的轨道占据数没有变化，但轨道形状反复变化，导致SCF振荡不收敛。这种情况的典型表现与前一条类似，但振荡幅度一般稍小些，且SCF结束后打印的轨道占据数与预期定性相符。
- 3. 数值积分格点过小或者双电子积分精度过低，导致SCF因数值误差而小幅度振荡不收敛。这种情况的典型表现为SCF能量以 :math:`10^{-4}` Hartree以下的幅度无规律振荡，且SCF结束后打印的轨道占据数与预期定性相符。
- 4. 基组接近线性相关，或因为格点太小导致基组在格点上的投影接近线性相关。这种情况的典型表现为SCF能量以1 Hartree以上的幅度变化（不一定是在振荡，也可能是单调或者基本单调的变化），SCF能量远低于预期值，且SCF结束后打印的轨道占据数完全不符合物理实际。当SCF能量较预期值低得非常多时，SCF能量甚至可能不显示为数字，而是显示为一串星号。
+ 1. the HOMO-LUMO energy gap is too small, resulting in repeated changes in the occupation of the frontline orbitals. For example, two orbitals  :math:`\psi_1` and :math:`\psi_2`, at the Nth SCF iteration :math:`\psi_1` is the occupied orbitals and :math:`\psi_2` is the empty orbitals, 
+ however, after constructing the Fock matrix based on such orbital occupancy and diagonalizing it, the orbitals of the N+1th SCF iteration are obtained, but the orbital energy of :math:`\psi_1` is higher than that of :math:`\psi_2`, so the electrons are transferred from :math:`\psi_1` orbitals to :math:`\psi_2` orbitals. But then, the Fock matrix of the N+1th SCF iteration changes a lot compared to the Nth SCF iteration, resulting in a lower orbital energy of :math:`\psi_1` than  :math:`\psi_2` in the N+2nd SCF iteration, so the orbital occupation number returns to the case of the Nth SCF iteration, and thus the orbital occupation number of the SCF iteration always changes and never converges.
+ This situation is typified by the fact that the SCF energy alternately oscillates between two energies (or oscillates irregularly within a certain range) with an oscillation amplitude around :math:`10^{-4} \sim 1` Hartree, and the orbital occupation number printed at the end of the SCF is not as expected.
+ 2. The HOMO-LUMO energy gap is small, and although the orbital occupation number does not change for each step of the iteration, the orbital shape changes repeatedly, leading to non-convergence of the SCF oscillation. The typical performance of this case is similar to the previous one, but the amplitude of the oscillation is generally slightly smaller and the orbital occupation number printed at the end of the SCF is qualitatively consistent with the expectation.
+ 3. The numerical integration grid point is too small or the accuracy of the two-electron integration is too low, resulting in small oscillations of the SCF that do not converge due to numerical errors. This situation is typically characterized by irregular oscillations of the SCF energy with an amplitude below :math:`10^{-4}` Hartree, and the number of orbital occupations printed at the end of the SCF is qualitatively as expected.
+ 4. The basis group is nearly linearly correlated, or the projection of the basis group on the grid is nearly linearly correlated because the grid is too small. This situation is typically characterized by the SCF energy varying by more than 1 Hartree (not necessarily in oscillation, but also monotonically or essentially monotonically), the SCF energy being much lower than expected, and the number of orbit occupancies printed at the end of the SCF being completely unphysically realistic. When the SCF energy is very much lower than expected, the SCF energy may not even be displayed as a number, but as a string of asterisks.
  
 以下是各类SCF不收敛问题的常见解决方法（一定程度上也适用于BDF以外的软件）：
 
- 1. 增加能级移动vshift，适用于第1类和第2类情况，方法为在输入文件的$scf模块里加入：
+ 1. add an energy shift vshift, for both category 1 and category 2 cases, by adding to the $scf module of the input file.
 
 .. code-block:: bdf
 
  vshift
   0.2
 
-如果仍然观察到明显的振荡，则逐渐增加vshift，直到收敛为止。vshift会倾向于让SCF的收敛变得单调，但是vshift设得太大会增加迭代收敛所用的次数，因此在增加vshift的时候可以适当增加maxiter。当vshift增加到1.0仍然无法收敛时，应该考虑其他方法。
+If significant oscillations are still observed, it shall gradually increase vshift until convergence. vshift tends to make the convergence of SCF monotonic, but setting vshift too large increases the number of iterations used to converge, so it is appropriate to increase maxiter when increasing vshift. When vshift increases to 1.0 and still fails to converge, one should Consider other methods.
 
- 2. 增加密度矩阵阻尼damp，适用于第2类情况（对第1类情况也有一点效果），方法为在输入文件的$scf模块里加入：
+ 2. increase the density matrix damping damp for the class 2 case (it also has a slight effect on the class 1 case) by adding to the $scf module of the input file.
  
 .. code-block:: bdf
 
  damp
   0.7
 
-注意damp可以和vshift联用，两者的效果在一定程度上是相互促进的。如果阻尼设为0.7仍然观察到明显的振荡，则在保证阻尼小于1的情况下增大阻尼，例如接下来可以尝试0.9、0.95等。与vshift类似，damp也是倾向于改善SCF收敛的单调性，但damp太大会导致收敛变慢，因此可以增加maxiter。当damp增加到0.99仍然无法收敛时，应该考虑其他方法。
+Note that damp can be used in conjunction with vshift, and the two effects are to some extent mutually reinforcing. If significant oscillations are still observed with damping set to 0.7, increase the damping while ensuring that it is less than 1. For example, next try 0.9, 0.95, etc. Similar to vshift, damp also tends to improve the monotonicity of SCF convergence, but too large a damp leads to slower convergence, so maxiter can be increased. when damp is increased to 0.99 and still fails to converge, other methods should be considered.
 
- 3. 关闭DIIS，适用于第1类和第2类情况，且增加vshift和damp也无法收敛时。DIIS在大多数情况下是会加速SCF收敛的，但当HOMO-LUMO能隙特别小时有可能反倒会减慢甚至阻止收敛，后一种情况下可以在$scf模块里添加NoDIIS关键词关掉DIIS，增加maxiter，并视收敛情况设定vshift和damp。
- 4. 关闭SMH，适用于第1类和第2类情况，且前3种方式都不奏效时，方法是在$scf模块里添加NoSMH关键词，增加maxiter，并视收敛情况设定vshift和damp。我们目前还没有遇到过用SMH不收敛、不用SMH能收敛的情形，但是因为SMH是一种很新的SCF收敛方法，不排除极个别情况下SMH会对收敛有负面影响，因此关闭SMH可以作为一种备选方案。
- 5. 改用FLMO或iOI方法，适用于第1类和第2类情况，分子较大（如大于50个原子），且怀疑SCF不收敛是因为原子初始猜测精度太低或者定性错误所导致时。方法请参见 :ref:`FLMO及iOI方法相关章节<FLMOMethod.rst>` 。
- 6. 先计算一个类似的、较容易收敛的体系，再以该体系的波函数为初猜来收敛原体系，适用于第1类和第2类情况。比如一个中性的二重态过渡金属配合物的SCF计算不收敛，可以计算其闭壳层的一价阳离子，收敛后以一价阳离子的轨道作为初猜来进行中性分子的SCF计算（但注意因为BDF尚不支持读取RHF/RKS波函数作为UHF/UKS计算的初猜，因此此处闭壳层的一价阳离子应当用UHF/UKS计算）。极端情况下甚至可以先计算高价阳离子，然后添加少量（如2个）电子重新收敛SCF，再添加少量电子，如此直至得到原来的中性体系的波函数。另一种常用的手段为先在小基组下进行SCF计算，收敛后利用 :ref:`expandmo模块<expandmo.rst>` 将小基组的SCF轨道投影到原基组上，再在原基组下进行SCF迭代直至收敛。
- 7. 增大格点，适用于第3类情况，有时对第4类情况也有效。方法是用grid关键词，如：
+ 3. turn off DIIS for cases 1 and 2, and when increasing vshift and damp does not converge, DIIS will speed up SCF convergence in most cases, but it may slow down or even prevent convergence when the HOMO-LUMO energy gap is particularly small. In the latter case, you can turn off DIIS by adding the NoDIIS keyword to the $scf module, increase maxiter, and set vshift and damp depending on the convergence.
+ 4. 关闭SMH，适用于第1类和第2类情况，且前3种方式都不奏效时，方法是在$scf模块里添加NoSMH关键词，增加maxiter，并视收敛情况设定vshift和damp。We have not yet encountered a situation where SMH does not converge and does not converge, but since SMH is a very new method for convergence of SCF, turning off SMH can be an alternative. However, since SMH is a very new method for convergence of SCF, we cannot rule out that SMH may have a negative impact on convergence in rare cases, so turning off SMH can be an alternative.
+ 5. Switch to the FLMO or iOI method for cases of type 1 and type 2, where the molecules are large (e.g. larger than 50 atoms) and where it is suspected that the SCF does not converge because the initial guessing accuracy of the atoms is too low or because of qualitative errors. See :ref:`the sections on FLMO and iOI methods <FLMOMethod.rst>` 。
+ 6. Calculate a similar system that converges more easily and then use the wave function of that system as an initial guess to converge the original system, for both type 1 and type 2 cases. For example, if the SCF calculation of a neutral dibasic transition metal complex does not converge, one can calculate the monovalent cation of its closed-shell layer and use the orbitals of the monovalent cation as the first guess for the SCF calculation of the neutral molecule after convergence (but note that since BDF does not yet support reading the RHF/RKS wave function as the first guess for the UHF/UKS calculation, the monovalent cation of the closed-shell layer should be calculated using UHF /UKS calculation). In extreme cases it is even possible to calculate the higher valence cations first, then add a small number (e.g. 2) of electrons to reconverge the SCF, then add a small number of subs, and so on until the original wave function of the neutral system is obtained. 
+    Another common tool is to perform the SCF calculation under the small basis group first, and then use the :ref:`expandmo module <expandmo.rst>` to project the SCF orbitals of the small basis group onto the original basis group after convergence, and then iterate the SCF under the original basis group until convergence. 
+ 7. Increase the grid points, which is applicable to the case of type 3 and sometimes also valid for the case of type 4. This is done by using grid keywords, e.g.
  
 .. code-block:: bdf
 
  grid
   fine
 
-注意：（1）对于meta-GGA泛函，默认的格点已经是fine了，因此此时应当将格点设为ultra fine；（2）增大格点会增加每一步SCF迭代的耗时；（3）增大格点会使得收敛的能量和其他没有改变grid的计算不可比，因此如果要将这个计算和以前做过的计算进行比较，或者将这个计算得到的能量/自由能与其他计算的结果作差等等，则必须把已经做过的所有相关计算用和本输入文件相同的格点重新计算，即便已经做过的那些计算不加大格点也能收敛，也需要这样做。加大格点后若结果没有任何改善，则应该尝试其他方法；如果结果有改善但还是不收敛，可以进一步尝试将fine改为ultra fine；如果仍然不能收敛，应当考虑下面的方法。
+注意：（1）For meta-GGA generalized functions, the default grid point is already fine, so the grid point should be set to ultra fine;
+（2）Increasing the grid point will increase the time spent in each SCF iteration step;
+（3）Increasing the grid point will make the converged energy incomparable with other calculations without changing the grid, so if you want to compare this calculation with previous calculations, or to compare the energy/free energy obtained from this calculation with other calculations, etc., you must recalculate all relevant calculations already done with the same grid point as this input file. Therefore, if you want to compare this calculation with previous calculations, or if you want to compare the energy/free energy obtained from this calculation with the results of other calculations, etc., you must recalculate all the relevant calculations already done with the same grid points as this input file, even if those calculations already done can converge without increasing the grid points.
+If the results do not improve after increasing the grid points, you should try other methods; if the results improve but still do not converge, you can further try to change the fine to ultra fine; if it still does not converge, you should consider the following methods.
 
- 8. 将双电子积分的阈值设严，适用于第3类情况，有时对第4类情况也有效。方法是在SCF模块里添加：
+ 8. The threshold value for the double electron integration is set tightly for the category 3 case and sometimes for the category 4 case as well. This is done by adding to the SCF module.
  
 .. code-block:: bdf
 
  optscreen
   1
 
-该方法和增大格点一样，也会增大每一步SCF迭代的耗时，且也会导致计算结果和不加optscreen的计算结果不可比。该方法仅适用于不开启MPEC或MPEC+COSX的计算。
+This method, like increasing the grid point, also increases the time consumed for each SCF iteration and also leads to results that are not comparable to those without the optscreen. This method is only applicable to calculations without MPEC or MPEC+COSX enabled.
 
- 9. 将判断基组线性相关性的阈值设松，适用于第4类情况。方法是在$scf模块里添加：
+ 9. set the threshold for determining the linear correlation of the base group loose, for the category 4 case. This is done by adding to the $scf module.
  
 .. code-block:: bdf
 
@@ -647,20 +650,20 @@ SCF收敛后再一次打印轨道占据情况，可以看到 **alpha** 轨道中
  tollin
   1.d-6
 
-该方法会导致计算结果和不加这些关键词的计算结果不可比。tollin不建议设得比1.d-5更大，否则会引入较大误差，如果tollin设为1.d-5仍然出现第4类不收敛情况，则应考虑以上所述的增大格点、改变双电子积分阈值等方法。
+This method will make the converged energy incomparable with other calculations without changing the tollin. It is not recommended to set the tollin larger than 1.d-5, otherwise it will lead to larger errors. If the tollin is set to 1.d-5 and still there is a non-convergence of type 4, then the methods described above, such as increasing the grid point and changing the two-electron integration threshold, should be considered.
 
-注意在以上各方法中，如果某种方法虽不能使SCF收敛，但让SCF收敛情况较以前更好了，则尝试下一个方法时应当用
+Note that among the above methods, if a method does not converge the SCF but makes it converge better than before, the next method should be tried with
 
 .. code-block:: bdf
 
  guess
   readmo
 
-读取上一种方法的最后一步SCF迭代的轨道作为初猜。但如果前一种方法反倒导致SCF收敛变差了，则尝试下一个方法时应当重新从原子猜测开始，或者挑选之前尝试过的其他方法的最后一步迭代的轨道作为初猜（当然这要求用户提前把每种SCF收敛方法得到的轨道都进行备份）。
+The orbit of the last SCF iteration of the previous method is read as the first guess. However, if the previous method backfired and caused the SCF convergence to deteriorate, the next method should be tried either by starting again with an atomic guess or by picking the track of the last iteration of the other previously tried method as the first guess (this of course requires the user to back up the tracks obtained for each SCF convergence method in advance).
 
-自洽场计算的加速算法
+Acceleration algorithms for self-consistent field calculations
 ------------------------------------------------
-BDF的一个重要特色是利用 **MPEC+COSX** 方法加速SCF、TDDFT的能量及梯度计算。设置MPEC+COSX计算，输入如下：
+An important feature of the BDF is the acceleration of the energy and gradient calculations of SCF and TDDFT using the **MPEC+COSX** method. Set up the MPEC+COSX calculation with the following inputs.
 
 .. code-block:: bdf
 
@@ -715,7 +718,7 @@ BDF的一个重要特色是利用 **MPEC+COSX** 方法加速SCF、TDDFT的能量
     H       3.37540288537848     0.07856300492440     2.10071295465512
     End geometry
 
-如果在高级输入模式下，只需在COMPASS模块输入中加入关键词 ``MPEC+COSX``，如：
+If in advanced input mode, simply add the keyword ``MPEC+COSX`` to the COMPASS module input, e.g.
 
 .. code-block:: bdf
 
@@ -772,7 +775,7 @@ BDF的一个重要特色是利用 **MPEC+COSX** 方法加速SCF、TDDFT的能量
     MPEC+COSX # ask for the MPEC+COSX method
     $end
 
-在 **SCF** 模块会输出会有关 **MPEC+COSX** 是否都被设置为 True 的提示：
+The **SCF** module will output a prompt about whether **MPEC+COSX** are both set to True.
 
 .. code-block:: bdf
 
@@ -791,7 +794,7 @@ BDF的一个重要特色是利用 **MPEC+COSX** 方法加速SCF、TDDFT的能量
     IfMPEC= T
     IfCOSX= T
 
-这里， ``IfMPEC= T`` , 且 ``IfCOSX= T`` 说明 **MPEC+COSX** 方法被用于计算。SCF迭代过程如下：
+Here, ``IfMPEC= T`` and ``IfCOSX= T`` indicates that the **MPEC+COSX** method is used to compute. the SCF iterative process is as follows.
 
 .. code-block:: bdf
 
@@ -832,4 +835,4 @@ BDF的一个重要特色是利用 **MPEC+COSX** 方法加速SCF、TDDFT的能量
        E_xc  =                 0.00000000
       Virial Theorem      2.001208
 
-在CPU为i9-9900K的台式机上，8个OpenMP线程并行计算耗时22秒。相同条件下SCF计算不用MPEC+COSX方法加速，计算耗时110秒， **MPEC+COSX** 大约加速了 **5** 倍。
+On a desktop with an i9-9900K CPU, eight OpenMP threads compute in parallel in 22 seconds. The SCF calculation under the same conditions without MPEC+COSX method, the computation takes 110 seconds, and **MPEC+COSX** speeds up the computation by a factor of about **5**.
