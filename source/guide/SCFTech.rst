@@ -126,10 +126,9 @@ In the second step, the convergence orbit of the :math:`\ce{H2O}` molecule is us
     %cp $BDF_WORKDIR/h2o.scforb $BDF_TMPDIR/${BDFTASK}.inporb
 
 
-这里，使用了关键词 ``guess=readmo`` ，指定要读入初始猜测轨道。初始猜测轨道是用 ``%`` 引导的拷贝命令从
-环境变量 ``BDF_WORKDIR`` 定义的文件夹中的h2o.scforb文件复制为 ``BDF_TMPDIR`` 中的 ``${BDFTASK}.inporb`` 文件。
-这里， ``BDF_WORKDIR`` 是执行计算任务的目录， ``BDF_TMPDIR`` 是BDF存储临时文件的目录。
-
+Here, key word ``guess=readmo`` is used to assign the initial guess orbital to be read. Initial guess orbital is copied by using ``%`` guided copy command from h2o.scforb in
+environmental variable ``BDF_WORKDIR`` defined file to ``${BDFTASK}.inporb`` file in ``BDF_TMPDIR``.
+Here， ``BDF_WORKDIR`` is the directory of executing tasks, ``BDF_TMPDIR`` is directory to store temporary files in BDF.
 
 Extending small basis group convergence orbits to large basis group initial guesses
 ------------------------------------------------
@@ -439,7 +438,10 @@ It can be seen that the first SCF calculation uses the atom guess and the energy
       0.00
    Alpha      10.00    2.00
 
-Here, the 10th alpha orbital of the ``A'``integrable representation is the occupied orbital and the 11th orbital is the empty orbital. The second SCF calculation reads in the converged orbitals of the first SCF and does the SCF calculation using the mom method, where the input asks to excite the electrons of the 10th orbital represented by ``A'`` to the 11th orbital. The output file first suggests that the molecular orbitals were read in and gives the occupation
+Here, the 10th alpha orbital of the ``A'`` integrable representation is the occupied orbital and the 11th orbital is the empty orbital. 
+The second SCF calculation reads in the converged orbitals of the first SCF and does the SCF calculation using the mom method, 
+where the input asks to excite the electrons of the 10th orbital represented by ``A'`` to the 11th orbital. 
+The output file first suggests that the molecular orbitals were read in and gives the occupation
 
 .. code-block:: 
 
@@ -596,7 +598,7 @@ Common causes of SCF non-convergence include
  3. The numerical integration grid point is too small or the accuracy of the two-electron integration is too low, resulting in small oscillations of the SCF that do not converge due to numerical errors. This situation is typically characterized by irregular oscillations of the SCF energy with an amplitude below :math:`10^{-4}` Hartree, and the number of orbital occupations printed at the end of the SCF is qualitatively as expected.
  4. The basis group is nearly linearly correlated, or the projection of the basis group on the grid is nearly linearly correlated because the grid is too small. This situation is typically characterized by the SCF energy varying by more than 1 Hartree (not necessarily in oscillation, but also monotonically or essentially monotonically), the SCF energy being much lower than expected, and the number of orbit occupancies printed at the end of the SCF being completely unphysically realistic. When the SCF energy is very much lower than expected, the SCF energy may not even be displayed as a number, but as a string of asterisks.
  
-以下是各类SCF不收敛问题的常见解决方法（一定程度上也适用于BDF以外的软件）：
+The following part is the common solvation to various kinds of SCF convergence failure（also applied to programs other than BDF）：
 
  1. add an energy shift vshift, for both category 1 and category 2 cases, by adding to the $scf module of the input file.
 
@@ -617,7 +619,7 @@ If significant oscillations are still observed, it shall gradually increase vshi
 Note that damp can be used in conjunction with vshift, and the two effects are to some extent mutually reinforcing. If significant oscillations are still observed with damping set to 0.7, increase the damping while ensuring that it is less than 1. For example, next try 0.9, 0.95, etc. Similar to vshift, damp also tends to improve the monotonicity of SCF convergence, but too large a damp leads to slower convergence, so maxiter can be increased. when damp is increased to 0.99 and still fails to converge, other methods should be considered.
 
  3. turn off DIIS for cases 1 and 2, and when increasing vshift and damp does not converge, DIIS will speed up SCF convergence in most cases, but it may slow down or even prevent convergence when the HOMO-LUMO energy gap is particularly small. In the latter case, you can turn off DIIS by adding the NoDIIS keyword to the $scf module, increase maxiter, and set vshift and damp depending on the convergence.
- 4. 关闭SMH，适用于第1类和第2类情况，且前3种方式都不奏效时，方法是在$scf模块里添加NoSMH关键词，增加maxiter，并视收敛情况设定vshift和damp。We have not yet encountered a situation where SMH does not converge and does not converge, but since SMH is a very new method for convergence of SCF, turning off SMH can be an alternative. However, since SMH is a very new method for convergence of SCF, we cannot rule out that SMH may have a negative impact on convergence in rare cases, so turning off SMH can be an alternative.
+ 4. Turn off SMH，applied to the 1 and 2 situation and the above three solvation failed to converge. The solvation is to add NoSMH key word in $scf module, increase maxiter, and set vshift and damp depending on the convergence. We have not yet encountered a situation where SMH does not converge and does not converge, but since SMH is a very new method for convergence of SCF, turning off SMH can be an alternative. However, since SMH is a very new method for convergence of SCF, we cannot rule out that SMH may have a negative impact on convergence in rare cases, so turning off SMH can be an alternative.
  5. Switch to the FLMO or iOI method for cases of type 1 and type 2, where the molecules are large (e.g. larger than 50 atoms) and where it is suspected that the SCF does not converge because the initial guessing accuracy of the atoms is too low or because of qualitative errors. See :ref:`the sections on FLMO and iOI methods <FLMOMethod.rst>` 。
  6. Calculate a similar system that converges more easily and then use the wave function of that system as an initial guess to converge the original system, for both type 1 and type 2 cases. For example, if the SCF calculation of a neutral dibasic transition metal complex does not converge, one can calculate the monovalent cation of its closed-shell layer and use the orbitals of the monovalent cation as the first guess for the SCF calculation of the neutral molecule after convergence (but note that since BDF does not yet support reading the RHF/RKS wave function as the first guess for the UHF/UKS calculation, the monovalent cation of the closed-shell layer should be calculated using UHF /UKS calculation). In extreme cases it is even possible to calculate the higher valence cations first, then add a small number (e.g. 2) of electrons to reconverge the SCF, then add a small number of subs, and so on until the original wave function of the neutral system is obtained. 
     Another common tool is to perform the SCF calculation under the small basis group first, and then use the :ref:`expandmo module <expandmo.rst>` to project the SCF orbitals of the small basis group onto the original basis group after convergence, and then iterate the SCF under the original basis group until convergence. 
@@ -628,7 +630,7 @@ Note that damp can be used in conjunction with vshift, and the two effects are t
  grid
   fine
 
-注意：（1）For meta-GGA generalized functions, the default grid point is already fine, so the grid point should be set to ultra fine;
+Note：（1）For meta-GGA generalized functions, the default grid point is already fine, so the grid point should be set to ultra fine;
 （2）Increasing the grid point will increase the time spent in each SCF iteration step;
 （3）Increasing the grid point will make the converged energy incomparable with other calculations without changing the grid, so if you want to compare this calculation with previous calculations, or to compare the energy/free energy obtained from this calculation with other calculations, etc., you must recalculate all relevant calculations already done with the same grid point as this input file. Therefore, if you want to compare this calculation with previous calculations, or if you want to compare the energy/free energy obtained from this calculation with the results of other calculations, etc., you must recalculate all the relevant calculations already done with the same grid points as this input file, even if those calculations already done can converge without increasing the grid points.
 If the results do not improve after increasing the grid points, you should try other methods; if the results improve but still do not converge, you can further try to change the fine to ultra fine; if it still does not converge, you should consider the following methods.

@@ -384,7 +384,7 @@ Example: M062X calculation of :math:`\ce{H2O}` molecule. This generalized functi
      ultra fine
     $end
 
-BThe BDF uses ``Ultra coarse`` integration lattice points at the beginning steps of the Kohn-Sham calculation, as shown below.
+The BDF uses ``Ultra coarse`` integration lattice points at the beginning steps of the Kohn-Sham calculation, as shown below.
 
 .. code-block:: 
 
