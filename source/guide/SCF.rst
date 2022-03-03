@@ -1,18 +1,18 @@
-自洽场方法：Hartree-Fock和Kohn-Sham
+Self-consistent field methods: Hartree-Fock and Kohn-Sham
 ===========================================
 
-BDF的自洽场包括Hartree-Fock和Kohn-Sham方法。
+The self-consistent fields of the BDF include the Hartree-Fock and Kohn-Sham methods.
 
-限制性Hartree-Fock方法
+Restricted Hartree-Fock Method
 -----------------------------------------------------------------
 
-限制性Hatree-Fock方法(RHF)的示例已在 :ref:`第一个算例一节<FirstExample>` 提及，这里不再赘述。
+An example of the Restricted Hartree-Fock method (RHF) was mentioned in the :ref:`first example section <FirstExample>` and will not be repeated here.
 
-非限制性Hartree-Fock方法
+Unrestricted Hartree-Fock method
 -----------------------------------------------------------------
 
-对于有不成对电子的体系，需要用 ``UHF`` 方法，此外也可以用限制性开壳层Hartree-Fock （restricted open-shell Hartree-Fock）方法，见后。
-对于奇数电子体系，BDF默认自旋多重度为2，且利用UHF计算。例如计算 :math:`\ce{C3H5}` 分子，
+For systems with unpaired electrons, the ``UHF`` method is required, and the restricted open-shell Hartree-Fock (RHF) method can also be used, see later. 
+For odd-electron systems, the BDF defaults to a spin multiplet of 2 and uses the UHF calculation. For example, to calculate the :math:`\ce{C3H5}` molecule，
 
 .. code-block:: bdf
 
@@ -30,7 +30,7 @@ BDF的自洽场包括Hartree-Fock和Kohn-Sham方法。
     H                 -0.79835551    0.09653770    2.15071009
     end geometry
 
-UHF计算输出和RHF类似，从 ``scf`` 模块输出可以检查电荷和自旋多重度是否正确，
+The output of the UHF calculation is similar to that of the RHF, in that the output from the ``scf`` module can be checked for correct charge and spin multiplicity.
 
 .. code-block:: 
 
@@ -42,7 +42,7 @@ UHF计算输出和RHF类似，从 ``scf`` 模块输出可以检查电荷和自�
     Num. of alpha electrons :      12
     Num. of beta  electrons :      11
 
-轨道占据情况按 ``Alpha`` 和 ``Beta`` 轨道分别给出，
+The orbital occupancy is given separately for ``Alpha`` and ``Beta`` orbitals.
 
 .. code-block:: 
 
@@ -64,7 +64,7 @@ UHF计算输出和RHF类似，从 ``scf`` 模块输出可以检查电荷和自�
         0.00 0.00 0.00 0.00 0.00 0.00 0.00
      Beta       11.00
     
-轨道能， ``HOMO-LUMO gap`` 也按照 ``Alpha`` 和 ``Beta`` 轨道分开打印
+The orbital energy, ``HOMO-LUMO gap`` is also printed separately according to ``Alpha`` and ``Beta`` orbits.
 
 .. code-block:: 
 
@@ -100,12 +100,12 @@ UHF计算输出和RHF类似，从 ``scf`` 模块输出可以检查电荷和自�
     Beta    LUMO energy:       0.15755278 au       4.28723115 eV  Irrep: A       
     HOMO-LUMO gap:       0.46232325 au      12.58046111 eV
 
-其他输出信息可参见RHF计算的例子，这里不再冗述。
+Other output information can be found in the example of RHF calculation and will not be described in detail here.
 
-限制性开壳层Hartree-Fock方法
+Restricted open-shell Hartree-Fock method
 ------------------------------------------------------------------------------------------
 
-限制性开壳层Hartree-Fock（Restricted open-shell Hartree-Fock - ROHF）也可以计算开壳层分子体系。这里给出一个 :math:`\ce{CH2}` 三重态的ROHF算例，
+Restricted open-shell Hartree-Fock（Restricted open-shell Hartree-Fock - ROHF）can also be calculated for the open-shell molecular system. An example of ROHF calculation for the :math:`\ce{CH2}` triplet state is given here.
 
 .. code-block:: bdf
 
@@ -118,8 +118,7 @@ UHF计算输出和RHF类似，从 ``scf`` 模块输出可以检查电荷和自�
      H     0.000000        1.65723       -0.94197
     end geometry
 
-这里，在第二行指定使用 ``ROHF`` 方法，且利用关键词 ``spinmulti=3`` 设定计算三重态。ROHF的输出和UHF类似，
-但其 ``Alpha`` 轨道和 ``Beta`` 是一样的，所以相对应的 ``Alpha`` 和 ``Beta`` 轨道能量相等，如下所示：
+Here, the ``ROHF`` is specified in the second line and the triplet state is calculated using the keyword ``spinmulti=3``。The output of ROHF is similar to that of The output of ROHF is similar to UHF, but its ``Alpha`` orbitals are the same as ``Beta`` so the corresponding ``Alpha`` 和 ``Beta`` orbitals are equal in energy, as follows.
 
 .. code-block:: 
 
@@ -161,8 +160,7 @@ UHF计算输出和RHF类似，从 ``scf`` 模块输出可以检查电荷和自�
     Energy of vir-orbsB:    B2            4
        -0.16343739     0.65138659      1.35768658      1.54657952
                  
-由于 ``Alpha`` 与 ``Beta`` 轨道的占据数不同， ``Alpha`` 的HOMO、LUMO轨道、轨道能与 ``Beta`` 的不同，如下：
-
+Due to the different occupation numbers of ``Alpha`` and ``Beta`` orbitals, the HOMO, LUMO orbitals, and orbital energies of ``Alpha`` iffer from those of ``Beta``, as follows.
 .. code-block:: 
 
     Alpha   HOMO energy:      -0.16343739 au      -4.44735961 eV  Irrep: B2      
@@ -172,9 +170,9 @@ UHF计算输出和RHF类似，从 ``scf`` 模块输出可以检查电荷和自�
     HOMO-LUMO gap:      -0.06306010 au      -1.71595329 eV
 
 
-RKS，UKS，和ROKS计算
+RKS, UKS, and ROKS Calculations
 -------------------------------------------------
-对于限制性Kohn-Sham（Restricted Kohn-Sham, RKS）方法，这里以简洁输入的模式给出一个 :math:`\ce{H2O}`  分子的RKS计算算例，使用了B3lyp泛函。
+For the Restricted Kohn-Sham (RKS) method, an example of the RKS calculation for an :math:`\ce{H2O}` molecule is given here in a concise input mode, using the B3lyp generalized function.
 
 .. code-block:: bdf
 
@@ -189,7 +187,7 @@ RKS，UKS，和ROKS计算
   R1=1.0     # OH bond length, unit is Angstrom
   end geometry
 
-这个输入对应的高级模式的输入为
+The corresponding advanced mode input is: 
 
 .. code-block:: bdf
 
@@ -212,7 +210,7 @@ RKS，UKS，和ROKS计算
       b3lyp
     $end
 
-这里，输入要求使用 ``B3lyp`` 泛函。相比于Hartree-Fock，输出多了Exc项的贡献，如下所示：
+Here, the input requires the use of the ``B3lyp`` generic function. Compared to Hartree-Fock, the output has an additional contribution from the Exc term, as follows.
 
 .. code-block:: 
 
@@ -227,7 +225,7 @@ RKS，UKS，和ROKS计算
      E_xc  =                -7.50177140
     Virial Theorem      2.006909
 
-:math:`\ce{H2O+}` 离子的ROKS计算，简洁输入如下，
+The ROKS calculation for the :math:`\ce{H2O+}` ion is succinctly entered as follows.
 
 .. code-block:: bdf
 
@@ -243,21 +241,21 @@ RKS，UKS，和ROKS计算
     end geometry
 
 .. hint::
-    相比于Hartree-Fock，Kohn-Sham需要在高级输入使用dft关键词指定交换相关泛函。如果是简洁输入，只需指定交换相关泛函和基组。系统会根据自旋态选择使用RKS或UKS，如果要使用ROKS，必须明确输入。
+    In contrast to Hartree-Fock，Kohn-Sham requires the use of the dft keyword in advanced input to specify the exchange-related generic function. For concise input, only the exchange-dependent generic function and basis group need to be specified. The system will choose to use RKS or UKS depending on the spin state, and must be entered explicitly if ROKS is to be used. 
 
 
-基于RS杂化泛函的Kohn-Sham计算
+Kohn-Sham calculations based on RS heterogeneous generalizations
 -------------------------------------------------
 
-CAM-B3LYP等RS杂化泛函，将库伦相互作用分为长短程，
+CAM-B3LYP and other RS hybridization generalization functions, dividing the Coulomb interaction into long and short ranges, the
 
 .. math::
 
     \frac{1}{r_{12}} = \frac{1-[\alpha + \beta \cdot erf(\mu r_{12})]}{r_{12}}+\frac{\alpha + \beta \cdot erf(\mu r_{12})}{r_{12}}
 
-采用BDF高级输入时，可以通过xuanyuan模块中的关键词RS，调整 :math:`\mu` 参数。CAM-B3lyp默认的 :math:`\mu` 参数为0.33，
-其它范围分离泛函中的 :math:`\mu` 值见 :ref:`RSOMEGA<xuanyuan_rsomega>` 关键词。
-例如 1,3-Butadiene 分子，利用CAM-B3lyp的RKS高级模式输入为，
+When using the BDF advanced input, the :math:`\mu` parameter can be adjusted using the keyword RS in the xuanyuan module. the default :math:`\mu` parameter for CAM-B3lyp is 0.33.
+other :math:`\mu` values in RS Hybrid GGA see :ref:`RSOMEGA<xuanyuan_rsomega>` keyword。
+for example, for 1,3-Butadiene molecules, the RKS advanced mode input using CAM-B3lyp is.
 
 .. code-block:: bdf
 
@@ -290,11 +288,10 @@ CAM-B3LYP等RS杂化泛函，将库伦相互作用分为长短程，
    $end
 
 
-自定义杂化泛函、双杂化泛函的精确交换项和相关项成分
+Exact exchange term and correlation term components for custom heterogeneous generalized functions, double heterogeneous generalized functions
 -----------------------------------------------------------
 
-对于某些计算，可能需要用户手动调节泛函的精确交换项成分，才能获得满意的精度。此时可在 ``$scf`` 模块里加入 ``facex`` 关键词，例如若要将B3LYP泛函的精确交换项成分由默认的20%改为15%，可以写
-
+For some calculations, it may be necessary for the user to manually adjust the exact exchange term components of the generic function to obtain satisfactory accuracy. In this case, you can add the ``facex`` keyword to the ``$scf`` module, for example, to change the exact exchange term component of the B3LYP generic function from the default 20% to 15%, you can write
 .. code-block:: bdf
 
    $scf
@@ -305,12 +302,11 @@ CAM-B3LYP等RS杂化泛函，将库伦相互作用分为长短程，
     0.15
    $end
 
-类似地，可以用 ``facco`` 关键词自定义双杂化泛函的MP2相关项成分。注意并不是所有泛函都支持自定义facex和facco（参见 :ref:`SCF模块的关键词列表<scf>` ）。
+Similarly, it is possible to customize the MP2-related term components of a two-hybrid generic function with the ``facco`` keyword. Note that not all generic functions support custom facex and facco（see :ref:`the SCF module for a list of keywords <scf>` ）。
 
-对弱相互作用的色散矫正
+Dispersion correction for weak interactions
 -------------------------------------------------
-常见的交换相关泛函如B3lyp不能很好地描述弱相互作用，需要在计算能量或者做分子结构优化时，加入色散矫正。BDF采用了Stefan Grimme开发的
-D3色散矫正方法，需要在SCF模块的输入中指定D3关键词，输入如下，
+Common exchange-correlation general functions such as B3lyp do not describe weak interactions well and require dispersion correction when calculating energy or doing molecular structure optimization. BDF uses the D3 dispersion correction method developed by Stefan Grimme, which requires specifying the D3 keyword in the input to the SCF module, as follows
 
 .. code-block:: bdf
 
@@ -331,10 +327,10 @@ D3色散矫正方法，需要在SCF模块的输入中指定D3关键词，输入�
 
 .. tip::
 
-    * 这里使用了BDF混合模式的输入方式，在简洁输入基础上，通过添加SCF模块关键词精确控制SCF计算。
+    * The BDF mixed-mode input method is used here to precisely control the SCF calculation by adding the SCF module keyword on top of the simple input.
 
 
-在Kohn-Sham计算结束后加入色散矫正，计算输出如下，
+The dispersion correction is added at the end of the Kohn-Sham calculation, and the calculated output is as follows.
 
 .. code-block:: 
 
@@ -359,17 +355,16 @@ D3色散矫正方法，需要在SCF模块的输入中指定D3关键词，输入�
       E_xc  =                -7.50940464
      Virial Theorem      2.006140
 
-这里的总能量 ``E_tot`` 包含了色散矫正能， ``E_disp = -0.00057364`` 。
+Here the total energy ``E_tot`` includes the dispersion correction energy, ``E_disp = -0.00057364`` 。
 
 
-提高Kohn-Sham计算的积分格点精度
+Improving the accuracy of integration lattice points for Kohn-Sham calculations
 -------------------------------------------------
 
-虽然BDF对不同的泛函按照精度要求定义了默认积分格点（例如Meta-GGA类泛函对积分格点要求很高，BDF默认使用Fine格点），
-用户可能还希望对积分格点进行调节。Kohn-Sham泛函的积分格点可以在SCF模块的输入中通过Grid关键词定义，Grid的有效值为 ``Ultra coarse`` ，
-``Coarse`` ， ``medium`` ， ``fine`` ， ``Ultra fine`` ， ``sg1`` 等6个，从 ``Ultra coarse`` 到 ``sg1`` 积分格点依次增加，数值积分精度依次提高。
+Although the BDF defines default integration grid points for different general functions according to their accuracy requirements (e.g., the Meta-GGA class of general functions requires high integration grid points, and the BDF defaults to Fine grid points), 
+the user may also wish to adjust the integration grid points. The valid values of the Grid are ``Ultra coarse`` ，``Coarse`` ， ``medium`` ， ``fine`` ， ``Ultra fine`` ， ``sg1`` etc. From ``Ultra coarse`` to ``sg1``, the number of integration points increases and the numerical integration accuracy increases.
 
-示例： :math:`\ce{H2O}` 分子的M062X计算。该泛函属于杂化Meta-GGA类型泛函，要求密集的积分格点，因此输入用到了高级输入和简洁输入混合模式，如下所示：
+Example: M062X calculation of :math:`\ce{H2O}` molecule. This generalized function is a heterogeneous Meta-GGA type generalized function, which requires a dense integration grid, so the input uses a mixture of advanced input and simple input, as shown below.
 
 .. code-block:: bdf
 
@@ -389,7 +384,7 @@ D3色散矫正方法，需要在SCF模块的输入中指定D3关键词，输入�
      ultra fine
     $end
 
-BDF在Kohn-Sham计算的开始几步采用 ``Ultra coarse`` 积分格点，如下所示，
+BThe BDF uses ``Ultra coarse`` integration lattice points at the beginning steps of the Kohn-Sham calculation, as shown below.
 
 .. code-block:: 
 
@@ -424,7 +419,7 @@ BDF在Kohn-Sham计算的开始几步采用 ``Ultra coarse`` 积分格点，如�
      Numerical Grid Generated SUCCESSFULLY! 
     Total and symmetry independent Grid Number:      4352      1181
 
-当能量收敛到0.01 Hartree之内时，会切换到 ``Ultra fine`` 积分格点，输出如下所示：
+When the energy converges to within 0.01 Hartree, it switches to the ``Ultra fine`` integration grid point and the output is shown below.
 
 .. code-block:: 
 
@@ -459,5 +454,5 @@ BDF在Kohn-Sham计算的开始几步采用 ``Ultra coarse`` 积分格点，如�
       Numerical Grid Generated SUCCESSFULLY! 
      Total and symmetry independent Grid Number:     94208     24827
 
-这里，H和O原子的积分格点都为100*1202，其中，100是径向格点的数目，1202是角向格点的数目。
+Here, the integration lattice points of both H and O atoms are 100*1202, where 100 is the number of radial lattice points and 1202 is the number of angular lattice points.
 
