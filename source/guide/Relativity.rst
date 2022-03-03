@@ -1,33 +1,29 @@
 
 .. _relativity:
 
-相对论效应
+Relativistic effects
 ================================================
-相对论效应主要包括标量相对论效应和旋轨耦合作用两部分。
-相对论效应在有机发光机理研究十分重要，例如旋轨耦合作用导致电子态发生系间窜跃，以及过渡态、产物的自旋发生改变。
-原子最内层的芯电子一方面受相对论效应的影响最强，另一方面对化学变化不敏感，因此有不同的处理方式，主要有全电子相对论和有效芯势（ECP）两类方法。
+The relativistic effect mainly includes two parts: scalar relativistic effect and spin-orbit coupling effect. Relativistic effects are important in the study of organic light-emitting mechanisms, such as inter-system scattering of electronic states due to spin-track coupling, and changes in the spin of transition states and products. The innermost core electrons of the atom are most strongly affected by relativistic effects on the one hand, and insensitive to chemical changes on the other hand, so there are different ways to deal with them, mainly all-electron relativistic and effective core potential (ECP) two types of methods.
 
-1. **全电子方法** 所有的内层电子均做变分处理。常见的全电子相对论哈密顿量有：零阶正则近似（ZORA），二阶Douglas-Kroll-Hess（DKH2），
-刘文剑等人提出的精确二分量（X2C），等。ZORA和DKH2在精度和效率上没有优势，不建议使用。
+1. **All-electron methods** all the inner layer electrons are made variational treatment. The common all-electron relativistic Hamiltonians are: the zero-order regular approximation (ZORA), the second-order Douglas-Kroll-Hess (DKH2), the exact dichotomy (X2C) proposed by Wenjian Liu et al. ZORA and DKH2 have no advantages in terms of accuracy and efficiency and are not recommended.
 
-2. **ECP** 重原子的芯层电子用事先拟合好的有效势函数替代。当重原子较多的情况下，ECP能够大幅降低变分自由度，提高计算效率。根据价电子波函数在芯层有无节点，
-ECP又分为赝势（PP）和模型芯势（MCP）两大类，其中MCP为了正确地重现价电子波函数节点，必须结合大量的高斯函数，导致计算效率的提升不明显，因此应用较少。
-BDF程序中的ECP均指PP。
+2. The core electrons of **ECP** heavy atoms are replaced by a pre-fitted effective potential function. When there are more heavy atoms, ECP can significantly reduce the variational degrees of freedom and improve the computational efficiency. The ECP is divided into two categories, pseudopotential (PP) and model core potential (MCP), depending on whether the valence electron wave function has nodes in the core layer or not, where MCP has to combine a large number of Gaussian functions in order to reproduce the valence electron wave function nodes correctly, leading to an insignificant improvement in computational efficiency, and is therefore less used.ECP in BDF programs refers to PP.
 
-BDF基组库提供大量的 :ref:`全电子相对论基组<all-e-bas>` 和 :ref:`ECP基组<ecp-bas>` 。
+The BDF basis set library provides a large number of :ref:` all-electron relativistic basis sets<all-e-bas>` and :ref:`ECP basis sets<ecp-bas>` .
+
 
 .. warning::
 
-    1. X2C哈密顿与ECP基组不要混用
-    2. X2C相对论计算必须采用非收缩基组或专门优化的收缩基组，但前18号元素不强求
+    1. Do not mix X2C Hamiltonian and ECP basis sets
+    2. X2C relativistic calculations must use non-shrinking basis sets or specially optimized shrinking basis sets, but the first 18 elements are not mandatory.
 
 
-标量相对论效应
+Scalar relativistic effects
 ------------------------------------------------
 
-* **全电子方法**
+* **All-electron methods**
 
-BDF可以通过无自旋X2C哈密顿（sf-X2C）及其局域近似变体sf-X2C-AXR、sf-X2C-AU，考虑标量相对论效应。例如：
+The BDF can consider scalar relativistic effects through the spinless X2C Hamiltonian (sf-X2C) and its local approximation variants sf-X2C-AXR, sf-X2C-AU. For example：
 
 .. code-block:: bdf
 
@@ -41,6 +37,13 @@ BDF可以通过无自旋X2C哈密顿（sf-X2C）及其局域近似变体sf-X2C-A
 在以上输入中， ``heff`` 调用标量相对论哈密顿，如sf-X2C（3，4，或21），sf-X2C-AXR（原子X矩阵近似，22），
 sf-X2C-AU（原子U变换近似，23），其中21，22，23具有解析导数。
 对于不涉及5d以上重元素—重元素成键的分子体系，sf-X2C-AU具有最高的效率且不损失精度，是推荐方法。否则用sf-X2C-AXR或sf-X2C。
+
+In the above input, ``heff`` calls scalar relativistic Hamiltonians such as sf-X2C (3,
+4, or 21), sf-X2C-AXR (atomic X-matrix approximation, 22), and sf-X2C-AU (atomic
+U-transformation approximation, 23), where 21, 22, 23 have analytic derivatives.
+For molecular systems not involving heavy element-heavy element bonding above 5d,
+sf-X2C-AU has the highest efficiency without loss of precision and is the
+recommended method. Otherwise, sf-X2C-AXR or sf-X2C is used.
 
 .. _finite-nuclear:
 
