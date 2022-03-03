@@ -8,18 +8,18 @@ Specify the expansion of molecular orbitals using the overlapping integrals of t
 
 The Expandmo module dependency file is as follows：
 
-+------------------+--------------------------+----------+----------+
-| filename           | description                     | file format |          |
-+------------------+--------------------------+----------+----------+
-| $BDFTASK.chkfil1 | The check file for the small basis set calculation    | Binary   | input file |
-+------------------+--------------------------+----------+----------+
-| $BDFTASK.chkfil2 | The check file for the big basis set calculation    | Binary   | input file |
-+------------------+--------------------------+----------+----------+
-| inporb           | The MO file produced by the small basis set calculation   | text file | input file |
-+------------------+--------------------------+----------+----------+
-| $BDFTASK.exporb  | The extended MO coefficient file is stored in | text file | input file |
-|                  | BDF_WORKDDIR中           |          |          |
-+------------------+--------------------------+----------+----------+
++--------------------+---------------------------------------------------------+-------------+----- -----+
+| filename           | description                                             | file format |           |
++--------------------+---------------------------------------------------------+-------------+-----------+
+| $BDFTASK.chkfil1   | The check file for the small basis set calculation      | Binary      | input file|
++--------------------+---------------------------------------------------------+-------------+-----------+
+| $BDFTASK.chkfil2   | The check file for the big basis set calculation        | Binary      | input file|
++--------------------+---------------------------------------------------------+-------------+-----------+
+| inporb             | The MO file produced by the small basis set calculation | text file   | input file|
++--------------------+---------------------------------------------------------+-------------+-----------+
+| $BDFTASK.exporb    | The extended MO coefficient file is stored in           | text file   | input file|
+|                    | BDF_WORKDDIR中                                          |             |           |
++--------------------+---------------------------------------------------------+-------------+-----------+
 
 .. code-block:: bdf
 
