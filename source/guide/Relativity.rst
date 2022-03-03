@@ -34,9 +34,6 @@ The BDF can consider scalar relativistic effects through the spinless X2C Hamilt
     1
   $end
 
-在以上输入中， ``heff`` 调用标量相对论哈密顿，如sf-X2C（3，4，或21），sf-X2C-AXR（原子X矩阵近似，22），
-sf-X2C-AU（原子U变换近似，23），其中21，22，23具有解析导数。
-对于不涉及5d以上重元素—重元素成键的分子体系，sf-X2C-AU具有最高的效率且不损失精度，是推荐方法。否则用sf-X2C-AXR或sf-X2C。
 
 In the above input, ``heff`` calls scalar relativistic Hamiltonians such as sf-X2C (3, 4, or 21), sf-X2C-AXR (atomic X-matrix approximation, 22), and sf-X2C-AU (atomic
 U-transformation approximation, 23), where 21, 22, 23 have analytic derivatives. For molecular systems not involving heavy element-heavy element bonding above 5d,
@@ -75,9 +72,11 @@ core-layer orbital properties.
 
 It includes two treatments：
 
-1. the spin-orbit coupling pseudopotential, which requires the addition of an additional SO potential function to the scalar ECP (SOECP; see the :ref:`spin-orbit coupling pseudopotential basis set<soecp-bas>`  in the basis set library)
-2. 有效核电荷 :cite:`zeff1995,zeff1998` 。
+1. the spin-orbit coupling pseudopotential, which requires the addition of an additional SO potential function to the scalar ECP (SOECP; see the :ref:`spin-orbit coupling pseudopotential basis set<soecp-bas>` in the basis set library)
+2. the effective nuclear charge :cite:`zeff1995,zeff1998` 。
 
+Since the effect of the two-electron spin-orbit interaction is already included in the fitting parameters of the SO potential or in the empirical parameters of the effective nuclear charge,
+it is sufficient to calculate the single-electron spin-orbit integral in the xuanyuan module (so1e; hsoc = 0).
 由于双电子自旋轨道相互作用的影响已经包含在SO势的拟合参数或有效核电荷的经验参数中，只要计算单电子自旋轨道积分即可。
 在BDF中可以对SOECP描述的原子以及标量ECP或全电子非相对论描述的原子分别使用这两种处理方法，
 只需要在 :ref:`xuanyuan<xuanyuan>` 模块中设定 ``hsoc`` 为10。
