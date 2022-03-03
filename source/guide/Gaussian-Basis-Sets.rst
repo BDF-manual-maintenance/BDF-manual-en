@@ -256,7 +256,7 @@ Accordingly, a finite nucleus model must also be used in the calculation of mole
     +                        +-----------------------------+----------------------------------------+------------------------+
     |                        | | ANO-RCC-VTZ               | 3- 20, 31- 38                          | relativistic effect     |
     +------------------------+-----------------------------+----------------------------------------+------------------------+
-    | Ahlrichs               | | Def2系列                  | 全电子非相对论基组与赝势基组的混合，see :ref:`pseudopotential basis set <ecp-bas>` |
+    | Ahlrichs               | | Def2 series               | mix of all electron non-relativitistic basis set and pseudopotential basis set, see :ref:`pseudopotential basis set <ecp-bas>` |
     +                        +-----------------------------+----------------------------------------+------------------------+
     |                        | | jorge-DZP                 | | D: 1-103                             |                        |
     |                        | | jorge-TZP                 | | T: 1-103                             |                        |
@@ -376,9 +376,9 @@ The pseudopotential basis groups are divided into scalar pseudopotential basis g
     :class: longtable
 
     +------------------------+-----------------------------+----------------------------------------+------------------------+
-    | 基组类型               | 基组名称                    | 支持的元素                             | 备注                   |
+    | Basis set type         | Basis set name              | Supported element                      | Remark                 |
     +========================+=============================+========================================+========================+
-    | 关联一致               | | aug-cc-pVDZ-PP            | 29- 36, 39- 54, 72- 86                 | SOECP                  |
+    | Correlation consistent | | aug-cc-pVDZ-PP            | 29- 36, 39- 54, 72- 86                 | SOECP                  |
     |                        | | aug-cc-pVTZ-PP            |                                        |                        |
     |                        | | aug-cc-pVQZ-PP            |                                        |                        |
     |                        | | aug-cc-pV5Z-PP            |                                        |                        |
@@ -422,9 +422,9 @@ The pseudopotential basis groups are divided into scalar pseudopotential basis g
     |                        | | Pitzer-VDZ-PP             | 3- 18                                  | SOECP                  |
     |                        | | Pitzer-VTZ-PP             |                                        |                        |
     +------------------------+-----------------------------+----------------------------------------+------------------------+
-    | Clarkson               | | CRENBL                    | 1 (全电子), 3-118                      | SOECP，小芯            |
+    | Clarkson               | | CRENBL                    | 1 (all electron), 3-118                | SOECP，small core      |
     +                        +-----------------------------+----------------------------------------+------------------------+
-    |                        | | CRENBS                    | | 21- 36, 39- 54, 57, 72- 86,          | SOECP，大芯            |
+    |                        | | CRENBS                    | | 21- 36, 39- 54, 57, 72- 86,          | SOECP，large core      |
     |                        |                             | | 104-118                              |                        |
     +------------------------+-----------------------------+----------------------------------------+------------------------+
     | Ahlrichs               | | Def2-SVP                  | 1- 36 (全电子), 37- 57, 72- 86         | TM73是新版             |
