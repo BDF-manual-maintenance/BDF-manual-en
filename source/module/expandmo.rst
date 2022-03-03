@@ -1,29 +1,29 @@
-不同基组扩展轨道 - EXPANDMO模块
-================================================
-EXPANDMO模块用于将小基组计算的MO扩展为大基组MO，扩展的MO可用于SCF的初始猜测，也可用于一些双基组(Dual Basis)的计算。此外，expandmo还可以利用原子价活性空间（atomic valance active space），自动构建MCSCF计算的活性空间和初始猜测轨道。
+Different Base Group Expansion Tracks - EXPANDMO Module
+============================================================
+The EXPANDMO module is used to extend the MO of a small basis group calculation to a large basis group MO. The extended MO can be used for the initial guesses of the SCF and also for some Dual Basis calculations. In addition, EXPANDMO can automatically construct the active space and initial guess orbits for MCSCF calculations using the atomic valence active space.
 
-:guilabel:`Overlap` 参数类型：Bool型
+:guilabel:`Overlap` parameter type: Bool type
 ------------------------------------------------
-指定利用小基组与大基组的重叠积分扩展分子轨道。
+Specify the expansion of molecular orbitals using the overlapping integrals of the small and large basis groups.
 
-Expandmo模块依赖文件如下：
+The Expandmo module dependency file is as follows：
 
 +------------------+--------------------------+----------+----------+
-| 文件名           | 描述                     | 文件格式 |          |
+| filename           | description                     | file format |          |
 +------------------+--------------------------+----------+----------+
-| $BDFTASK.chkfil1 | 小基组计算的Check文件    | 二进制   | 输入文件 |
+| $BDFTASK.chkfil1 | The check file for the small basis set calculation    | Binary   | input file |
 +------------------+--------------------------+----------+----------+
-| $BDFTASK.chkfil2 | 大基组计算的Check文件    | 二进制   | 输入文件 |
+| $BDFTASK.chkfil2 | The check file for the big basis set calculation    | Binary   | input file |
 +------------------+--------------------------+----------+----------+
-| inporb           | 小基组计算产生的MO文件   | 文本文件 | 输入文件 |
+| inporb           | The MO file produced by the small basis set calculation   | text file | input file |
 +------------------+--------------------------+----------+----------+
-| $BDFTASK.exporb  | 扩展的MO系数文件，存储在 | 文本文件 | 输入文件 |
+| $BDFTASK.exporb  | The extended MO coefficient file is stored in | text file | input file |
 |                  | BDF_WORKDDIR中           |          |          |
 +------------------+--------------------------+----------+----------+
 
 .. code-block:: bdf
 
-     #用cc-pVDZ基组计算CH2分子，并扩展分子轨道系数到aug-cc-pVDZ基组，用于SCF计算的初猜
+     #Calculate CH2 molecules with cc-pVDZ base groups and extend molecular orbital coefficients to aug-cc-pVDZ group for initial guessing of SCF calculations
      # First we perform a small basis set calculation by using CC-PVDZ.
      $COMPASS
      Title
