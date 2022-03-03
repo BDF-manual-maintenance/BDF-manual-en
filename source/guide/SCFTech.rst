@@ -438,7 +438,10 @@ It can be seen that the first SCF calculation uses the atom guess and the energy
       0.00
    Alpha      10.00    2.00
 
-Here, the 10th alpha orbital of the ``A'``integrable representation is the occupied orbital and the 11th orbital is the empty orbital. The second SCF calculation reads in the converged orbitals of the first SCF and does the SCF calculation using the mom method, where the input asks to excite the electrons of the 10th orbital represented by ``A'`` to the 11th orbital. The output file first suggests that the molecular orbitals were read in and gives the occupation
+Here, the 10th alpha orbital of the ``A'`` integrable representation is the occupied orbital and the 11th orbital is the empty orbital. 
+The second SCF calculation reads in the converged orbitals of the first SCF and does the SCF calculation using the mom method, 
+where the input asks to excite the electrons of the 10th orbital represented by ``A'`` to the 11th orbital. 
+The output file first suggests that the molecular orbitals were read in and gives the occupation
 
 .. code-block:: 
 
