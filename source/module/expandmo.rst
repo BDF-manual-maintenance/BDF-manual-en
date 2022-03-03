@@ -1,6 +1,6 @@
-Different Base Group Expansion Tracks - EXPANDMO Module
+Different Basis Set Expansion Tracks - EXPANDMO Module
 ============================================================
-The EXPANDMO module is used to extend the MO of a small basis group calculation to a large basis group MO. The extended MO can be used for the initial guesses of the SCF and also for some Dual Basis calculations. In addition, EXPANDMO can automatically construct the active space and initial guess orbits for MCSCF calculations using the atomic valence active space.
+The EXPANDMO module is used to extend the MO of a small basis group calculation to a large basis set MO. The extended MO can be used for the initial guesses of the SCF and also for some Dual Basis calculations. In addition, EXPANDMO can automatically construct the active space and initial guess orbits for MCSCF calculations using the atomic valence active space.
 
 :guilabel:`Overlap` parameter type: Bool type
 ------------------------------------------------
@@ -23,7 +23,7 @@ The Expandmo module dependency file is as follows：
 
 .. code-block:: bdf
 
-     #Calculate CH2 molecules with cc-pVDZ base groups and extend molecular orbital coefficients to aug-cc-pVDZ group for initial guessing of SCF calculations
+     #Calculate CH2 molecules with cc-pVDZ basis sets and extend molecular orbital coefficients to aug-cc-pVDZ group for initial guessing of SCF calculations
      # First we perform a small basis set calculation by using CC-PVDZ.
      $COMPASS
      Title
