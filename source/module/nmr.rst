@@ -1,55 +1,53 @@
-核磁屏蔽常数计算 - NMR模块
-==============================================
+Nuclear magnetic shielding constant calculation - NMR module
+==============================================================
 
-NMR用于计算分子的核磁屏蔽常数。
+NMR is used to calculate the nuclear magnetic shielding constants of molecules.
 
-:guilabel:`igiao` 参数类型：整型
+:guilabel:`igiao` parameter type: Integer
 ------------------------------------------------
-指定是否计算GIAO的核磁共振屏蔽常数，可以为0（不做GIAO计算）或1（做GIAO计算），默认为0，输入形式如下：
+Specify whether to calculate the NMR shielding constant for GIAO, either 0(do not do GIAO calculations) or 1 (do GIAO calculations), the default is 0 and the input form is as follows.
 
 .. code-block:: bdf
 
   igiao
     1
 
-:guilabel:`icg` 参数类型：整型
+:guilabel:`icg` parameter type: Integer
 ------------------------------------------------
-指定是否计算COMMON GAUGE（CG）的核磁共振屏蔽常数，可以为0（不做CG计算）或1（做CG计算），默认为0，输入形式如下：
+Specify whether to calculate the NMR shielding constant for COMMON GAUGE (CG), either 0(do not do CG calculations) or1 (do CG calculations), with the default being 0, entered in the following form.
 
 .. code-block:: bdf
 
   icg
     1
 
-:guilabel:`igatom` 参数类型：整型
+:guilabel:`igatom` parameter type: Integer
 ------------------------------------------------
-指定COMMON GAUGE计算的规范原点位置，接受的输入为0，或1到原子个数的值，默认为0。当igatom为0时，COMMON GAUGE的规范
-原点设定在空间坐标原点上，而当igatom为1到分子原子数的值时，设定规范原点在第igatom的原子中心上。输入形式如下：
-
+Specifies the position of the canonical origin of the COMMON GAUGE calculation. The accepted input is either 0, or a value from 1 to the number of atoms, with the default being 0. When igatom is 0, the canonical origin of COMMON GAUGE is set at the origin of the spatial coordinates, while when igatom is a value from 1 to the number of atoms in the molecule, the canonical origin is set at the atomic center of the first igatom. The input form is as follows.
 .. code-block:: bdf
 
   igatom
-    3      # 设定规范原点在第3个原子中心处
+    3      # Sets the specification origin at the center of the 3rd atom
 
 
-:guilabel:`cgcoord` 参数类型：实型3个数
+:guilabel:`cgcoord` parameter type: real 3 numbers
 ------------------------------------------------
-指定COMMON GAUGE计算的规范原点位置到空间中某个坐标点上，输入坐标的默认单位是原子单位（即bohr，AU），其单位可由参数 ``cgunit`` 控制。
+Specifies the position of the canonical origin of the COMMON GAUGE calculation to a coordinate point in space. The default units for the input coordinates are atomic units (i.e. bohr, AU), whose units can be controlled by the parameter ``cgunit`` .
 
 .. code-block:: bdf
 
   cgcoord
-    1.0 0.0 0.0   # 输入为3个实型数，将规范原点置于空间坐标为（1.0，0.0，0.0）的点上
+    1.0 0.0 0.0   # Enter 3 real numbers and place the canonical origin on a point with spatial coordinates of (1.0, 0.0, 0.0).
 
-:guilabel:`cgunit` 参数类型：字符串
+:guilabel:`cgunit` parameter type: string
 ------------------------------------------------
-给出 ``cgcoord`` 参数的单位，默认为原子单位（即bohr，AU），可以通过输入angstrom，将单位改为埃。其他输入（如bohr，AU，等），坐标单位为原子单位.
+Given the units of the ``cgcoord`` parameter, the default is atomic units (i.e. bohr, AU), which can be changed to angstrom by entering angstrom. For other inputs (e.g. bohr, AU, etc.), the coordinates are in atomic units.
 
 .. code-block:: bdf
 
   cgunit
-    angstrom      # cgcoord坐标的单位，默认为原子单位，当输入为angstrom时，规范原点坐标单位为埃
-                  # 其他输入（如bohr，AU），坐标单位为原子单位，输入不区分大小写
+    angstrom      # The units of the cgcoord coordinates, which default to atomic units, and when the input is angstrom, the canonical origin coordinate units are angstroms
+                  # Other inputs (e.g. bohr, AU) have coordinate units in atomic units and inputs are not case-sensitive
 
 
 
