@@ -2,7 +2,7 @@ This chapter introduces the basic use of the various functions of the BDF, and g
 
 .. _FirstExample:
 
-First example :math:`\ce{H2O}` RHF calculation for H2O molecules
+First example  RHF calculation for H2O molecules
 ================================================
 Hartree-Fock is the most basic algorithm in quantum chemistry. In this subsection, we will guide the user through a BDF calculation and analyze the input and output information by using an example of Hartree-Fock calculation for a water molecule. Here, we first give the concise inputs to the BDF, and in order to understand the difference between the concise and advanced input modes of the BDF, we also give the advanced input file for each concise input.
 
