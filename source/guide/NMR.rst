@@ -1,25 +1,23 @@
 
-核磁共振屏蔽常数
+Nuclear magnetic resonance shielding constants
 ================================================
 
-BDF支持限制性Hartree-Fock（RHF）和限制性Kohn-Sham（RKS）方法的核磁共振屏蔽常数（NMR）计算，
-其中外矢势规范原点的问题可以使用Common gauge方法和GIAO（gauge-including atomic orbitals）处理。
+BDF supports the restricted Hartree-Fock (RHF) and restricted Kohn-Sham (RKS) methods for NMR shielding constant (NMR) calculations, where the problem of the outer vector potential canonical origin can be handled using the Common gauge method and GIAO (gauge-including atomic orbitals).
 
 .. warning::
 
-    由于NMR计算需要libcint库，需要在计算脚本中增加一行：
-    export USE_LIBCINT=yes
+    Since the libcint library is required for NMR calculation, a line needs to be added in the calculation script: export USE_LIBCINT=yes
 
 
 
-NMR算例
+NMR calculation example
 ----------------------------------------------------------
-以下为甲烷分子核磁共振屏蔽常数计算的输入文件：
+The following is the input file for the NMR shielding constant calculation of methane molecules：
 
 
 .. code-block:: bdf
 
-  $COMPASS  # 分子坐标输入及对称性判断等
+  $COMPASS  # Molecular coordinate input and symmetry judgment
   Title
   CH4 Molecule NR-DFT-NMR       # job title
   Basis
@@ -31,34 +29,34 @@ NMR算例
   H -1.196   1.196   -1.196
   H  1.196  -1.196   -1.196
   END geometry
-  nosymm                        # NMR模块暂不支持对称性
+  nosymm                        # NMR module does not support symmetry 
   UNIT
     BOHR                        # input molecule geometry in bohr
   $END
 
-  $xuanyuan # 单双电子积分相关设定和计算
+  $xuanyuan # Single and double electron integral correlation setting and calculation
   $end
 
-  $SCF      # 自洽场计算模块
+  $SCF      # Self consistent field calculation module
   RKS       # Restrict Kohn-Sham
   DFT
     b3lyp
   $END
 
-  $NMR      # 核磁共振屏蔽常数计算模块
+  $NMR      # NMR shielding constant calculation module
   icg
-   1        # 可输入0或1，0为不进行COMMON GAUGE计算，1为进行COMMON GAUGE计算，默认为0
+   1        # can enter 0 or 1. 0 means no common gauge calculation and 1 means common gauge calculation. The default value is 0.
   igiao
-   1        # 可输入0或1，0为不进行GIAO计算，1为进行GIAO计算，默认为0
+   1        # can enter 0 or 1. 0 means no GIAO calculation and 1 means GIAO calculation. The default value is 0.
   $END
 
-完成计算将顺序调用 ``compass`` , ``xuanyuan`` , ``scf`` 及 ``nmr`` 四个模块。其中 ``scf`` 模块执行 ``RKS`` 计算。
-基于RKS的计算结果，进行后续的 ``NMR`` 计算，其中 ``NMR`` 计算将顺序进行COMMON GAUGE计算和GIAO计算，计算将给出所有原子的
-各向同性以及各向异性核磁共振屏蔽常数。
+
+The four modules ``compass`` ,  ``xuanyuan`` , ``scf`` and ``nmr`` are called sequentially to complete the calculation. The ``scf`` module performs the ``RKS`` calculation. Based on the results of the RKS calculation, subsequent ``NMR`` calculations are performed, where the ``NMR`` calculation is followed by the COMMON GAUGE calculation and the GIAO calculation, which gives the isotropic and anisotropic NMR shielding constants for all atoms.
+
 
 COMMON GAUGE
 ----------------------------------------------------------
-可以通过关键词icg控制进行COMMON GAUGE的NMR计算：
+The NMR calculation of COMMON GAUGE can be controlled by the keyword icg：
 
 .. code-block:: bdf 
 
@@ -67,10 +65,9 @@ COMMON GAUGE
     1
   $END
 
-可以输入0或者1，默认值为0，即不进行COMMON GAUGE计算，输入为1时，则为进行COMMON GAUGE计算。
+You can enter 0 or 1. The default value is 0, which means that no COMMON GAUGE calculation is performed, and 1, which means that a COMMON GAUGE calculation is performed.
 
-在COMMON GAUGE计算中，规范原点默认位于坐标原点，即（0，0，0）处，可以通过关键词igatom将规范原点指定在某个原子上，
-也可以通过cgcoord将规范原点设置为空间某个指定的位置，具体输入方式如下：
+In the COMMON GAUGE calculation, the canonical origin is located at the origin of the coordinates (0, 0, 0) by default. The canonical origin can be specified at an atom by using the keyword igatom, or it can be set to a specified location in space by using cgcoord, as follows.：
 
 .. code-block:: bdf 
 
@@ -78,19 +75,18 @@ COMMON GAUGE
   icg
     1
   igatom
-    3             # 将规范原点指定在3号原子上，输入为整型数，范围为0到分子原子数，
-                  # 如输入值0，则将规范原点指定在坐标原点上
+    3             # Specify the gauge origin on atom 3, enter an integer number, ranging from 0 to the number of molecular atoms，
+                  # If you enter a value of 0, the specification origin is specified at the coordinate origin
   cgcoord
-    1.0 0.0 0.0   # 输入为3个实型数，将规范原点至于空间坐标为（1.0，0.0，0.0）的点上
+    1.0 0.0 0.0   # enter 3 real numbers, and place the origin of the specification on the point with the spatial coordinates of (1.0, 0.0, 0.0)
   cgunit
-    angstrom      # cgcoord坐标的单位，默认值为原子单位，当输入为angstrom，输入的规范原点坐标
-                  # 单位为埃；其他输入（如bohr，AU），坐标单位为原子单位，输入不区分大小写
+    angstrom      # The unit of cgcoord coordinate. The default value is atomic unit. When the input is Angstrom, the input standard origin coordinate
+                  # In angstroms; For other inputs (such as Bohr, AU), the coordinate unit is atomic unit, and the input is case insensitive
   $END
 
-当输入中同时存在igatom和cgcoord时，以后输入的为准。例如上面的例子，最终规范原点设定在空间坐标为（1.0，0.0，0.0）（单位埃）的位置上。
-如两个参数igatom和cgcoord都未输入，计算COMMON GAUGE的NMR值时，规范原点设在坐标原点上，即设在（0.0，0.0，0.0）的位置上。
+When both igatom and cgcoord are present in the input, the latter input prevails. For example, in the above example, the final canonical origin is set at the spatial coordinates (1.0, 0.0, 0.0) (in angstroms). If both parameters igatom and cgcoord are not entered, the NMR value of COMMON GAUGE is calculated with the normative origin at the coordinate origin, i.e. at the position (0.0, 0.0, 0.0)
 
-输出文件中Common gauge计算从 ``[nmr_nr_cg]`` 开始，如下：
+The Common gauge calculation in the output file starts at ``[nmr_nr_cg]`` , as follows：
 
 .. code-block:: bdf 
 
@@ -101,7 +97,7 @@ COMMON GAUGE
     set the common gauge origin as the coordinate origin(default)
         0.000000000000      0.000000000000      0.000000000000
 
-略过中间部分输出，最终结果输出如下：
+Omitting the middle part of the output, the final result is output as follows：
 
 .. code-block:: bdf 
 
@@ -114,12 +110,12 @@ COMMON GAUGE
        31.028177      9.317141
        31.028177      9.317141
 
-分别为C原子和H原子的核磁共振屏蔽常数，单位为ppm，第一列为各向同性屏蔽常数，第二列为各向异性屏蔽常数。
+The NMR shielding constants in ppm for C and H atoms, respectively, are shown in the first column as isotropic shielding constants and in the second column as anisotropic shielding constants.
 
 
 GIAO
 ----------------------------------------------------------
-可以通过关键词igiao控制进行GIAO的NMR计算：
+The NMR calculation of GIAO can be controlled by the keyword igiao：
 
 .. code-block:: bdf 
 
@@ -128,13 +124,12 @@ GIAO
     1
   $END
 
-可以输入0或者1，默认值为0，即不进行GIAO计算，输入为1时，进行GIAO计算。
+You can enter either 0 or 1. The default value is 0, i.e., no GIAO calculation is performed, and when entered as 1, GIAO calculation is performed.
 
 .. warning::
-  NMR模块中，icg和igiao可以仅输入其中之一为1，即设定进行其中一种计算，也可以两者都输入设为1（即两种计算都进行），但是不能都不输入或者都设为0，
-  不然NMR模块不会得出任何核磁共振屏蔽常数值。
+  In the NMR module, icg and igiao can be entered as either 1, which sets either calculation to be performed, or both (i.e. both calculations), but not both or 0, otherwise the NMR module will not produce any NMR shielding constant values.
 
-输出文件中GIAO计算从 ``[nmr_nr_giao]`` 开始，如下：
+The GIAO calculation in the output file starts at ``[nmr_nr_giao]`` , as follows：
 
 .. code-block:: bdf
 
@@ -150,7 +145,7 @@ GIAO
 
    giao integrals...
 
-略过中间部分输出，最终结果输出如下：
+Omitting the middle part of the output, the final result is output as follows：
 
 .. code-block:: bdf 
 
@@ -163,10 +158,7 @@ GIAO
         31.204947      9.070921
         31.204946      9.070920
 
-同COMMON GAUGE的情况，上面结果分别为C原子和H原子的GIAO核磁共振屏蔽常数，单位为ppm，
-第一列为各向同性屏蔽常数，第二列为各向异性屏蔽常数。
+As in the case of COMMON GAUGE, the above results are the GIAO shielding constants in ppm for C and H atoms, respectively, with the first column being the isotropic shielding constant and the second column being the anisotropic shielding constant。
 
 .. warning::
-  输出中的关键词 ``Isotropic/anisotropic constant by atom type`` 对于
-  GIAO与COMMON GAUGE完全相同，在读取结果时应注意是在 ``[nmr_nr_cg]`` 后的，
-  还是 ``[nmr_nr_giao]`` 后的，来区分COMMON GAUGE的结果还是GIAO的结果
+  The keyword ``Isotropic/anisotropic constant by atom type`` in the output is exactly the same for GIAO and COMMON GAUGE, when reading the result, you should pay attention to whether it is after ``[nmr_nr_cg]`` or after ``[nmr_nr_giao]`` to distinguish between COMMON GAUGE result or GIAO result.
