@@ -79,14 +79,13 @@ Since the effect of the two-electron spin-orbit interaction is already included 
 it is sufficient to calculate the single-electron spin-orbit integral. In the BDF, the atoms described by SOECP and the atoms described by scalar ECP or all-electron non-relativity can be used separately, by setting ``hsoc`` to 10 in the :ref:`xuanyuan<xuanyuan>` module. 
 
 
-需要注意的是，有效核电荷支持的元素和基组类型有限。对于全电子基组，仅支持Xe之前的主族元素，且较重的稀有气体元素Ne、Ar、Kr除外。
-对于标量ECP基组，虽然支持的元素更多，但是芯电子数必须一致，见下表；
+It is important to note that the effective nuclear charge supports a limited number of elemental and base group types. For all-electron base groups, only the main group elements before Xe are supported, with the exception of the heavier noble gas elements Ne, Ar, and Kr. For scalar ECP base groups, although more elements are supported, the number of core electrons must be consistent, see the following table:
 
-.. table:: 有效核电荷支持的标量ECP基组芯电子数以及原子
+.. table:: The number of electrons and atoms in the core of the scalar ECP base group supported by the effective nuclear charge
     :widths: auto
 
     +-----------------------------+----------------------------------------+-------+
-    | 原子                        | ZA                                     | NCore |
+    | Atom                        | ZA                                     | NCore |
     +=============================+========================================+=======+
     | Li-F                        | 3- 9                                   | 2     |
     +-----------------------------+----------------------------------------+-------+
@@ -107,5 +106,5 @@ it is sufficient to calculate the single-electron spin-orbit integral. In the BD
     | Pb-At                       | 82-85                                  | 78    |
     +-----------------------------+----------------------------------------+-------+
 
-更多细节，如Zeff参数、参考文献等，见soint_util/zefflib.F90。如果有效核电荷方法用于不支持的元素或基组，旋轨耦合计算的结果不可靠。
+For more details, such as Zeff parameters, references, etc., see soint_util/zefflib.F90. If the effective nuclear charge method is used for unsupported elements or groups, the results of the spin-orbit coupling calculations are unreliable.
 
