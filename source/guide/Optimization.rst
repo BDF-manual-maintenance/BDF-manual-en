@@ -15,12 +15,8 @@ Commonly used algorithms for structural optimization are as follows：
 
 #. Steepest descent：The steepest descent method is a line search along the direction of the negative gradient, which is very efficient for structures far from the minima, but slow to converge near the minima and easy to oscillate.
 #. Conjugate gradient：Conjugate gradient method is a modification of the most rapid descent method, the optimization direction of each step and the previous step of the combination of optimization direction, can somewhat alleviate the problem of oscillation
-#. Newton method：The idea of Newton method is to expand the function with respect to the current position in the Taylor series. Newton method converges quickly, for the quadratic function can go to the minimum in one step.
-However, the Newton method requires solving the Hessian matrix, which is very expensive to compute, and the quasi-Newton method is generally used in geometric optimization.
-#. Quasi-Newton method：The quasi-Newton method constructs the Hessian matrix by approximation, and the Hessian matrix of the current step is obtained based on the forces of the current step and the Hessian matrix of the
-previous step. There are various approaches, the most commonly used is the BFGS method, in addition to DFP, MS, PSB, etc. Since the Hessian of the quasi-Newton
-method is constructed approximately, the accuracy of each optimization step is lower than that of the Newton method, and the number of steps required to reach
-convergence is more than that of the Newton method. However, the total optimization time is still significantly reduced because each step takes much less time.
+#. Newton method：The idea of Newton method is to expand the function with respect to the current position in the Taylor series. Newton method converges quickly, for the quadratic function can go to the minimum in one step. However, the Newton method requires solving the Hessian matrix, which is very expensive to compute, and the quasi-Newton method is generally used in geometric optimization.
+#. Quasi-Newton method：The quasi-Newton method constructs the Hessian matrix by approximation, and the Hessian matrix of the current step is obtained based on the forces of the current step and the Hessian matrix of the previous step. There are various approaches, the most commonly used is the BFGS method, in addition to DFP, MS, PSB, etc. Since the Hessian of the quasi-Newton method is constructed approximately, the accuracy of each optimization step is lower than that of the Newton method, and the number of steps required to reach convergence is more than that of the Newton method. However, the total optimization time is still significantly reduced because each step takes much less time.
 
 The structural optimization of the BDF is implemented by the BDFOPT module, which supports the Newtonian and quasi-Newtonian based methods for minima and transition
 The BDFOPT module supports Newtonian and quasi-Newtonian methods for the optimization of minima and transition structures, and supports restricted
@@ -68,15 +64,9 @@ single, linear invocation of the modules, but rather, the modules are invoked se
 
  1. run COMPASS, which reads the molecular structure and other information； 
  2. run BDFOPT to initialize the intermediate quantities needed for structure optimization；
- 3. BDFOPT starts a separate BDF process to calculate the energy and gradient under the current structure, which only executes COMPASS, XUANYUAN, SCF, and RESP modules
-and skips BDFOPT. i.e., most of the time the user will find two BDF processes running independently of each other, one of which is the process to which BDFOPT
-belongs and is waiting. is in the waiting state, while the other process is performing energy and gradient calculations. To avoid cluttering the output file,
-the output of the latter process is automatically redirected to a file with the ``.out.tmp`` suffix, thus separating it from the output of the BDFOPT module
-(which is typically redirected by the user to an ``.out`` file)
- 4. when the latter process is finished, BDFOPT aggregates the energy and gradient information of the current structure and adjusts the molecular structure
-accordingly with a view to reducing the energy of the system；
- 5. BDFOPT determines whether the structure converges according to the gradient of the current structure and the size of the current geometry step, if it converges, or if the structure optimization reaches the maximum number of iterations, the
-program ends; if it does not converge, the program jumps to step 3。
+ 3. BDFOPT starts a separate BDF process to calculate the energy and gradient under the current structure, which only executes COMPASS, XUANYUAN, SCF, and RESP modules and skips BDFOPT. i.e., most of the time the user will find two BDF processes running independently of each other, one of which is the process to which BDFOPT belongs and is waiting. is in the waiting state, while the other process is performing energy and gradient calculations. To avoid cluttering the output file, the output of the latter process is automatically redirected to a file with the ``.out.tmp`` suffix, thus separating it from the output of the BDFOPT module (which is typically redirected by the user to an ``.out`` file)
+ 4. when the latter process is finished, BDFOPT aggregates the energy and gradient information of the current structure and adjusts the molecular structure accordingly with a view to reducing the energy of the system；
+ 5. BDFOPT determines whether the structure converges according to the gradient of the current structure and the size of the current geometry step, if it converges, or if the structure optimization reaches the maximum number of iterations, the program ends; if it does not converge, the program jumps to step 3。
 
 Therefore, the ``.out`` file contains only the output of COMPASS and BDFOPT modules, which can be used to monitor the process of structural optimization, but does not
 contain information on SCF iterations, Buju analysis, etc., which needs to be viewed in the ``.out.tmp`` file
@@ -938,15 +928,9 @@ imaginary frequencies of the resulting structure to meet the expected value, i.e
 state, and higher order saddle points if the number of imaginary frequencies is greater than 1. When the actual number of virtual frequencies calculated does not
 match the expected value, the structure needs to be adjusted and re-optimized.
 
- * When the actual calculated number of imaginary frequencies is less than the expected value, i.e., when the optimized transition state gets a structure with the number of imaginary frequencies of 0: this generally means that the obtained transition state structure is wrongly characterized, and the initial guess
-structure needs to be prepared again according to the common sense of chemistry. 
- * When the actual number of false frequencies is greater than the expected value, there are two possible cases：（1）the false frequencies are caused by the numerical
-error of the calculation, not the real existence. In this case, it can be solved by increasing the grid point, decreasing the integration truncation threshold,
-decreasing various convergence thresholds (such as SCF convergence threshold, structural optimization convergence threshold, etc.), etc.（2）The system does
-have a false frequency. In this case, we should check the simple positive mode corresponding to the false frequency from the output file, and perturb the
-converged structure along the direction of the simple positive mode, and then use the perturbed structure as the first guess to re-optimize the structure.
- * Note that it is impossible to determine whether a certain imaginary frequency is caused by numerical error from the frequency calculation results alone, but in
-general, the smaller the absolute value of the imaginary frequency, the more likely it is caused by numerical error, and vice versa, the more likely it is real.
+ * When the actual calculated number of imaginary frequencies is less than the expected value, i.e., when the optimized transition state gets a structure with the number of imaginary frequencies of 0: this generally means that the obtained transition state structure is wrongly characterized, and the initial guess structure needs to be prepared again according to the common sense of chemistry. 
+ * When the actual number of false frequencies is greater than the expected value, there are two possible cases：（1）the false frequencies are caused by the numerical error of the calculation, not the real existence. In this case, it can be solved by increasing the grid point, decreasing the integration truncation threshold, decreasing various convergence thresholds (such as SCF convergence threshold, structural optimization convergence threshold, etc.), etc.（2）The system does have a false frequency. In this case, we should check the simple positive mode corresponding to the false frequency from the output file, and perturb the converged structure along the direction of the simple positive mode, and then use the perturbed structure as the first guess to re-optimize the structure.
+ * Note that it is impossible to determine whether a certain imaginary frequency is caused by numerical error from the frequency calculation results alone, but in general, the smaller the absolute value of the imaginary frequency, the more likely it is caused by numerical error, and vice versa, the more likely it is real.
 
 Symmetry problem
 ########################################################
@@ -957,12 +941,8 @@ molecule with a planar structure with initial structure symmetry  :math:`\rm D_{
 By default the BDF forces the molecular point group symmetry to be maintained unless the system has a first order Jahn-Teller effect. If the user wants the BDF to break the
 symmetry of the molecules, one of the following approaches can be taken：
 
- * Still optimize at high symmetry until convergence, and then calculate the frequencies. If false frequencies are present, perturb the molecular structure as
-in the previous subsection to eliminate them. If the molecule can be further reduced in energy by breaking the symmetry, then the perturbed molecular structure
-should be found to have reduced symmetry at this point, and the optimization should continue with that structure as the initial structure.
- * If a subgroup of the molecular point group is specified in the COMPASS module, the program will only keep the subgroup symmetry unbroken. If a  :math:`\rm C_1` group is
-specified, the program allows breaking the molecular symmetry in any way, maximizing the probability of obtaining a low-energy structure at the cost of not
-being able to use the point group symmetry to speed up the computation, resulting in increased computational effort.
+ * Still optimize at high symmetry until convergence, and then calculate the frequencies. If false frequencies are present, perturb the molecular structure as in the previous subsection to eliminate them. If the molecule can be further reduced in energy by breaking the symmetry, then the perturbed molecular structure should be found to have reduced symmetry at this point, and the optimization should continue with that structure as the initial structure.
+ * If a subgroup of the molecular point group is specified in the COMPASS module, the program will only keep the subgroup symmetry unbroken. If a  :math:`\rm C_1` group is specified, the program allows breaking the molecular symmetry in any way, maximizing the probability of obtaining a low-energy structure at the cost of not being able to use the point group symmetry to speed up the computation, resulting in increased computational effort.
 
 Geometric optimization does not converge
 ########################################################
@@ -971,18 +951,15 @@ There are many factors that lead to the non-convergence of geometric optimizatio
 
  * The presence of numerical noise in the energy, gradients;
  * The potential energy surface is too flat;
- * The molecule has more than one stable wave function, and the wave function jumps back and forth between the various stable solutions during structural optimization,
-and does not converge stably and consistently to the the same solution；
- * unreasonable molecular structure, e.g. wrong units of coordinates (e.g. the unit of coordinates is supposed to be Bohr, but the unit specified in the input file
-is Angstrom or vice versa), overdrawing or missing atoms, too close distances between non-bonded atoms, etc.
+ * The molecule has more than one stable wave function, and the wave function jumps back and forth between the various stable solutions during structural optimization, and does not converge stably and consistently to the the same solution；
+ * unreasonable molecular structure, e.g. wrong units of coordinates (e.g. the unit of coordinates is supposed to be Bohr, but the unit specified in the input file is Angstrom or vice versa), overdrawing or missing atoms, too close distances between non-bonded atoms, etc.
 
 If the geometric optimization does not converge, or if there is no trend of convergence even though the maximum number of convergences has not been reached,
 after repeatedly checking that the three-dimensional structure of the molecule is correct and reasonable, and that the wave function is not too close to the atom,
 then the geometry of the molecule should be optimized. After repeatedly checking that the three-dimensional structure of the molecule is correct and reasonable,
 and that the wave function converges normally, the following methods can be tried in turn:
  
- * Use the last frame of the task that does not converge as the initial structure and start the optimization again. In addition to manually copying the structure
-coordinates of the last frame into the input file, a In addition to manually copying the structural coordinates of the last frame into the input file, a simpler way is to add the ``restart`` keyword to the COMPASS module, e.g.
+ * Use the last frame of the task that does not converge as the initial structure and start the optimization again. In addition to manually copying the structure coordinates of the last frame into the input file, a In addition to manually copying the structural coordinates of the last frame into the input file, a simpler way is to add the ``restart`` keyword to the COMPASS module, e.g.
  
  
 .. code-block:: bdf
@@ -1053,5 +1030,4 @@ forbidden to exceed 0.05 during the entire structural optimization process.
 
 It indicates that the exact Hessian is recalculated every 10 steps of structural optimization, in addition to the exact Hessian calculated before structural optimization.
 
- * The lattice points are increased and the convergence thresholds of the integration truncation and SCF, etc., are decreased to reduce the numerical errors.
-Note that this method only works when the structural optimization is almost convergence but not full convergence.
+ * The lattice points are increased and the convergence thresholds of the integration truncation and SCF, etc., are decreased to reduce the numerical errors. Note that this method only works when the structural optimization is almost convergence but not full convergence.
