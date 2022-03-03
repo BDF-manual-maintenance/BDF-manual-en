@@ -38,45 +38,44 @@ The BDF can consider scalar relativistic effects through the spinless X2C Hamilt
 sf-X2C-AU（原子U变换近似，23），其中21，22，23具有解析导数。
 对于不涉及5d以上重元素—重元素成键的分子体系，sf-X2C-AU具有最高的效率且不损失精度，是推荐方法。否则用sf-X2C-AXR或sf-X2C。
 
-In the above input, ``heff`` calls scalar relativistic Hamiltonians such as sf-X2C (3,
-4, or 21), sf-X2C-AXR (atomic X-matrix approximation, 22), and sf-X2C-AU (atomic
-U-transformation approximation, 23), where 21, 22, 23 have analytic derivatives.
-For molecular systems not involving heavy element-heavy element bonding above 5d,
-sf-X2C-AU has the highest efficiency without loss of precision and is the
-recommended method. Otherwise, sf-X2C-AXR or sf-X2C is used.
+In the above input, ``heff`` calls scalar relativistic Hamiltonians such as sf-X2C (3, 4, or 21), sf-X2C-AXR (atomic X-matrix approximation, 22), and sf-X2C-AU (atomic
+U-transformation approximation, 23), where 21, 22, 23 have analytic derivatives. For molecular systems not involving heavy element-heavy element bonding above 5d,
+sf-X2C-AU has the highest efficiency without loss of precision and is the recommended method. Otherwise, sf-X2C-AXR or sf-X2C is used.
 
 .. _finite-nuclear:
 
-``nuclear`` 选项设为1表示使用有限核模型，一般不是必须的。但是有些相对论收缩基组考虑了原子核尺寸效应，或者当计算原子核附近的电子性质时，这些情况下要使用有限核模型。
+The ``nuclear`` option set to 1 indicates the use of a finite nuclear model, which is generally not required. However, some relativistic shrinkage basis groups take
+into account nucleus size effects, or when calculating the electronic properties near the nucleus, in these cases the finite nuclear model is used.
 
-sf-X2C及其局域变体支持的计算类型有：单点能，结构优化，以及部分 :ref:`一阶单电子性质<1e-prop>` 。解析Hessian和二阶单电子性质正在开发中。
+The types of calculations supported by sf-X2C and its local variants are: single point energies, structure optimization, and some :ref:`first-order single electron
+properties<1e-prop>` . Analytic Hessian and second-order single-electron properties are under development.
+
 
 * **ECP**
 
-ECP必须与非相对论哈密顿相结合，相对论效应隐含在赝势参数中。
-BDF支持的ECP计算类型有：单点能以及部分 :ref:`单电子性质<1e-prop>` 。ECP的梯度和Hessian正在开发中。
+ECP must be combined with a non-relativistic Hamiltonian, where relativistic effects are implicit in the pseudopotential parameters.
+The types of ECP calculations supported by the BDF are:  single-point energy and some :ref:`single electron properties<1e-prop>` . Gradient and Hessian for ECP are under development.
 
-旋轨耦合作用
+Spin-orbit coupling interactions
 ------------------------------------------------
-BDF可以通过态相互作用（SI）方法，在TDDFT单点计算中处理不同自旋多重度电子态之间的自旋轨道耦合。需要在 ``xuanyuan`` 模块中通过
-``hsoc`` 关键词指定如何计算自旋轨道积分。参见TDDFT部分的示例。
+BDF can handle spin-orbit coupling between different spin multiplet electronic states in TDDFT single-point calculations by means of the state interaction (SI)
+method. It needs to be specified in the ``xuanyuan`` module via the ``hsoc`` keyword how to calculate the spin-orbit integrals. See the TDDFT section for an example.
 
-根据采用的哈密顿的不同，自旋轨道耦合也可分为全电子和ECP两类。
+Depending on the adopted Hamiltonian, spin-orbit coupling can also be divided into two categories: all-electron and ECP.
 
-* **全电子方法**
+* **All-electron methods**
 
-虽然双电子自旋轨道积分的贡献小于单电子自旋轨道积分，但是对旋轨耦合作用的影响可能达到1/5~1/3，因此不能忽略。
-建议采用单电子自旋轨道积分+单中心近似的分子平均场双电子自旋轨道积分（so1e + SOMF-1c； ``hsoc`` = 2）。
-它可以与sf-X2C标量相对论哈密顿结合，对于轻元素体系也可以与非相对论哈密顿结合。
-此外，还可以对单电子自旋轨道积分进行屏蔽原子核 :cite:`snso2000,msnso2013` 或有效核电荷 :cite:`zeff1995` 校正，近似考虑双电子自旋轨道积分的影响，但是这对芯层轨道性质可能会造成无法预料的误差。
+Although the contribution of the two-electron spin-orbit integral is smaller than that of the single-electron spin-orbit integral, the effect on the spin-orbit coupling effect may reach 1/5~1/3, and therefore cannot be neglected. A singleelectron spin-orbit integral + a molecular mean-field two-electron spin-orbit
+integral with a single-center approximation （so1e + SOMF-1c； ``hsoc`` = 2）is suggested. It can be combined with the sf-X2C scalar relativistic Hamiltonian and, for the light element system, with the non-relativistic Hamiltonian. In addition, it is possible to correct the single-electron spin-orbit integrals for shielded nuclei :cite:`snso2000,msnso2013` or effective nuclear charges :cite:`zeff1995` , approximating the effect of the twoelectron spin-orbit integrals, but this may cause unpredictable errors on the
+core-layer orbital properties.
 
 .. _so1e-zeff:
 
 * **ECP**
 
-包括两种处理方法：
+It includes two treatments：
 
-1. 旋轨耦合赝势，需要在标量ECP中加入额外的SO势函数（SOECP；见基组库中的 :ref:`旋轨耦合赝势基组 <soecp-bas>` ），以及
+1. the spin-orbit coupling pseudopotential, which requires the addition of an additional SO potential function to the scalar ECP (SOECP; see the :ref:`spin-orbit coupling pseudopotential basis set<soecp-bas>`  in the basis set library)
 2. 有效核电荷 :cite:`zeff1995,zeff1998` 。
 
 由于双电子自旋轨道相互作用的影响已经包含在SO势的拟合参数或有效核电荷的经验参数中，只要计算单电子自旋轨道积分即可。
