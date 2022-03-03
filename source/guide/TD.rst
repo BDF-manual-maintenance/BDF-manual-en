@@ -1347,27 +1347,26 @@ The SOC calculation results in that
       9       5.5113 eV    50.0%  Spin: |S+,1>    1-th   B2    5.5115   -0.0002    5.5119     44456.48
      10       5.5116 eV    49.8%  Spin: |S+,2>    1-th   B2    5.5115    0.0001    5.5122     44458.63
      
-这里的输出有两部分，第一部分给出了每个 ``SOC-SI`` 态相对于S0态的能量及组成成分，例如
+Here the output has two parts, the first part gives the energy and composition of each ``SOC-SI`` state relative to the S0 state, for example
 
-  * ``No.    10    w=      5.5116 eV`` 表示第10个 ``SOC-SI`` 态的能量为 ``5.5116 eV`` ，注意这里是相对于S0态的能量;
+ * ``No. 10 w= 5.5116 eV`` means that the energy of the 10th ``SOC-SI`` state is ``5.5116 eV``, note that this is the energy relative to the S0 state;
+
+The following three lines show the components of this state.
+
+ * ``Spin: |S+,1> 1-th Spatial: B2;`` represents the first triplet state with symmetry B2 (spin +1 with respect to the S state, and therefore S+); and and therefore S+);
+ *  ``OmegaSF= 5.5115eV`` is the energy relative to the first spin state.
+ * ``Cr= -0.5011 Ci= -0.0063`` is the real and imaginary part of the wave function of this component in the spinor state, with a percentage of ``25.1%``.
+
+The second part summarizes the results of the SOC-SI state calculations.
+
+ * ``ExEnergies`` are the excitation energies when SOC is taken into account, and ``Esf`` is the original excitation energy without SOC;
+ * The excited states are denoted by ``Spin: |S,M> n-th sym``, and spin |Gs,1>, the nth state with spatial symmetry sym. For example, the |Gs,1> represents the ground state, |So,1> represents the excited state with the same total spin as the ground state, and |S+,2> represents the excited state with total spin plus 1. M is the first component of the spin projection (in total 2S+1).
   
-下面三行是这个态的组成成分，
+The keyword ``imatrso`` specifies which sets of jump dipole moments between the spin states are to be calculated and printed. Here it is specified that ``6`` sets of jump dipole moments are printed.
+ * ``1 1`` indicates the intrinsic dipole moment of the ground state.
+ * ``1 2`` indicates the dipole moments between the first and second spin states.
 
-  * ``Spin: |S+,1>    1-th Spatial:  B2;`` 代表这是对称性为B2的第一个三重态（相对于S态自旋+1，因而是S+）;
-  * ``OmegaSF=      5.5115eV`` 是相对于第一个旋量态的能量；
-  * ``Cr= -0.5011  Ci= -0.0063`` 是该成分在旋量态中组成波函数的实部与虚部，所占百分比为 ``25.1%``。
-
-第二部分总结了SOC-SI态的计算结果，
-
-  * ``ExEnergies`` 列出考虑SOC后的激发能。 ``Esf`` 为原始不考虑SOC时的激发能;
-  * 激发态表示用 ``Spin: |S,M> n-th sym`` 来表示，自旋\|Gs,1>，空间对称性为sym的第n个态。例如，\|Gs,1>代表基态，\|So,1>表示总自旋和基态相同的激发态，\|S+,2>表示总自旋加1的激发态。M为自旋投影的第几个分量（in total 2S+1）。
-
-关键词 ``imatrso`` 指定要计算并打印哪几组旋量态之间的跃迁偶极矩。这里指定打印 ``6`` 组跃迁偶极矩，
-
-  * ``1 1`` 表示基态固有偶极矩；
-  * ``1 2`` 表示第一个与第二个旋量态间的跃迁偶极矩。
-
-跃迁偶极矩的输出如下：
+The output of the leap dipole moments is as follows.
 
 .. code-block:: 
 
@@ -1396,24 +1395,20 @@ The SOC calculation results in that
   
 
 .. hint::
-  * ``imatsoc`` 设置为 ``-1`` 可指定打印所有的耦合矩阵元;
-  * 默认不计算打印跃迁偶极矩，设置 ``imatrso`` 为 ``-1`` 可以打印所有旋量态之间的跃迁偶极矩，设置 ``imatrso`` 为 ``-2`` 可以打印所有基态旋量态和所有激发态旋量态之间的跃迁偶极矩。
-  * SOC计算的参考态必须要么是RHF/RKS，要么是ROHF/ROKS，不支持UHF/UKS。
-  * 当SOC计算的参考态为ROHF/ROKS时，isf=0的TDDFT计算必须使用X-TDA（即itest=1, icorrect=1, isf=0, itda=1；不支持full X-TDDFT），isf=1的TDDFT计算必须使用SF-TDA（即isf=1, itda=1；不支持full SF-TDDFT）。
+  * ``imatsoc`` set to ``-1`` specifies printing of all coupling matrix elements;
+  * The default is not to print the leap dipole moments, set ``imatrso`` to ``-1`` to print the leap dipole moments between all spin states, and ``imatrso`` to ``-2`` to print the leap dipole moments between all ground state spin states and all excited state spin states.
+  * The reference state for SOC calculations must be either RHF/RKS or ROHF/ROKS, UHF/UKS is not supported.
+  * When the reference state for SOC calculations is ROHF/ROKS, TDDFT calculations with isf=0 must use X-TDA (i.e., itest=1, icorrect=1,isf=0, itda=1; full X-TDDFT is not supported) and TDDFT calculations with isf=1 must use SF-TDA (i.e. isf=1, itda=1; full SF-TDDFT is not supported).
 
 
-采用ECP基组的TDDFT-SOC自旋轨道耦合计算
+SOECP-TDDFT-SOC based spin-orbit coupling calculations
 ----------------------------------------------------------
 
-除了sf-X2C全电子标量相对论哈密顿以外，也可以用赝势做TDDFT-SOC自旋轨道耦合计算，其中旋轨耦合赝势（SOECP）是首选，
-为此需要选择合适的 :ref:`旋轨耦合赝势基组 <soecp-bas>` ，并在 ``xuanyuan`` 模块中设置 ``hsoc`` 为10（也可以写其它值，
-但是都会当作10处理）。
-其它输入与sf-X2C/TDDFT-SOC输入类似（例如在 ``scf`` 中指定轨道占据时要扣除芯层电子）或相同。
+In addition to the sf-X2C all-electron scalar relativistic Hamiltonian, the spin-orbit coupling pseudopotential (SOECP) can also be used for TDDFT-SOC spin-orbit coupling calculations by selecting the appropriate  :ref:`旋轨耦合赝势基组 <soecp-bas>` and setting ``hsoc`` to 0 in the ``xuanyuan`` module (if other values are written, they are treated as 0). 
+The other inputs are similar to or identical to the sf-X2C-TDDFT-SOC inputs (e.g. the core electrons are subtracted when specifying the orbital occupation in ``scf``).
 
-在下面的例子中，在 :math:`C_{2v}` 点群对称性下计算了InB分子的闭壳层基态 :math:`X^1\Sigma^+` （A1）和最低三个激发态
-:math:`^3\Pi` （B1+B2）、 :math:`^1\Pi` （B1+B2）、 :math:`^3\Sigma^+` （A1），其中前两个Λ-S态是做了大量实验研究的束缚态，
-后两个Λ-S态是排斥态，实验上不太关心。
-输入中，首先在TDDFT级别下（这里采用Tamm-Dancoff近似）计算了Λ-S态的能量并存储波函，之后计算自旋轨道耦合后的Ω态能量。
+In the following example, the closed-shell layer ground state :math:`X^1\Sigma^+` (A1) and three excited states :math:`^3\Pi` (B1+B2),  :math:`^1\Pi` (B1+B2), :math:`^3\Sigma^+` (A1) are calculated under the :math:`C_{2v}` point group symmetry for the InB molecule, where the first two Λ-S states are bound states that have been extensively studied experimentally and the last two Λ-S states are repulsive states that are of little experimental interest.
+In the input, the energy of the Λ-S state is first calculated at the TDDFT level (using the Tamm-Dancoff approximation here) and the wave function is stored, and then the energy of the Ω state after spin-orbit coupling is calculated.
 
 .. code-block:: bdf
 
@@ -1477,7 +1472,7 @@ The SOC calculation results in that
    2
   $END
 
-SOECP/TDDFT-SOC的计算输出与sf-X2C/TDDFT-SOC类似。结果总结如下，并与二分量EOM-CCSD的结果进行对比。
+The computational output of SOECP-TDDFT-SOC is similar to that of sf-X2C-TDDFT-SOC. The results are summarized below and compared with those of EOM-CCSD/SOC.
 
 .. table:: InBr分子的垂直激发能：SOECP/TDDFT-SOC与二分量EOM-CCSD。能量单位：cm :math:`^{-1}`
     :widths: auto
@@ -1503,10 +1498,10 @@ SOECP/TDDFT-SOC的计算输出与sf-X2C/TDDFT-SOC类似。结果总结如下，�
     |                     |             | 1   |     38423   |        98   |              |             |
     +---------------------+-------------+-----+-------------+-------------+--------------+-------------+
 
-除了SOECP基组以外，也可以用标量ECP基组结合 :ref:`有效核电荷近似（Zeff）<so1e-zeff>` 完成以上计算。
-作为测试，首先删除Br基组中的SO赝势部分，重做上面的计算，但是会发现结果较差：
-:math:`^3\Pi_2` 与 :math:`^3\Pi_1` 的分裂只有850 cm :math:`^{-1}` ，而 :math:`^3\Sigma^+` 态的分裂几乎为零。
-这是因为Br具有10个芯电子的ECP基组没有专门优化的有效核电荷，程序只能采用实际的核电荷数35：
+In addition to the SOECP basis set, the above calculation can also be done using the scalar ECP basis set in combination with :ref:`有效核电荷近似（Zeff）<so1e-zeff>` .
+As a test, first delete the SO pseudopotential part in the Br basis set and redo the above calculation, but you will find that the result is poor:
+The split of :math:`^3\Pi_2` and :math:`^3\Pi_1` is only 850 cm :math:`^{-1}`, while the split of :math:`^3\Sigma^+` almost zero.
+This is because the ECP basis set for Br with 10 core electrons has no specially optimized effective nuclear charge, and the program can only take the actual nuclear charge number of 35:
 
 .. code-block::
 
@@ -1519,7 +1514,7 @@ SOECP/TDDFT-SOC的计算输出与sf-X2C/TDDFT-SOC类似。结果总结如下，�
       2     35       10         N.A.
   ----------------------------------
 
-对于上例中的Br，不妨改用具有28个芯电子的标量ECP基组cc-pVTZ-ccECP，基组的输入部分修改如下：
+For Br in the above example, it is possible to use the scalar ECP basis set cc-pVTZ-ccECP with 28 core electrons instead. The input part of the basis set is modified as follows:
 
 .. code-block:: bdf
 
@@ -1528,7 +1523,7 @@ SOECP/TDDFT-SOC的计算输出与sf-X2C/TDDFT-SOC类似。结果总结如下，�
      Br=cc-pvtz-ccecp
    end basis
 
-在TDDFT-SOC计算输出的一开始可以看到
+At the beginning of the TDDFT-SOC calculation output can be seen
 
 .. code-block::
 
@@ -1541,8 +1536,8 @@ SOECP/TDDFT-SOC的计算输出与sf-X2C/TDDFT-SOC类似。结果总结如下，�
       2     35       28     1435.000
   ----------------------------------
 
-这表明在Br的单电子自旋轨道积分中，用优化好的1435.000替换默认的核电荷数35（一般来说，ECP芯电子数NCore越大，有效核电荷Zeff越大），
-而对In原子仍旧计算SOECP积分。计算结果如下，可见旋轨分裂得到了明显改善：
+This shows that in the single-electron spin-orbit integration of Br, the default nuclear charge number 35 is replaced with the optimized 1435.000 (in general, the larger the ECP core electron number NCore, the larger the effective nuclear charge Zeff),
+The SOECP integral is still calculated for the In atom. The calculation results are as follows, and it can be seen that the orbital splitting has been significantly improved:
 
 .. table:: InBr分子的TDDFT-SOC垂直激发能：In:SOECP，Br:SOECP与Br:ECP。能量单位：cm :math:`^{-1}`
     :widths: auto
@@ -1568,21 +1563,20 @@ SOECP/TDDFT-SOC的计算输出与sf-X2C/TDDFT-SOC类似。结果总结如下，�
     |                     |             | 1   |     38423   |        98   |     38853   |        65   |
     +---------------------+-------------+-----+-------------+-------------+-------------+-------------+
 
-最后，TDDFT-SOC计算也可以用SOECP（或标量ECP）基组与全电子非相对论基组进行组合。BDF程序已经对Xe之前的主族元素优化了Zeff（较重的稀有气体元素除外）。
-例如，In继续用cc-pVTZ-PP，而Br用全电子非相对论基组cc-pVTZ，会得到与SOECP/TDDFT-SOC相近的结果。详细结果从略。
+Finally, TDDFT-SOC calculations can also be combined with the SOECP (or scalar ECP) basis set with the all-electron non-relativistic basis set. The BDF program has optimized Zeff for main group elements prior to Xe (except heavier noble gas elements).
+For example, continuing to use cc-pVTZ-PP for In, and using the all-electron non-relativistic basis set cc-pVTZ for Br, yields similar results to SOECP/TDDFT-SOC. Detailed results are omitted.Finally, TDDFT-SOC calculations can also be combined with the SOECP (or scalar ECP) basis set with the all-electron non-relativistic basis set. The BDF program has optimized Zeff for main group elements prior to Xe (except heavier noble gas elements).
 
 .. attention::
+  
+   1. Precautions when using the effective nuclear charge method for TDDFT-SOC calculation: You must use :ref:`优化好的有效核电荷<so1e-zeff>` to ensure accuracy. To do this, check the Zeff value printed in the output file, try not to have N.A., this is especially important for ECP basis sets.
+   2. When SOECP or scalar ECP is combined with all-electron basis set, note about all-electron basis set: Atoms using all-electron basis set do not consider scalar relativistic correspondence, so they cannot be heavy atoms, and must use non-relativistic basis set.
 
-   1. 用有效核电荷方法进行TDDFT-SOC计算时的注意事项：必须用 :ref:`优化好的有效核电荷<so1e-zeff>` 才能保证精度。为此要检查输出文件打印的Zeff值，尽量不要出现N.A.，这对ECP基组尤其重要。
-   2. SOECP或标量ECP与全电子基组组合时，关于全电子基组的注意事项：使用全电子基组的原子不考虑标量相对论相应，因此不能是重原子，且必须用非相对论基组。
+Calculation of first-order non-adiabatic coupling matrix elements (fo-NACME)
+-------------------------------------------------------------------------------------------
 
+As mentioned before, the (first-order) non-adiabatic coupling matrix element is of great importance in the non-radiative leap process. In BDF, the input files of NACME between the ground state and excited state, and between the excited state and excited state are written with some differences, which are described below.
 
-一阶非绝热耦合矩阵元（fo-NACME）的计算
--------------------------------------------------------
-
-如前所述，（一阶）非绝热耦合矩阵元在非辐射跃迁过程中有着重要的意义。在BDF中，基态和激发态之间的NACME，以及激发态和激发态之间的NACME的输入文件在写法上存在一定差异，以下分别介绍。
-
-（1）基态和激发态之间的NACME： :math:`\ce{NO3}` 自由基的D0/D1 NACME（GB3LYP/cc-pVDZ）
+(1) NACME between ground state and excited state: D0/D1 NACME of :math:`\ce{NO3}` radical (GB3LYP/cc-pVDZ)
 
 .. code-block:: bdf
 
@@ -1652,7 +1646,7 @@ SOECP/TDDFT-SOC的计算输出与sf-X2C/TDDFT-SOC类似。结果总结如下，�
    1 2 1
   $end
 
-注意 ``$resp`` 模块中指定的不可约表示为pair irrep（即跃迁涉及的占据轨道和空轨道的不可约表示的直积；对于阿贝尔点群，pair irrep可以由基态不可约表示和激发态不可约表示的直积求得），而不是激发态的irrep。该分子的基态（D0）属于B1不可约表示，第一二重态激发态（D1）属于B2不可约表示，因此D1态的pair irrep为B1和B2的直积，即A2。Pair irrep也可由TDDFT模块的输出读取得到，即以下输出部分的Pair一栏：
+Note that the integrable representation specified in the ``$resp`` module is pair irrep (i.e., the direct product of the integrable representations of the occupied and empty orbitals involved in the leap; for the Abelian point group, pair irrep can be obtained from the direct product of the ground state integrable representation and the excited state integrable representation), not the irrep of the excited state. the ground state (D0) of this molecule belongs to the B1 integrable representation, and the first two-state excited state (D1) belongs to the B1 integrable representation. The pair irrep of the D1 state is therefore the direct product of B1 and B2, i.e., A2. Pair irrep can also be read from the output of the TDDFT module, i.e., the Pair column of the following output section.
 
 .. code-block::
 
@@ -1663,7 +1657,7 @@ SOECP/TDDFT-SOC的计算输出与sf-X2C/TDDFT-SOC类似。结果总结如下，�
       3  B2    1  A2    2.5146 eV    493.06 nm   0.0000   0.0384  98.4% CO(bb):  A2(   1 )->  B1(   5 )   4.159 0.319    1.7141
       4  A1    2  B1    2.6054 eV    475.87 nm   0.0171   0.0154  87.7% CO(bb):  B1(   4 )->  B1(   5 )   3.984 0.746    1.8049
 
-计算完成后，在 ``$resp`` 模块的输出部分的结尾，可以看到NACME的计算结果：
+After the calculation is completed, the result of the NACME calculation can be seen at the end of the output section of the ``$resp`` module.
 
 .. code-block::
 
@@ -1673,7 +1667,7 @@ SOECP/TDDFT-SOC的计算输出与sf-X2C/TDDFT-SOC类似。结果总结如下，�
        3       -0.0000000000        0.1902838724        0.0000000000
        4       -0.0000000000        0.0000000000        0.0000000000
 
-注意该结果没有包括电子平移因子（electron translation factor, ETF）的贡献，对于某些分子，不包括ETF的NACME可能会不具有平移不变性，进而导致后续动力学模拟等计算产生误差。此时需要使用考虑了ETF的NACME，在输出文件稍后的位置可以读取得到：
+Note that this result does not include the contribution of the electron translation factor (ETF). For some molecules, NACME without ETF may not have translation invariance, which may lead to errors in subsequent kinetic simulations. In this case, it is necessary to use a NACME that takes into account the ETF, which can be read later in the output file at the following location.
 
 .. code-block::
 
@@ -1683,9 +1677,9 @@ SOECP/TDDFT-SOC的计算输出与sf-X2C/TDDFT-SOC类似。结果总结如下，�
        3       -0.0000000000        0.1920053581        0.0000000000
        4       -0.0000000000        0.0000000000       -0.0000000000
 
-程序还会输出名为dpq-R、Final-NAC(R)、dpq-S、Final-NAC(S)等的矢量，这些量是中间变量，仅供监测计算过程使用，并非最终的NACME，一般情况下用户可忽略这些输出。
+The program will also output vectors named dpq-R, Final-NAC(R), dpq-S, Final-NAC(S), etc. These quantities are intermediate variables that are only used to monitor the computational process, not the final NACME, and the user can generally ignore these outputs.
 
-（2）激发态和激发态之间的NACME：苯乙酮的T1/T2 NACME（BH&HLYP/def2-SVP）
+(2) NACME between excited and excited states: T1/T2 NACME of acetophenone (BH&HLYP/def2-SVP)
 
 .. code-block:: bdf
 
@@ -1763,7 +1757,7 @@ SOECP/TDDFT-SOC的计算输出与sf-X2C/TDDFT-SOC类似。结果总结如下，�
   noresp # do not include the quadratic response contributions (recommended)
   $end
 
-计算得到T1态和T2态的NACME：
+NACME was calculated for the T1 and T2 states.
 
 .. code-block::
 
@@ -1786,9 +1780,9 @@ SOECP/TDDFT-SOC的计算输出与sf-X2C/TDDFT-SOC类似。结果总结如下，�
       16       -0.1407399684       -0.1429881941       -0.1657943551
       17       -0.0000034197        0.0004577563       -0.0833951446
 
-类似基态的情形，
+Similar to the case of the ground state, the
 
-激发态的定域化
+Definitization of the excited states
 ----------------------------------------------
 
 .. code-block:: bdf
@@ -1849,7 +1843,7 @@ SOECP/TDDFT-SOC的计算输出与sf-X2C/TDDFT-SOC类似。结果总结如下，�
     1 2 3 4 5 6 7 8 9 10 11 12
    &end
 
-TDA计算了4个激发态，输出如下,
+The TDA calculates 4 excited states and the output is as follows,
 
 .. code-block:: bdf
 
@@ -1860,7 +1854,7 @@ TDA计算了4个激发态，输出如下,
     3   A    4   A    9.0292 eV    137.31 nm   0.0000   0.0000  62.4%  CV(0):   A(  16 )->   A(  20 )  15.353 0.398    1.5422
     4   A    5   A    9.0663 eV    136.75 nm   0.0000   0.0000  50.4%  CV(0):   A(  15 )->   A(  18 )  15.688 0.390    1.5793
 
-定域化的过程及定域的激发态为,
+The process of domainization and the excited states in the fixed domain are,
 
 .. code-block:: bdf
 
@@ -1926,5 +1920,4 @@ TDA计算了4个激发态，输出如下,
        State4    0.000000    0.000021    0.192803    8.873501
     **************************************************************
 
-其中，对角元为定域激发态的能量，非对角元为两个定域态之间的耦合，这里的能量单位是 ``eV`` 。
-
+其中，对角元为定域激发态的能量，非对角元为两个定域态之间的耦合，这里的能量单位是 ``eV`` 。where the diagonal element is the energy of the fixed-domain excited state and the non-diagonal element is the coupling between the two fixed-domain states, where the unit of energy is ``eV``.
