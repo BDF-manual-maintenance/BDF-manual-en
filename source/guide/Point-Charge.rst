@@ -1,7 +1,8 @@
 
-点电荷模型
+Point charge model
 ================================================
-BDF支持将MM区原子电荷作为点电荷输入进行计算。点电荷以与计算任务同名的 ``$BDFTASK.extcharge`` 文件作为输入，具体格式如下：
+The BDF supports the calculation of atomic charges in the MM region as point charge input. The point charge is given as input to the ``$BDFTASK.extcharge`` file
+with the same name as the calculation task as input, in the following format:
 
 .. code-block:: bdf
 
@@ -15,8 +16,8 @@ BDF支持将MM区原子电荷作为点电荷输入进行计算。点电荷以与
   H   0.000000   0.785178  -0.427319
   H   0.000000  -0.785178  -0.427319
   End Geometry
-  Extcharge  #表示需要输入点电荷
-    point      #表示输入电荷类型为点电荷
+  Extcharge  #Indicates that an input point charge is required
+    point      #Indicates that the input charge type is a point charge
   $END
   
   $XUANYUAN
@@ -26,12 +27,12 @@ BDF支持将MM区原子电荷作为点电荷输入进行计算。点电荷以与
   RHF
   $END
 
-点电荷输入文件（文件名 h2o.extcharge）如下：
+The point charge input file (file name h2o.extcharge) is as follows：
 
 .. code-block:: bdf
 
-    External charge, Point charge   #第一行为标题和说明行
-    6                               #要输入的点电荷数 
+    External charge, Point charge   #The first line is the title and description line
+    6                               #The number of point charges to enter 
     C1     -0.732879     0.000000     5.000000     0.114039 
     C2      0.366440     0.000000     5.780843    -0.456155 
     C3      0.366440     0.000000     4.219157    -0.456155
@@ -39,14 +40,16 @@ BDF支持将MM区原子电荷作为点电荷输入进行计算。点电荷以与
     C5      0.366440     0.000000     10.78084    -0.456155 
     C6      0.366440     0.000000     9.219157    -0.456155
 
-点电荷的默认输入格式为:  原子标签、  电荷、 和坐标\（ x\  y\  z）\  ; 坐标单位默认为埃。坐标输入单位也可以为Bohr，输入格式如下：
+The default input format for point charges is: atomic label, charge, and coordinates (x\  y\  z); the coordinates are in angstroms by default. Coordinate input
+units can also be be Bohr, and the input format is as follows
+
 
 .. code-block:: bdf
 
     External charge, Point charge   # title line
     6    Bohr                       # Unit: Bohr  
     C1     -0.732879     0.000000     5.000000     0.114039 
-    #     省略 # 
+    #     ... # 
 
 
-.. 本小节结束
+

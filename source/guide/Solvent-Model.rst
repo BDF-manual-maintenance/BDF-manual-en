@@ -1,12 +1,13 @@
-溶剂化模型
+Solvation models
 ================================================
 
-溶剂化模型用于计算溶质和溶剂之间的相互作用，一般分为隐式溶剂模型（连续介质模型）和显式溶剂模型两种。 在BDF中，对于连续溶剂模型，我们采用
-ddCOSMO（domain-decomposition COSMO solvation model），对于显示溶剂模型我们采用QM/MM方法，结合pDymamo2.0程序包进行计算。
+Solvation models are used to calculate the interaction between solutes and solvents,
+and are generally divided into two types: implicit solvent models (continuous medium models) and explicit solvent models. In BDF, for the continuous solvent
+model, we use ddCOSMO (domain-decomposition COSMO solvation model), and for the display solvent model we use the QM/MM method in combination with the pDymamo2.0 program package for the calculation.
 
-溶剂化效应计算
+Calculation of solvation effects
 ------------------------------------------------
-BDF目前支持基态溶剂化效应计算，包括HF和DFT方法。以下是甲醛分子溶剂化效应计算的输入文件：
+BDF currently supports the calculation of base-state solvation effects, including HF and DFT methods. The following are the input files for the solventization effect calculation of formaldehyde molecules file:
 
 .. code-block:: bdf
 
@@ -33,14 +34,16 @@ BDF目前支持基态溶剂化效应计算，包括HF和DFT方法。以下是甲
   rks
   dft
     b3lyp
-  solvent   #溶剂化计算开关
-    water    #指定溶剂
+  solvent   #Solvation calculation 
+    water    #Specify the solvent
   grid
     medium
   $END
 
-其中，在 ``SCF`` 中加入 ``solvent`` 关键词，表示要进行溶剂化效应计算，紧跟一行可以输入溶剂类型，这里是 ``water`` 。
-BDF中支持的溶剂类型列表如下：
+Where the solvent keyword is added to the ``SCF`` to indicate that a ``solvent`` effect calculation is to be performed, followed by a line where the solvent type, in this
+case ``water`` , can be entered.
+The list of solvent types supported in BDF is as follows:
+
 
 .. table::
 
@@ -139,45 +142,49 @@ BDF中支持的溶剂类型列表如下：
     ButanoicAcid               :math:`{\epsilon}` =2.9931    z-1,2-DiChloroEthene               :math:`{\epsilon}` =9.2
    ========================== ============================= ================================== =============================
 
-输入介电常数
+Entering the dielectric constant
 --------------------------------------------------------
 
-对于表中没有的溶剂，可以输入介电常数。格式如下：
+For solvents that are not in the table, you can enter the dielectric constant. The format is as follows:
 
 .. code-block:: bdf 
 
   solvent
-    user   #用户指定
+    user   #User-specified
   dielectric
-    78.3553   #输入介电常数
+    78.3553   #Enter the dielectric constant
 
 
 .. note::
 
-   溶剂化效应目前只支持能量计算，梯度计算会在近期完成。 
+   Solvation effects are currently only supported for energy calculations, and gradient calculations will be completed in the near future. 
 
 
-激发态溶剂化效应
+Excited State Solvation Effect
 ----------------------------------------------------------
 
-激发态溶剂化效应可以采用显式溶剂和隐式溶剂相结合的方法计算。以水溶液为例，由于溶质分子的HOMO和LUMO轨道有可能弥散到
-第一水合层，所以在进行激发态计算时可以将第一水合层的水分子包括在TDDFT计算区域，而其余部分用隐式溶剂处理。
+The excited state solvation effect can be calculated using a combination of explicit and implicit solvents. Take an aqueous solution as an example, due to
+the solute molecule's HOMO and LUMO orbitals may diffuse into the first hydration layer, so the excited state calculation can include the water molecules in the
+first hydration layer in the TDDFT calculation region, while the rest is treated with an implicit solvent.
 
-以芥子酸（sinapic acid）为例。为了确定溶质分子的第一水合层，可以采用Amber程序将芥子酸分子置于小的水盒子中进行分子动力学模拟。
-待体系平衡后，可分析溶质分子周围水分子分布情况，从而确定第一水合层。当然，也可以选取多帧结构进行计算，然后取平均。
+Take sinapic acid as an example. To determine the first hydration layer of the solute molecule, the Amber program can be used to simulate the molecular dynamics
+of the mustard acid molecule in a small box of water. After the system is equilibrated, the distribution of water molecules around the solute molecule can
+be analyzed to determine the first hydration layer. Of course, it is also possible to select a multi-frame structure for calculation and then take an average.
 
-水合层分子选取可以采用VMD程序完成。假设输入为pdb文件，在命令行中可以选择第一水合层分子，并保存为pdb文件。命令如下：
+The selection of molecules in the hydration layer can be done using the VMD program. Assuming that the input is a pdb file, the first hydration layer molecule
+can be selected on the command line and saved as a pdb file. The command is as follows:
 
 .. code-block:: bdf 
 
-  atomselect top  "same resid as (within 3.5  of not water)"   # 选择第一水合层
-  atomselect0 writepdb sa.pdb                     #溶质分子和第一水合层保存于pdb文件
+  atomselect top  "same resid as (within 3.5  of not water)"   # Select the first hydration layer
+  atomselect0 writepdb sa.pdb                     #Solute molecules and first hydrated layers are preserved in pdb files
 
-上例中选取了与溶质分子相距3.5埃范围内的所有水分子，并且水分子的三个原子中只要有一个在截断范围内，就选择整个分子。选取结果如图所示：
+In the above example, all water molecules within 3.5 Å of the solute molecule are selected, and the entire molecule is selected as long as one of the three atoms
+of the water molecule is within the truncation range. The selection results are shown in the figure:
 
 .. figure:: /images/SAtddft.jpg
 
-依据sa.pdb文件中的坐标信息，进行TDDFT计算，输入文件如下：
+Based on the coordinate information in the sa.pdb file, the TDDFT calculation is performed with the following input file：
 
 .. code-block:: bdf
 
