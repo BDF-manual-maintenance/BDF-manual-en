@@ -1,3 +1,5 @@
+This chapter introduces the basic use of the various functions of the BDF, and gives basic examples of calculations and analysis of data readings for specific calculation functions.
+
 .. _FirstExample:
 
 First example :math:`\ce{H2O}` RHF calculation for H2O molecules
@@ -455,7 +457,7 @@ The output of the energy printout is the occupancy of the orbitals, the orbital 
 
 Here
 
- * ``[Final occupation pattern: ]``gives the orbital occupation. Since we are performing a restricted Hartree-Fock calculation, the occupation is given only for the Alpha orbit, which is given separately according to the integrable representation. From this example, it can be seen that the first 3 of the A1 orbitals and the 1st of the B1 and B2 orbitals are occupied by 1 electron each. Since this example is an RHF, the alpha and beta orbitals are the same, so A1 indicates 3 double-occupied orbitals, and B1 and B2 indicate 1 double-occupied orbital each.
+ * ``[Final occupation pattern:]``gives the orbital occupation. Since we are performing a restricted Hartree-Fock calculation, the occupation is given only for the Alpha orbit, which is given separately according to the integrable representation. From this example, it can be seen that the first 3 of the A1 orbitals and the 1st of the B1 and B2 orbitals are occupied by 1 electron each. Since this example is an RHF, the alpha and beta orbitals are the same, so A1 indicates 3 double-occupied orbitals, and B1 and B2 indicate 1 double-occupied orbital each.
  * ``[Orbital energies:]`` The orbital energies are given separately according to the integrable representation.
  * ``Alpha   HOMO energy:`` gives the HOMO orbital energy in units au and eV; the integrable representation to which the orbital belongs, in this case B2.
  * ``Alpha   LUMO energy:`` the LUMO orbital energy is given in units of au and eV; the integrable representation to which the orbital belongs, in this case A1.
