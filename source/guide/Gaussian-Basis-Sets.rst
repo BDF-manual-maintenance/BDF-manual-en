@@ -1,4 +1,4 @@
-Gaussian basis group
+Gaussian basis set
 ================================================
 
 In order to solve the Hartree-Fock, Kohn-Sham DFT equations, it is necessary to expand the molecular orbitals into linear combinations of single-electron basis functions.
@@ -37,40 +37,40 @@ so in quantum chemistry programs the integral is usually calculated first under 
 
 .. attention::
 
-  1. most modern Gaussian basis groups are optimized under spherical basis functions, except for the older basis groups such as Pople type.
+  1. most modern Gaussian basis sets are optimized under spherical basis functions, except for the older basis sets such as Pople type.
   2. Cartesian basis functions have no advantage in terms of accuracy or efficiency, especially for all-electron relativity calculations, which also lead to numerical instability, so spherical basis functions are always used in BDF calculations. 
-  3. Cartesian and spherical basis functions lead to different results. If the results of BDF calculations are repeated with other quantum chemistry programs, it is necessary to check whether the spherical basis functions are used, in addition to ensuring that the structure, method, and basis group are the same. 
+  3. Cartesian and spherical basis functions lead to different results. If the results of BDF calculations are repeated with other quantum chemistry programs, it is necessary to check whether the spherical basis functions are used, in addition to ensuring that the structure, method, and basis set are the same. 
 In the literature, data sets of optimized GTO basis functions for various atoms in different situations have been created and given different names to be called by quantum chemistry programs. These named GTO basis function data sets are called **Gaussian Basis Sets**。
 the Gaussian Basis Sets built into the BDF are mainly from the following Basis Set Repository websites, and the original literature on the various Basis Sets can be found at the corresponding websites.
 
-* Basis Set Exchange :cite:`bse2019` ：All-electron basisets, scalar ECP basisets, can be exported in BDF format（note: ECP basisets have to be manually repositioned for ECP data）。 https://www.basissetexchange.org/
+* Basis Set Exchange :cite:`bse2019` ：All-electron basis sets, scalar ECP basis sets, can be exported in BDF format（note: ECP basisets have to be manually repositioned for ECP data）。 https://www.basissetexchange.org/
 * Stuttgart/Cologne pseudopotential basis set library: mainly SOECP basis sets, and a few early scalar ECP basis sets. http://www.tc.uni-koeln.de/PP/clickpse.en.html
 * Turbomole basis set library:all-electron basis set, scalar ECP basis set, SOECP basis set. http://www.cosmologic-services.de/basis-sets/basissets.php
-* Dyall Relativistic Basis Group: All-electron relativistic basis group. http://dirac.chem.sdu.dk/basisarchives/dyall/index.html
+* Dyall Relativistic Basis Set: All-electron relativistic basis set. http://dirac.chem.sdu.dk/basisarchives/dyall/index.html
 * Sapporo basis set library: all-electron basis sets. http://sapporo.center.ims.ac.jp/sapporo/
-* Clarkson University ECP basis group library: SOECP basis group. https://people.clarkson.edu/~pchristi/reps.html
-* ccECP Basis Group Library: Scalar ECP Basis Groups. https://pseudopotentiallibrary.org/
+* Clarkson University ECP basis set library: SOECP basis set. https://people.clarkson.edu/~pchristi/reps.html
+* ccECP Basis Set Library: Scalar ECP Basis Sets. https://pseudopotentiallibrary.org/
 
 In addition, there are individual elements with built-in motifs from the original literature.
 
 * All-electron basis set Dirac-RPF-4Z and Dirac-aug-RPF-4Z, including s-、p-region elements :cite:`dasilva2014`，d-region elements :cite:`dasilva2014a`，f-region elements :cite:`dasilva2017`
-* Pseudopotential basis group Pitzer-AVDZ-PP、Pitzer-VDZ-PP、Pitzer-VTZ-PP :cite:`pitzer2000`
-* Ce - Lu :cite:`ermler1994`, Fr - Pu :cite:`ermler1991`, Am - Og :cite:`ermler1997,ermler1999` in the pseudopotential basis group CRENBL（Note: the Am - Og basis group on the Basis Set Exchange is wrong!）
-* Am - Og :cite:`ermler1997,ermler1999` in the pseudopotential basis group CRENBS（Note: the Am - Og basis set on Basis Set Exchange is wrong!）
-* Ac, Th, Pa :cite:`dolg2014` ，U :cite:`dolg2009` in the pseudopotential basis group Stuttgart-ECPMDFSO-QZVP
+* Pseudopotential basis set Pitzer-AVDZ-PP、Pitzer-VDZ-PP、Pitzer-VTZ-PP :cite:`pitzer2000`
+* Ce - Lu :cite:`ermler1994`, Fr - Pu :cite:`ermler1991`, Am - Og :cite:`ermler1997,ermler1999` in the pseudopotential basis set CRENBL（Note: the Am - Og basis set on the Basis Set Exchange is wrong!）
+* Am - Og :cite:`ermler1997,ermler1999` in the pseudopotential basis set CRENBS（Note: the Am - Og basis set on Basis Set Exchange is wrong!）
+* Ac, Th, Pa :cite:`dolg2014` ，U :cite:`dolg2009` in the pseudopotential basis set Stuttgart-ECPMDFSO-QZVP
 
 BDF users can use either the standard basis sets from the BDF basis set library or custom basis sets.
 
 
 .. _all-e-bas:
 
-All-electron basis groups
+All-electron basis sets
 ------------------------------------------------
 
-All-electron basis groups are divided into two categories: non-shrinking basis groups and shrinking basis groups. The former can be used for both non-relativistic and relativistic calculations, but mainly for relativistic calculations, while the latter is divided into non-relativistic shrinkage basis groups and relativistic shrinkage basis groups.
+All-electron basis sets are divided into two categories: non-shrinking basis sets and shrinking basis sets. The former can be used for both non-relativistic and relativistic calculations, but mainly for relativistic calculations, while the latter is divided into non-relativistic shrinkage basis sets and relativistic shrinkage basis sets.
 
 All-electron relativistic calculations use Hamiltonians such as DKH, ZORA, X2C, etc. that take relativistic effects into account（see :ref:`Relativistic effects <relativity>` ），
-when it is necessary to use shrinkage basis groups optimized specifically for relativistic calculations, such as the cc-pVnZ-DK series, SARC, ANO-RCC, etc. 
+when it is necessary to use shrinkage basis sets optimized specifically for relativistic calculations, such as the cc-pVnZ-DK series, SARC, ANO-RCC, etc. 
 Most relativistic shrinkage basis sets treat the nucleus as a point charge, but some do take into account the nucleus distribution size effect when doing the shrinkage, which has the most pronounced effect on the shrinkage factor of the *s* and *p* asis functions.
 Accordingly, a finite nucleus model must also be used in the calculation of molecular integrals. :ref:`finite nucleus model <finite-nuclear>` 。
 
@@ -358,20 +358,20 @@ Accordingly, a finite nucleus model must also be used in the calculation of mole
 
 .. _ecp-bas:
 
-Pseudopotential basis groups
+Pseudopotential basis sets
 ------------------------------------------------
 
 The Effective Core Potential (ECP) includes the Pseudopotential (PP) and the Model Core Potential (MCP).
 The PP in quantum chemical calculations is not fundamentally different from the PP in plane wave calculations, except that it is expressed in a concise analytic form.
 Most quantum chemistry software, including BDF, supports PP, but fewer quantum chemistry software support MCP, so the names ECP and PP can be used interchangeably without ambiguity.
 
-The pseudopotential basis group needs to be used in conjunction with the pseudopotential, and the basis functions describe only the valence level electrons of the atoms. When heavier elements are involved in the system, the pseudopotential basis group is usually used for them, while the normal basis group is used for the other atoms as usual. The Lan series, the Stuttgart series, and the cc-pVnZ-PP series all belong to this group. For ease of recall, the pseudopotential basis groups of some lighter elements are actually non-relativistic all-electron basis groups, such as the Def2 series of basis groups for elements before the fifth period.
+The pseudopotential basis set needs to be used in conjunction with the pseudopotential, and the basis functions describe only the valence level electrons of the atoms. When heavier elements are involved in the system, the pseudopotential basis set is usually used for them, while the normal basis set is used for the other atoms as usual. The Lan series, the Stuttgart series, and the cc-pVnZ-PP series all belong to this set. For ease of recall, the pseudopotential basis sets of some lighter elements are actually non-relativistic all-electron basis sets, such as the Def2 series of basis sets for elements before the fifth period.
 
 .. _soecp-bas:
 
-The pseudopotential basis groups are divided into scalar pseudopotential basis groups and spin-orbit coupled pseudopotential (SOECP) basis groups, depending on whether the pseudopotential contains a spin-orbit coupling term or not.
+The pseudopotential basis sets are divided into scalar pseudopotential basis sets and spin-orbit coupled pseudopotential (SOECP) basis sets, depending on whether the pseudopotential contains a spin-orbit coupling term or not.
 
-.. table:: BDF基组库中的标准赝势基组
+.. table:: the standard pseudopotential basis sets in BDF basis set library 
     :widths: auto
     :class: longtable
 
@@ -427,7 +427,7 @@ The pseudopotential basis groups are divided into scalar pseudopotential basis g
     |                        | | CRENBS                    | | 21- 36, 39- 54, 57, 72- 86,          | SOECP，large core      |
     |                        |                             | | 104-118                              |                        |
     +------------------------+-----------------------------+----------------------------------------+------------------------+
-    | Ahlrichs               | | Def2-SVP                  | 1- 36 (全电子), 37- 57, 72- 86         | TM73是新版             |
+    | Ahlrichs               | | Def2-SVP                  | 1- 36 (all electron), 37- 57, 72- 86   | TM73 is new version    |
     |                        | | Def2-SV(P)                |                                        |                        |
     |                        | | Def2-SVPD                 |                                        |                        |
     |                        | | Def2-SVPD-TM73            |                                        |                        |
@@ -452,7 +452,7 @@ The pseudopotential basis groups are divided into scalar pseudopotential basis g
     |                        | | ma-Def2-QZVP              |                                        |                        |
     |                        | | ma-Def2-QZVPP             |                                        |                        |
     +                        +-----------------------------+----------------------------------------+------------------------+
-    |                        | | Def2-SV(P)-TM73           | 1- 36 (全电子), 37- 86                 | TM73是新版             |
+    |                        | | Def2-SV(P)-TM73           | 1- 36 (all electron), 37- 86           | TM73is new version      |
     |                        | | Def2-SVP-TM73             |                                        |                        |
     |                        | | Def2-TZVP-TM73            |                                        |                        |
     |                        | | Def2-TZVPP-TM73           |                                        |                        |
@@ -468,10 +468,10 @@ The pseudopotential basis groups are divided into scalar pseudopotential basis g
     |                        | | DHF-QZVP                  |                                        |                        |
     |                        | | DHF-QZVPP                 |                                        |                        |
     +------------------------+-----------------------------+----------------------------------------+------------------------+
-    | LAN                    | | LANL2DZ                   | | 1, 3-10 (全电子)                     |                        |
+    | LAN                    | | LANL2DZ                   | | 1, 3-10 (all electron)               |                        |
     |                        |                             | | 11-57, 72-83, 92-94                  |                        |
     +                        +-----------------------------+----------------------------------------+------------------------+
-    |                        | | LANL2DZDP                 | | 1, 6-9 (全电子)                      |                        |
+    |                        | | LANL2DZDP                 | | 1, 6-9 (all electron)                |                        |
     |                        |                             | | 14-17, 32-35, 50-53, 82-83           |                        |
     +                        +-----------------------------+----------------------------------------+------------------------+
     |                        | | LANL2TZ                   | 21- 30, 39- 48, 57, 72- 80             |                        |
@@ -487,9 +487,9 @@ The pseudopotential basis groups are divided into scalar pseudopotential basis g
     |                        | | LANL2TZ(F)                |                                        |                        |
     |                        | | LANL08(F)                 |                                        |                        |
     +------------------------+-----------------------------+----------------------------------------+------------------------+
-    | SBKJC                  | | SBKJC-VDZ                 | 1-2 (全电子), 3- 58, 72- 86            |                        |
+    | SBKJC                  | | SBKJC-VDZ                 | 1-2 (all electron), 3- 58, 72- 86      |                        |
     +                        +-----------------------------+----------------------------------------+------------------------+
-    |                        | | SBKJC-POLAR               | | 1-2 (全电子)                         |                        |
+    |                        | | SBKJC-POLAR               | | 1-2 (all electron)                   |                        |
     |                        |                             | | 3- 20, 32- 38, 50- 56, 82- 86        |                        |
     +                        +-----------------------------+----------------------------------------+------------------------+
     |                        | | pSBKJC                    | 6- 9, 14- 17, 32- 35, 50- 53           |                        |
@@ -514,11 +514,11 @@ The pseudopotential basis groups are divided into scalar pseudopotential basis g
 
 Custom basis set files
 ------------------------------------------------
-The BDF can use non-built-in basis groups, where the basis group data is saved in a text format basis group file, placed in the calculation directory, with the file name is the name of the base group to be referenced in the BDF.
+The BDF can use non-built-in basis sets, where the basis set data is saved in a text format basis set file, placed in the calculation directory, with the file name is the name of the base set to be referenced in the BDF.
 
 .. warning::
 
-    The file name of the custom base group file must be in **all capital letters** ！However, when referenced in the input file, the case is arbitrary.
+    The file name of the custom base set file must be in **all capital letters** ！However, when referenced in the input file, the case is arbitrary.
 
 For example, create a text file MYBAS-1 in the calculation directory (note: if you create a text file under Windows OS, the system may hide the extension *.txt*, so the actual name is MYBAS-1.txt) with the following contents
 
@@ -527,7 +527,7 @@ For example, create a text file MYBAS-1 in the calculation directory (note: if y
    # This is my basis set No. 1.               # any blank lines and # leading comment lines 
    # Supported elements: He and Al
 
-   ****                                        # a line beginning with four asterisks, followed by a base group of elements
+   ****                                        # a line beginning with four asterisks, followed by a base set of elements
    He      2    1                              # element sign, nuclear charge number, highest angular momentum of basis function
    S      4    2                               # S type GTO basis function, 4 original functions reduced to 2
                   3.836000E+01                 # exponents of four S-type Gaussian primitive functions
@@ -543,11 +543,11 @@ For example, create a text file MYBAS-1 in the calculation directory (note: if y
                   4.000000E-01
          1.0000000E+00           0.000000E+00
          0.0000000E+00           1.000000E+00
-   ****                       # four asterisks end the base group of he, followed by the base group of another element, or end 4个星号结束He的基组，后面可接另一个元素的基组，或者结束
+   ****                       # four asterisks end the base set of he, followed by the base set of another element, or end
    Al     13    2
    （ellipsis）
 
-In the above basis group, the P function is not contracted and can also be written in the following form.
+In the above basis set, the P function is not contracted and can also be written in the following form.
 
 .. code-block::
 
@@ -558,7 +558,7 @@ In the above basis group, the P function is not contracted and can also be writt
    ****
    （ellipsis）
 
-For pseudopotential basis groups, it is also necessary to provide ECP data after the valence basis function. For example
+For pseudopotential basis sets, it is also necessary to provide ECP data after the valence basis function. For example
 
 .. code-block::
 
@@ -619,7 +619,7 @@ For pseudopotential basis groups, it is also necessary to provide ECP data after
 
 For scalar ECP, the SOECP highest angular momentum is 0 (which can be omitted and not written), and it is not necessary to provide the data for the SO projection part.
 
-Once the above data is saved, the ``MYBAS-1`` base group can be called in the BDF input file, which is achieved by the following hybrid input mode.
+Once the above data is saved, the ``MYBAS-1`` base set can be called in the BDF input file, which is achieved by the following hybrid input mode.
 
 .. code-block:: bdf
 
@@ -632,16 +632,16 @@ Once the above data is saved, the ``MYBAS-1`` base group can be called in the BD
 
     $Compass
     Basis
-       mybas-1         # give the name of the base group file in the current directory. It is not case sensitive here
+       mybas-1         # give the name of the base set file in the current directory. It is not case sensitive here
     $End
 
-The custom base group must be entered in BDF's mixed mode. In the second line the input base group is set to **genbas**, and the custom base group file name needs to use the keyword  ``Basis`` in the **COMPASS** module with a value of ``mybas-1``, which means that the base group file named ``MYBAS-1`` is called.
+The custom base set must be entered in BDF's mixed mode. In the second line the input base set is set to **genbas**, and the custom base set file name needs to use the keyword  ``Basis`` in the **COMPASS** module with a value of ``mybas-1``, which means that the base set file named ``MYBAS-1`` is called.
 
-Basis group designation
+Basis set designation
 ------------------------------------------------
-**Use the same BDF built-in basis group for all atoms**
+**Use the same BDF built-in basis set for all atoms**
 
-In simple input mode, the basis group is specified in ``method/generic/basis group`` or ``method/basis group``. Here, the ``basis groups`` are the BDF built-in ones listed in the previous sections base group names, and the input characters are case-insensitive, as follows.
+In simple input mode, the basis set is specified in ``method/generic/basis set`` or ``method/basis set``. Here, the ``basis sets`` are the BDF built-in ones listed in the previous sections base set names, and the input characters are case-insensitive, as follows.
 
 .. code-block:: bdf
 
@@ -664,7 +664,7 @@ In simple input mode, the basis group is specified in ``method/generic/basis gro
    Cl  0.000   0.000    1.400
    End geometry
 
-In case of advanced input mode, the basis group used for the calculation is specified in the ``compass`` module using the keyword ``basis``, for example
+In case of advanced input mode, the basis set used for the calculation is specified in the ``compass`` module using the keyword ``basis``, for example
 
 .. code-block:: bdf
 
@@ -677,16 +677,16 @@ In case of advanced input mode, the basis group used for the calculation is spec
   End geometry
   $end
 
-where ``lanl2dz`` calls the built-in LanL2DZ basis group (registered in the ``basisname`` basisname file), which is case-insensitive.
+where ``lanl2dz`` calls the built-in LanL2DZ basis set (registered in the ``basisname`` basisname file), which is case-insensitive.
 
-**Specifying different basis groups for different elements** 
+**Specifying different basis sets for different elements** 
 
-You have to use the mixed input mode, i.e. set the basis group to ``genbas`` in ``Methods/Generic/Bases``, and add the **COMPASS** module input, specifying the basis group using the ``basis-block`` ... ``end basis`` keyword.
+You have to use the mixed input mode, i.e. set the basis set to ``genbas`` in ``Methods/Generic/Bases``, and add the **COMPASS** module input, specifying the basis set using the ``basis-block`` ... ``end basis`` keyword.
 
 If you specify a different name for a different element, you need to put it in the **COMPASS** module's ``basis-block`` ... ``end basis`` block.
-where the first line is the default base group and the subsequent lines specify other base groups for different elements in the format *element= base group name * or *element1, element2, ...,element n= base group name* 。
+where the first line is the default base set and the subsequent lines specify other base sets for different elements in the format *element= base set name * or *element1, element2, ...,element n= base set name* 。
 
-For example, an example of using different basis groups for different atoms in mixed input mode is as follows.
+For example, an example of using different basis sets for different atoms in mixed input mode is as follows.
 
 .. code-block:: bdf
 
@@ -705,7 +705,7 @@ For example, an example of using different basis groups for different atoms in m
   End Basis
   $end
 
-In the above example, the 3-21G basis group is used for H, while the default LanL2DZ basis group is used for Cl which is not additionally defined.
+In the above example, the 3-21G basis set is used for H, while the default LanL2DZ basis set is used for Cl which is not additionally defined.
 
 In case of advanced input, the following is used.
 
@@ -722,9 +722,9 @@ In case of advanced input, the following is used.
   End geometry
   $end
 
-**Assigning different basis groups to different atoms of the same element** 
+**Assigning different basis sets to different atoms of the same element** 
 
-The BDF can also assign different base groups with different names to different atoms of the same element, which need to be distinguished by an arbitrary number after the element symbol to distinguish them. For example
+The BDF can also assign different base sets with different names to different atoms of the same element, which need to be distinguished by an arbitrary number after the element symbol to distinguish them. For example
 
 
 .. code-block:: bdf
@@ -748,12 +748,12 @@ The BDF can also assign different base groups with different names to different 
   End basis
   $end
 
-In the above example, the cc-pVDZ group is used for the two hydrogen atoms of type H1, the 3-21G group for the two hydrogen atoms of type H2, and the 6-31G group for the carbon atoms. Note that the symmetry equivalent atoms must use the same basis group, which will be checked by the program;
-if the symmetry equivalent atoms have to use different basis groups, the symmetry can be set to a lower point group symmetry by ``Group`` or turned off with ``Nosymm``.
+In the above example, the cc-pVDZ basis set is used for the two hydrogen atoms of type H1, the 3-21G basis set for the two hydrogen atoms of type H2, and the 6-31G basis set for the carbon atoms. Note that the symmetry equivalent atoms must use the same basis set, which will be checked by the program;
+if the symmetry equivalent atoms have to use different basis sets, the symmetry can be set to a lower point set symmetry by ``Group`` or turned off with ``Nosymm``.
 
-Auxiliary basis groups
+Auxiliary basis sets
 ------------------------------------------------
-The method using density fitting approximation (RI) requires an auxiliary basis group. the Ahlrichs family of basis groups and the Dunning correlation consistency basis group as well as other individual basis groups have specially optimized auxiliary basis groups. the auxiliary basis groups can be specified in BDF by the ``RI-J``、 ``RI-K`` and ``RI-C`` keywords in compass. 其中 ``RI-J`` 用于指定库伦拟合基组， ``RI-K`` 用于指定库伦交换拟合基组， ``RI-C`` 用于指定库伦相关拟合基组。The auxiliary basis groups supported by BDF are stored in the corresponding folder under the ``$BDFHOME/basis_library`` path。
+The method using density fitting approximation (RI) requires an auxiliary basis set. the Ahlrichs family of basis sets and the Dunning correlation consistency basis set as well as other individual basis sets have specially optimized auxiliary basis sets. the auxiliary basis sets can be specified in BDF by the ``RI-J``、 ``RI-K`` and ``RI-C`` keywords in compass. ``RI-J`` is used to assign coulomb fitting basis set, ``RI-K`` is used to assign coulomb exchange fitting basis set, ``RI-C`` assign coulomb correlation fitting basis set. The auxiliary basis sets supported by BDF are stored in the corresponding folder under the ``$BDFHOME/basis_library`` path。
 
 High-level density fitting bases can be used on lower-level bases, e.g. ``cc-pVTZ/C`` can be used to do RI-J on ``cc-pVTZ``，and for pople series bases such as ``6-31G**`` that do not have a standard auxiliary base, ``cc-pVTZ/J`` can be used to do RI-J or RIJCOSX. Conversely, a high-level orbital basis set combined with a low-level auxiliary basis set introduces a more significant error.
 
