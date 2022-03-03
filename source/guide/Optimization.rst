@@ -1,26 +1,33 @@
 .. _GeomOptimization:
 
-结构优化与频率计算
-================================================
+Structural Optimization and Frequency Calculation
+===================================================
 
-结构优化的目的是找到体系势能面的极小点。能找到哪个极小点取决于输入文件中提供的初始结构，离哪个极小点越近，一般越容易收敛到哪个极小点。
+The purpose of structural optimization is to find the minimum point of the potential energy surface of the system. The minimum point that can be found depends
+on the initial structure provided in the input file. The closer to the minima, the easier it is to converge to the minima.
 
-结构优化在数学上等价于寻找多元函数极值问题：
+Structural optimization is mathematically equivalent to the problem of finding the extrema of a multivariate function.：
 
 .. math::
     F_{i} = -\frac{\partial E(R_1,R_2,\dots,R_N)}{\partial R_i} = 0, i=1,2,\dots,N
 
-结构优化常用算法如下：
+Commonly used algorithms for structural optimization are as follows：
 
-#. 最速下降法（Steepest descent）：最速下降法就是沿着负梯度的方向进行线搜索，对于远离极小点的结构，最速下降法优化效率非常高，但临近极小点时收敛慢，容易震荡。
-#. 共轭梯度法（Conjugate gradient）：共轭梯度法是最速下降法的改良，每步优化方向与前一步的优化方向相组合,能一定程度缓解震荡问题。
-#. 牛顿法（Newton method）：牛顿法的思路是将函数相对于当前位置进行泰勒级数展开。牛顿法收敛很快，对于二次函数一步就可以走到极小点。但是牛顿法需要求解Hessian矩阵，计算非常昂贵，一般几何优化中使用准牛顿法。
-#. 准牛顿法（Quasi-Newton method）：准牛顿法通过近似方法构建 Hessian矩阵，当前步的Hessian矩阵基于当前步的受力和上一步的Hessian矩阵来得到。具体做法有多种，最常用的是BFGS法，此外还有DFP、MS、PSB等。由于准牛顿法的 Hessian是近似构建的，所以每一步优化的准确度低于牛顿法，达到收敛所需步数较牛顿法更多。但由于每一步耗时大为降低，所以优化总耗时还是显著减少了。
+#. Steepest descent：The steepest descent method is a line search along the direction of the negative gradient, which is very efficient for structures far from the minima, but slow to converge near the minima and easy to oscillate.
+#. Conjugate gradient：Conjugate gradient method is a modification of the most rapid descent method, the optimization direction of each step and the previous step of the combination of optimization direction, can somewhat alleviate the problem of oscillation
+#. Newton method：The idea of Newton method is to expand the function with respect to the current position in the Taylor series. Newton method converges quickly, for the quadratic function can go to the minimum in one step.
+However, the Newton method requires solving the Hessian matrix, which is very expensive to compute, and the quasi-Newton method is generally used in geometric optimization.
+#. Quasi-Newton method：The quasi-Newton method constructs the Hessian matrix by approximation, and the Hessian matrix of the current step is obtained based on the forces of the current step and the Hessian matrix of the
+previous step. There are various approaches, the most commonly used is the BFGS method, in addition to DFP, MS, PSB, etc. Since the Hessian of the quasi-Newton
+method is constructed approximately, the accuracy of each optimization step is lower than that of the Newton method, and the number of steps required to reach
+convergence is more than that of the Newton method. However, the total optimization time is still significantly reduced because each step takes much less time.
 
-BDF的结构优化是由BDFOPT模块来实现的，支持基于牛顿法和准牛顿法来进行极小值点结构和过渡态结构的优化，且支持限制性结构优化等。以下对BDFOPT模块的输入文件格式举例进行介绍，并对输出文件进行解读。
+The structural optimization of the BDF is implemented by the BDFOPT module, which supports the Newtonian and quasi-Newtonian based methods for minima and transition
+The BDFOPT module supports Newtonian and quasi-Newtonian methods for the optimization of minima and transition structures, and supports restricted
+structure optimization. The following is an example of the input file format of the BDFOPT module, and an explanation of the output file。
 
-基态结构优化：一氯甲烷（ :math:`\ce{CH3Cl}` ）在B3LYP/def2-SV(P)水平下的结构优化
----------------------------------------------------------------------------------
+Base state optimization: Optimization of monochloromethane（ :math:`\ce{CH3Cl}` ）at the B3LYP/def2-SV(P) level
+---------------------------------------------------------------------------------------------------------------------
 
 .. code-block:: bdf
 
@@ -56,17 +63,25 @@ BDF的结构优化是由BDFOPT模块来实现的，支持基于牛顿法和准�
     geom
     $end
 
-其中RESP模块负责计算DFT梯度。与其他大部分任务不同，在结构优化任务中，程序并不是按顺序、单次、线性地调用各模块，而是会反复多次调用各模块。具体的调用顺序为：
+The RESP module is responsible for calculating the DFT gradient. Unlike most other tasks, in the structure optimization task, the program does not sequentially and
+single, linear invocation of the modules, but rather, the modules are invoked several times iteratively. The specific sequence of calls is as follows：
 
- 1. 运行COMPASS，读取分子结构等信息；
- 2. 运行BDFOPT，对结构优化所需的中间量进行初始化；
- 3. BDFOPT启动一个独立的BDF进程，用来计算当前结构下的能量和梯度，该进程只执行COMPASS、XUANYUAN、SCF、RESP各模块，而跳过BDFOPT。也即，大部分时候用户会发现有两个BDF进程在彼此独立地运行，其中一个为BDFOPT所属的进程，处于等待状态，而另一个进程则在进行能量和梯度的计算。为避免输出文件过于杂乱，后一个进程的输出会被自动重定向到后缀为 ``.out.tmp`` 的文件，从而与BDFOPT模块的输出（一般会被用户重定向到 ``.out`` 文件）分开；
- 4. 待后一个进程结束时，BDFOPT汇总当前结构的能量和梯度信息，并据此调整分子结构，以期降低体系能量；
- 5. BDFOPT根据当前结构的梯度以及当前几何结构步长（geometry step）的大小，判断结构是否收敛，如收敛，或结构优化达到最大迭代次数，则程序结束；如不收敛，则跳至第3步。
+ 1. run COMPASS, which reads the molecular structure and other information； 
+ 2. run BDFOPT to initialize the intermediate quantities needed for structure optimization；
+ 3. BDFOPT starts a separate BDF process to calculate the energy and gradient under the current structure, which only executes COMPASS, XUANYUAN, SCF, and RESP modules
+and skips BDFOPT. i.e., most of the time the user will find two BDF processes running independently of each other, one of which is the process to which BDFOPT
+belongs and is waiting. is in the waiting state, while the other process is performing energy and gradient calculations. To avoid cluttering the output file,
+the output of the latter process is automatically redirected to a file with the ``.out.tmp`` suffix, thus separating it from the output of the BDFOPT module
+(which is typically redirected by the user to an ``.out`` file)
+ 4. when the latter process is finished, BDFOPT aggregates the energy and gradient information of the current structure and adjusts the molecular structure
+accordingly with a view to reducing the energy of the system；
+ 5. BDFOPT determines whether the structure converges according to the gradient of the current structure and the size of the current geometry step, if it converges, or if the structure optimization reaches the maximum number of iterations, the
+program ends; if it does not converge, the program jumps to step 3。
 
-因此， ``.out`` 文件只包含COMPASS和BDFOPT模块的输出，可以用来监测结构优化的进程，但不包含SCF迭代、布居分析等信息，后者需要在 ``.out.tmp`` 文件中查看。
+Therefore, the ``.out`` file contains only the output of COMPASS and BDFOPT modules, which can be used to monitor the process of structural optimization, but does not
+contain information on SCF iterations, Buju analysis, etc., which needs to be viewed in the ``.out.tmp`` file
 
-以上述 :math:`\ce{CH3Cl}` 的结构优化任务为例，可以看到 ``.out`` 文件里BDFOPT模块的输出：
+Taking the structure optimization task of :math:`\ce{CH3Cl}` above as an example, the output of the BDFOPT module in the ``.out`` file can be seen as follows:
 
 .. code-block:: 
 
@@ -95,11 +110,14 @@ BDF的结构优化是由BDFOPT模块来实现的，支持基于牛顿法和准�
          4       -0.0003229876       -0.0006350885       -0.0000059774
          5       -0.0008670369       -0.0021403962       -0.0000084046
 
-可以看到BDFOPT调用了BDF程序本身，来计算初猜结构下分子的SCF能量和梯度。SCF和梯度计算的详细输出在 ``.out.tmp`` 文件中，而 ``.out`` 文件仅摘取能量值、梯度值，以及SCF是否收敛等信息。其中，能量的单位为Hartree，梯度的单位为Hartree/Bohr。
+It can be seen that BDFOPT calls the BDF program itself to calculate the SCF energy and gradient of the molecule under the initial guess structure. the detailed
+output of the SCF and gradient calculations is in the ``.out.tmp`` file, while the ``.out`` file only extracts the energy and gradient values, as well as information on
+whether the SCF converges or not. The unit of energy is Hartree and the unit of gradient is Hartree/Bohr.
 
-因BDFOPT是在冗余内坐标下优化的结构（ ``solver`` = 1），为了产生下一步的分子结构，必须先产生分子的冗余内坐标。
-因此在第一步结构优化时，输出文件还会给出各个冗余内坐标的定义（即参与形成相应的键、键角、二面角的原子编号），
-以及它们的值（键长的单位为埃，键角、二面角的单位为度）：
+
+Since BDFOPT is a structure optimized in redundant internal coordinates（ ``solver`` = 1），in order to generate the molecular structure for the next step, the redundant
+internal coordinates of the molecule must be generated first. Therefore, in the first step of the structure optimization, the output file also gives the definition
+of the individual redundant internal coordinates (i.e. the atomic numbers involved in the formation of the corresponding bonds, bond angles and dihedral angles), as well as their values (bond lengths in angstroms, bond angles in degrees).
 
 .. code-block:: 
 
@@ -132,7 +150,7 @@ BDF的结构优化是由BDFOPT模块来实现的，支持基于牛顿法和准�
 
     |******************************************************************************|
 
-待分子结构更新完成后，程序计算梯度以及几何步长的大小，判断结构优化是否收敛：
+After the molecular structure has been updated, the program calculates the gradient as well as the size of the geometric step and determines whether the structural optimization converges：
 
 .. code-block:: 
 
@@ -141,7 +159,9 @@ BDF的结构优化是由BDFOPT模块来实现的，支持基于牛顿法和准�
         Current values  :  0.8833E-02   0.2235E-01   0.2445E-01   0.5934E-01
         Geom. converge  :     No           No           No           No
 
-仅当均方根力（Force-RMS）、最大力（Force-Max）、均方根步长（Step-RMS）、最大步长（Step-Max）的当前值均小于对应的收敛限的时候（也即 ``Geom. converge`` 栏均为Yes），程序才认为结构优化收敛。对于本算例，结构优化在第5步时收敛，此时输出信息不仅包含各收敛判据的值，还会明确告知用户几何优化已收敛，并分别以笛卡尔坐标和内坐标的形式打印收敛的分子结构：
+The program considers the convergence of the structural optimization only when the current values of Force-RMS, Force-Max, Step-RMS, and Step-Max are less than the corresponding convergence limits (i.e.,  ``Geom. converge`` column is Yes).
+For this example, the structural optimization converges at step 5, when the output message not only contains the values of the convergence criteria, but also
+explicitly informs the user that the geometry optimization has converged, and prints the converged molecular structure in Cartesian and internal coordinates, respectively.
 
 .. code-block:: 
 
@@ -191,9 +211,12 @@ BDF的结构优化是由BDFOPT模块来实现的，支持基于牛顿法和准�
 
     |******************************************************************************|
 
-注意此处的均方根力和均方根步长的收敛限可以分别通过 ``tolgrad`` 和 ``tolstep`` 关键词来设定，程序自动根据设定值来调整最大力和最大步长的收敛限；当使用DL-FIND库时（见后），还可用 ``tolene`` 指定能量收敛限。不过一般不建议用户自行调整收敛限。
+Note that the convergence limits for the root-mean-square force and the rootmean-square step can be set here using the ``tolgrad`` and ``tolstep`` keywords,
+respectively, and the program automatically adjusts the convergence limits for the maximum force and the maximum step according to the set values; when using
+the DL-FIND library (see later), the energy convergence limit can also be specified by ``tolene``. However, it is generally not recommended to adjust the convergence limits by the user.
 
-与此同时，程序还会产生后缀为 ``.optgeom`` 的文件，其内容是优化后的分子结构的笛卡尔坐标（若是一般的单点计算，则为当前结构在标准取向下的笛卡尔坐标），但单位为Bohr而非Angstrom：
+
+At the same time, the program generates files with the suffix ``.optgeom`` , which contain the Cartesian coordinates of the converged molecular structure, but in Bohr units instead of Angstrom:
 
 .. code-block:: 
 
@@ -204,18 +227,20 @@ BDF的结构优化是由BDFOPT模块来实现的，支持基于牛顿法和准�
             H             -2.7178161476        -2.0052051760        -0.6126883555
             Cl             0.4272106261         1.1761889168        -0.0000021938
 
-``.optgeom`` 文件可以用 ``$BDFHOME/sbin/`` 下的工具 ``optgeom2xyz.py`` 转为xyz格式，从而可以在支持xyz格式的任何可视化软件里观看优化后的分子结构。例如待转换的文件名为filename.optgeom，则在命令行执行：（注意必须先设定环境变量$BDFHOME，或手动用BDF文件夹的路径替代下述命令里的$BDFHOME）
+The ``.optgeom`` file can be converted to xyz format using the tool ``optgeom2xyz.py`` under ``$BDFHOME/sbin/`` , so that the optimized molecular structure can be viewed in
+any visualization software that supports xyz format. For example, if the file to be converted is named filename.optgeom, execute the following command line: (note
+that you must first set the environment variable $BDFHOME, or manually replace $BDFHOME in the following command with the path to the BDF folder)
 
 .. code-block:: shell
 
     $BDFHOME/sbin/optgeom2xyz.py filename
 
-即可在当前目录下得到filename.xyz。
+You can get filename.xyz in the current directory.
 
-频率计算：:math:`\ce{CH3Cl}` 在平衡结构下的谐振频率及热化学量的计算
--------------------------------------------------------------------------
+Frequency calculation: Resonant frequencies and thermochemical quantities of :math:`\ce{CH3Cl}` in the equilibrium structure
+-------------------------------------------------------------------------------------------------------------------------------------------------
 
-结构优化收敛后，即可进行频率分析。准备以下输入文件：
+After convergence of the structure optimization, the frequency analysis can be performed. Prepare the following input file：
 
 .. code-block:: bdf
 
@@ -251,7 +276,11 @@ BDF的结构优化是由BDFOPT模块来实现的，支持基于牛顿法和准�
     geom
     $end
 
-其中分子结构为上述结构优化任务得到的收敛的结构。注意我们在BDFOPT模块中添加了 ``hess only`` ，其中 ``hess`` 代表计算（数值）Hessian，而 ``only`` 的含义将在后续章节详述。程序将分子中的每个原子分别向x轴正方向、x轴负方向、y轴正方向、y轴负方向、z轴正方向、z轴负方向进行扰动，并计算扰动结构下的梯度，如：
+where the molecular structure is the converged structure obtained from the above structure optimization task. Note that we have added ``hess only`` to the BDFOPT
+module, where ``hess`` stands for computed (numerical) Hessian, and the meaning of ``only`` will be described in detail in the subsequent sections. The program perturbs
+each atom in the molecule in the positive x-axis, negative x-axis, positive yaxis, negative y-axis, positive z-axis, and negative z-axis directions, and
+calculates the gradient under the perturbed structure, e.g.
+
 
 .. code-block:: 
 
@@ -277,7 +306,9 @@ BDF的结构优化是由BDFOPT模块来实现的，支持基于牛顿法和准�
          4       -0.0003058645        0.0000115926       -0.0000775624
          5       -0.0000498284       -0.0000354732        0.0000023346
 
-若体系的原子数为N，则共需计算6N个梯度。然而实际上程序还会顺便计算未扰动的结构的梯度，以供用户检查前述结构优化是否确实已经收敛，因此程序实际共计算6N+1个梯度。最后程序通过有限差分方法得到体系的Hessian：
+If the atomic number of the system is N, then a total of 6N gradients have to be calculated. However, in practice the program also calculates the gradients of the
+unperturbed structure in order to allow the user to check whether the aforementioned structural optimization has indeed converged, so that the program
+actually calculates a total of 6N+1 gradients. Finally, the program obtains the Hessian of the system by the finite difference method.：
 
 .. code-block:: 
 
@@ -337,9 +368,10 @@ BDF的结构优化是由BDFOPT模块来实现的，支持基于牛顿法和准�
 
     |--------------------------------------------------------------------------------|
 
-其中第3N+1（3N+2、3N+3）行对应第N个原子的x（y、z）坐标，第3N+1（3N+2、3N+3）列同理。
+where the 3N+1 (3N+2, 3N+3) rows correspond to the x (y, z) coordinates of the Nth atom and the 3N+1 (3N+2, 3N+3) columns do the same.
 
-接下来BDF调用UniMoVib程序进行频率和热力学量的计算。首先是振动所属不可约表示、振动频率、约化质量、力常数和简正模的结果：
+Next, the BDF calls the UniMoVib program for the calculation of frequencies and thermodynamic quantities. First are the results for the integrable representation
+to which the vibration belongs, the vibrational frequency, the approximate mass, the force constants and the simple positive modes：
 
 .. code-block:: 
 
@@ -362,7 +394,8 @@ BDF的结构优化是由BDFOPT模块来实现的，支持基于牛顿法和准�
                4   1        -0.19549  -0.38777  -0.01079       0.05490  -0.14087  -0.24770       0.15594   0.73490  -0.07808
                5  17         0.08533   0.23216   0.00014       0.00947  -0.00323  -0.01995      -0.01869   0.00699  -0.01000
 
-其中各振动模式是按振动频率从小到大的顺序排列的，而虚频排在所有实频的前面，因此只需检查前几个频率，即可得知虚频的数目。接下来打印热化学分析结果：
+Where each vibration mode is arranged in the order of vibration frequencies from smallest to largest, and the imaginary frequencies are ranked before all real
+frequencies, so only the first few frequencies need to be checked to know the number of imaginary frequencies. Next, the thermochemical analysis results are printed：
 
 .. code-block::
 
@@ -404,14 +437,14 @@ BDF的结构优化是由BDFOPT模块来实现的，支持基于牛顿法和准�
      Sum of electronic and thermal Free Energies:         -499.826695
      ====================================================================================
 
-用户可根据需要读取零点能、焓、Gibbs自由能等数据。注意以上所有热力学量是在以下各个假设下得到的：
+The user can read the zero-point energy, enthalpy, Gibbs free energy, etc. as needed. Note that all of the above thermodynamic quantities are obtained under each of the following assumptions：
 
-1. 频率校正因子为 1.0；
-2. 温度为 298.15 K；
-3. 压强为 1 atm；
-4. 电子态的简并度为1。
+1. a frequency correction factor of 1.0；
+2. a temperature of 298.15 K；
+3. a pressure of 1 atm；
+4. the simplicity of the electronic state is 1。
 
-如用户的计算不属于以上情形，可以通过一系列关键词进行指定，如以下的写法代表频率校正因子为0.98，温度为373.15 K，压强为2 atm，电子态的简并度为2：
+If the user's calculation does not fall under the above scenario, it can be specified by a series of keywords, such as the following, which represents a frequency correction factor of 0.98, a temperature of 373.15 K, a pressure of 2 atm, and a simplicity of 2 for the eletronic state. 
 
 .. code-block:: bdf
 
@@ -428,9 +461,13 @@ BDF的结构优化是由BDFOPT模块来实现的，支持基于牛顿法和准�
      2
     $end
     
-其中尤其需要注意的是电子态的简并度，对于非相对论或标量相对论计算，且电子态不存在空间简并性的情形，电子态的简并度等于自旋多重度（2S+1）；对于存在空间简并性的电子态，还应乘上电子态的空间简并度，也即电子波函数的空间部分所属不可约表示的维数。至于考虑了旋轨耦合的相对论性计算（如TDDFT-SOC计算），则应将自旋多重度替换为相应旋量态的简并度（2J+1）。
+Of particular note is the simplicity of the electronic state, which is equal to the spin multiplet (2S+1) for non-relativistic or scalar relativistic calculations
+and where the electronic state does not have spatial simplicity; for electronic states with spatial simplicity, the spatial simplicity of the electronic state
+should also be multiplied by the spatial simplicity of the electronic state, which is the number of dimensions of the incommensurable representation to which the
+spatial part of the electronic wave function belongs. As for the relativistic calculations considering the spin-orbit coupling (e.g., TDDFT-SOC calculations),
+the spin multiplicity should be replaced by the simplicity of the corresponding spin state (2J+1).
 
-有时因SCF不收敛或其他外在原因，导致频率计算中断，此时可在BDFOPT模块里加入 ``restarthess`` 关键词进行断点续算，节省计算时间，如：
+Sometimes, the frequency calculation is interrupted due to SCF non-convergence or other external reasons, when the calculation time can be saved by adding the ``restarthess`` keyword to the BDFOPT module for breakpoint continuation, e.g.
 
 .. code-block:: bdf
 
@@ -440,7 +477,8 @@ BDF的结构优化是由BDFOPT模块来实现的，支持基于牛顿法和准�
     restarthess
     $end
 
-此外值得注意的是，可以在同一个BDF任务里依次实现结构优化与频率分析（即所谓的opt+freq计算），而无需单独编写两个输入文件。为此只需将BDFOPT模块的输入改为：
+It is also worth noting that structural optimization and frequency analysis (the so-called opt+freq calculation) can be implemented sequentially in the same BDF
+task, without the need to write two separate input files. For this purpose it is sufficient to change the input of the BDFOPT module to：
 
 .. code-block:: bdf
 
@@ -451,12 +489,14 @@ BDF的结构优化是由BDFOPT模块来实现的，支持基于牛顿法和准�
      final
     $end
 
-其中final表示在结构优化成功结束后才进行数值Hessian计算；若结构优化不收敛，则程序直接报错退出，而不进行Hessian及频率、热力学量的计算。由此可以看出，前述的频率计算输入文件中的only，即为只进行频率计算而不进行结构优化之意。
+where final means that the numerical Hessian calculation is performed only after the successful completion of the structural optimization; if the structural
+optimization does not converge, the program simply quits with an error and does not perform the Hessian and frequency and thermodynamic quantities calculations.
+If the structural optimization does not converge, the program quits without performing the Hessian, frequency, and thermodynamic quantities calculations.
 
-过渡态结构优化：HCN/HNC异构反应的过渡态优化和频率计算
----------------------------------------------------------------
+Transition State Optimization: Transition State Optimization and Frequency Calculation for HCN/HNC Heterogeneous Reactions
+-------------------------------------------------------------------------------------------------------------------------------
 
-准备以下输入文件：
+Prepare the following input file:
 
 .. code-block:: bdf
 
@@ -494,11 +534,24 @@ BDF的结构优化是由BDFOPT模块来实现的，支持基于牛顿法和准�
     geom
     $end
 
-其中 ``iopt 10`` 表示优化过渡态。
+where ``iopt 10`` indicates the optimized transition state.
 
-无论是优化极小值点结构，还是优化过渡态，程序都必须在第一步结构优化之前产生一个初始的Hessian，以备后续结构优化步骤使用。一般而言，初始Hessian应当与初始结构下的精确Hessian定性符合，尤其是虚频数目必须一致。对于极小值点的优化，这个要求很容易满足，即便是分子力学级别的Hessian（所谓“模型Hessian”）也能做到和精确Hessian定性一致，因此此时程序以模型Hessian为初始Hessian，而无需计算精确Hessian。然而对于过渡态优化，模型Hessian一般不存在虚频，因此必须产生精确Hessian作为初始Hessian。以上输入文件的 ``hess init+final`` 即表示既产生初始Hessian以备过渡态优化需要（此Hessian因为不是在梯度为0的结构上计算的，频率及热化学量没有明确物理意义，因此仅计算Hessian而不做频率分析），又在结构优化收敛后再次进行Hessian计算，以得到频率分析结果。也可将 ``init+final`` 替换为 ``init`` ，即只产生初始Hessian，而结构优化收敛后不再次计算Hessian，但因过渡态优化（乃至所有结构优化任务）一般需要检验最终收敛的结构的虚频数目，因此不建议省略final关键词。
+Whether optimizing the minima structure or the transition state, the program must generate an initial Hessian prior to the first structural optimization step for
+use in subsequent structural optimization steps. In general, the initial Hessian should qualitatively match the exact Hessian under the initial structure, and in
+particular, the number of imaginary frequencies must be the same. This requirement is easily satisfied for the optimization of very small value points, and even the
+molecular mechanics level Hessian (the so-called "model Hessian") can be made to match the exact Hessian qualitatively, so the program uses the model Hessian as
+the initial Hessian without calculating the exact Hessian. However, for transition state optimization, the model Hessian generally does not have an imaginary
+frequency, so the exact Hessian must be generated as the initial Hessian. ``hess init+final`` in the above input file means that both the initial Hessian is generated
+for the transition state optimization (this Hessian is not calculated on a structure with gradient 0), and the frequency and thermochemical quantities are
+not calculated on a gradient 0 structure. The hess init+final in the above input file means that the initial Hessian is generated for the transition state optimization (this Hessian is not calculated on the structure with gradient 0,
+the frequency and thermochemical quantities have no clear physical meaning, so only the Hessian is calculated without frequency analysis), and the Hessian is
+calculated again after the structure optimization converges to obtain the frequency analysis results. It is also possible to replace ``init+final`` with ``init`` , i.e., to generate only the initial Hessian and
+not to calculate the Hessian again after convergence of the structural optimization, but it is not recommended to omit the final keyword since transition state
+optimization (and indeed all structural optimization tasks) generally requires checking the number of virtual frequencies of the final converged structure.
 
-计算的输出与优化极小值点结构类似。最后频率分析时可以看到收敛的结构有且仅有一个虚频（-1104 :math:`\rm cm^{-1}`）：
+
+The computed output is similar to that of the optimized minimal value point structure. The final frequency analysis shows that the converged structure has
+one and only one imaginary frequency（-1104 :math:`\rm cm^{-1}`）：
 
 .. code-block:: 
 
@@ -515,11 +568,14 @@ BDF的结构优化是由BDFOPT模块来实现的，支持基于牛顿法和准�
                2   7         0.03452  -0.06617   0.00000      -0.62958  -0.08802   0.00000       0.00688  -0.01481   0.00000
                3   1        -0.99304  -0.01621   0.00000       0.22954   0.15167   0.00000      -0.06313   0.99566   0.00000
 
-代表确实找到了过渡态。
+This means that the transition state is indeed found.
 
-在以上计算中，初始Hessian的理论级别与过渡态优化的理论级别一致。因初始Hessian只需定性正确即可，实际计算中可以在另一个较低的级别下计算初始Hessian，再在较高理论级别下优化过渡态。仍以以上算例为例，假如我们想在HF/STO-3G级别下计算初始Hessian，而在B3LYP/def2-SVP级别下优化过渡态，可以按照以下步骤进行：
+In the above calculation, the theoretical level of the initial Hessian is the same as the theoretical level of the transition state optimization. Since the initial
+Hessian only needs to be qualitatively correct, the initial Hessian can be calculated at a lower level and then the transition state can be optimized at a
+higher theoretical level. Taking the above example, if we want to calculate the initial Hessian at the HF/STO-3G level and optimize the transition state at the B3LYP/Def2-SVP level, we can follow the following steps.
 
-（1）准备以下输入文件，命名为 ``HCN-inithess.inp`` ：
+
+（1）Prepare the following input file named ``HCN-inithess.inp`` ：
 
 .. code-block:: bdf
 
@@ -551,11 +607,11 @@ BDF的结构优化是由BDFOPT模块来实现的，支持基于牛顿法和准�
     geom
     $end
 
-（2）用BDF运行该输入文件，得到Hessian文件 ``HCN-inithess.hess`` ；
+（2）Run the input file with BDF to obtain the Hessian file  ``HCN-inithess.hess`` ；
 
-（3）将 ``HCN-inithess.hess`` 复制或重命名为 ``HCN-optTS.hess`` ；
+（3）Copy or rename  ``HCN-inithess.hess`` to ``HCN-optTS.hess`` ；
 
-（4）准备以下输入文件，命名为 ``HCN-optTS.inp``：
+（4）Prepare the following input file, named ``HCN-optTS.inp``：
 
 .. code-block:: bdf
 
@@ -594,14 +650,18 @@ BDF的结构优化是由BDFOPT模块来实现的，支持基于牛顿法和准�
     geom
     $end
 
-其中关键词 ``readhess`` 表示读取与该输入文件同名的hess文件（即HCN-optTS.hess）作为初始Hessian。注意尽管该输入文件不会重新计算初始Hessian，仍然需要写 ``hess init+final`` 而不是 ``hess final`` 。
+Where the keyword ``readhess`` means to read a hess file with the same name as the input file (i.e. HCN-optTS.hess) as the initial Hessian.
+Note that although this input file does not recalculate the initial Hessian, you still need to write ``hess init+final`` instead of ``hess final`` .
 
-（5）运行该输入文件即可。
+（5）Just run the input file.
 
-限制性结构优化
+Restricted Structural Optimization
 -------------------------------------------------------
 
-BDF还支持在结构优化中限制一个或多个内坐标的值，方法是在BDFOPT模块中加入constrain关键词。constrain关键词后的第一行为一个整数（以下称为N），表示总的限制数目；第2行到第N+1行定义每个限制。例如以下输入表示在结构优化时限制第2个原子和第5个原子之间的距离（这两个原子之间不一定需要有化学键）：
+BDF also supports restricting the value of one or more internal coordinates in structure optimization by adding the constrain keyword to the BDFOPT module. the
+first line after the constrain keyword is an integer (hereafter called N) indicating the total number of restrictions; lines 2 through N+1 define each
+restriction. For example, the following input indicates the distance between the 2nd atom and the 5th atom (these two atoms do not necessarily need to be chemically
+bonded to each other) to be restricted during structure optimization:
 
 .. code-block:: bdf
 
@@ -613,7 +673,8 @@ BDF还支持在结构优化中限制一个或多个内坐标的值，方法是�
      2 5
     $end
 
-以下输入表示在结构优化时限制第1个原子和第2个原子之间的距离，同时还限制第2、第5、第10个原子形成的键角（同样地，不要求第2、第5个原子，或第5、第10个原子之间有化学键）：
+The following input indicates that the distance between the 1st atom and the 2nd atom is restricted during structure optimization, and also the bond angles formed
+by the 2nd, 5th and 10th atoms (again, no chemical bond is required between the 2nd and 5th atoms, or the 5th and 10th atoms)：
 
 .. code-block:: bdf
 
@@ -626,7 +687,7 @@ BDF还支持在结构优化中限制一个或多个内坐标的值，方法是�
      2 5 10
     $end
  
-以下输入表示在结构优化时限制第5、第10、第15、第20个原子之间的二面角，同时还限制第10、第15、第20、第25个原子之间的二面角：
+The following input indicates that the dihedral angles between the 5th, 10th, 15th, and 20th atoms are restricted during structure optimization, and also between the 10th, 15th, 20th, and 25th atoms：
  
 .. code-block:: bdf
 
@@ -639,19 +700,22 @@ BDF还支持在结构优化中限制一个或多个内坐标的值，方法是�
      10 15 20 25
     $end
 
-锥形交叉点（CI）和最低能量交叉点（MECP）的优化
--------------------------------------------------------
+Optimization of the conical intersection (CI) and the minimum energy intersection point (MECP)
+---------------------------------------------------------------------------------------------------
 
-优化CI和MECP需要调用DL-FIND外部库，为此需要在BDFOPT模块的输入里添加以下关键词
+The optimization of CIs and MECPs requires calling the DL-FIND external library, for which the following keywords are added to the input of the BDFOPT module.
 
 .. code-block:: bdf
 
     solver
      0
 
-相应地，前述各算例的 ``solver 1`` 代表使用BDF自带的结构优化代码而非DL-FIND来进行优化。原则上，极小值点和过渡态的优化也可用DL-FIND来实现，但效率一般不如BDF自带代码好，因此仅对于CI、MECP优化等BDF自带代码不支持的任务，才应调用DL-FIND。
+Accordingly, ``solver 1`` in the previous examples means that the optimization isperformed using the BDF's own structural optimization code instead of DL-FIND. In
+principle In principle, the optimization of minima and transition states can also be done with DL-FIND, but it is generally not as efficient as the BDF's own code, so DL-FIND should be called only for tasks that are not supported by the BDF's
+own code, such as CI and MECP optimization.
 
-以下为CI优化的示例输入，该输入文件计算了乙烯的T1态和T2态的锥形交叉点：
+
+The following is an example input for CI optimization, which computes the tapered intersection of the T1 and T2 states of the ethylene:
 
 .. code-block:: bdf
 
@@ -676,13 +740,13 @@ BDF还支持在结构优化中限制一个或多个内坐标的值，方法是�
     $END
 
     $bdfopt
-    imulti             #优化CI
+    imulti             #Optimize CI
      2
-    maxcycle           #最大优化步数
+    maxcycle           #Maximum number of optimization steps
      50
-    tolgrad            #均方根梯度的收敛标准
+    tolgrad            #Convergence criterion for root mean square gradients
      1.d-4
-    tolstep            #均方根步长的收敛标准
+    tolstep            #Convergence criterion for root mean square steps
      5.d-3
     $end
 
@@ -763,7 +827,10 @@ BDF还支持在结构优化中限制一个或多个内坐标的值，方法是�
      1 1 1 1 1 2
     $end
 
-注意该任务不仅需要计算T1态和T2态的梯度，还需要计算T1态和T2态之间的非绝热耦合矢量（由最后一个RESP模块完成），相关关键词参见 :doc:`tddft` ，此处不再赘述。在BDFOPT模块的输入中， ``imulti 2`` 代表优化CI。和普通结构优化任务类似，CI优化会输出每步的梯度和步长收敛情况，与此同时还会输出能量收敛情况。例如以上算例最后一步优化的输出为：
+Note that this task requires not only the calculation of the gradients of the T1 and T2 states, but also the calculation of the non-adiabatic coupling vector
+between the T1 and T2 states (done by the last RESP module), see tddft for the relevant keywords :doc:`tddft` , which are not repeated here. In the input of the BDFOPT module, ``imulti 2`` represents the optimization CI. similar to the normal structural
+optimization task, the CI optimization outputs the gradient and step size convergence for each step, along with the energy convergence. For example, the output of the last optimization step of the above example is
+
 
 .. code-block:: 
 
@@ -776,9 +843,11 @@ BDF还支持在结构优化中限制一个或多个内坐标的值，方法是�
     Converged!
      converged
 
-与前述各类优化任务类似，收敛的CI结构保存于 ``.optgeom`` 文件内，坐标单位为Bohr。注意能量一行的值总是显示为0，这并不代表CI优化时体系能量不变，而是因为优化CI不会用到能量的收敛情况来判断是否收敛。出于同样的原因， ``tolene`` 关键词对于CI优化（以及下述的MECP优化）是没有作用的。
+Similar to the previous optimization tasks, the convergent CI structure is saved in In the ``.optgeom`` file, the coordinate unit is Bohr. Note that the value in the
+row of energy is always displayed as 0, which does not mean that the system energy remains unchanged during CI optimization, but because the optimization CI will
+not use the convergence of energy to judge whether it converges. For the same reason, the ``tolene`` keyword has no effect on CI optimization (and MECP optimization below).
 
-以下是优化MECP的示例输入文件：
+The following is an example input file for optimizing MECP:
 
 .. code-block:: bdf
 
@@ -855,42 +924,66 @@ BDF还支持在结构优化中限制一个或多个内坐标的值，方法是�
      1
     $end
 
-其中 ``imulti 2`` 和 ``noncouple`` 关键词指定进行MECP优化。注意MECP优化任务仅需计算两个态（此处为S0态和T1态）的梯度，而无需计算非绝热耦合矢量。MECP优化任务的输出与CI优化任务类似，此处不再赘述。
+where the ``imulti 2`` and ``noncouple`` keywords are specified to perform MECP optimization. Note that the MECP optimization task requires the calculation of only two states (here S0 and T The output of the MECP optimization task is similar to the CI optimization task and is not described here.
 
-几何优化常见问题
+
+Geometric Optimization Frequently Asked Questions
 -------------------------------------------------------
 
-虚频问题
+False frequency problem
 ########################################################
 
-几何结构优化不仅要求结构收敛（即梯度和步长满足收敛限要求），同时还要求所得结构的虚频数目符合预期值，即当优化极小值点结构时，虚频数目为0；优化过渡态时，虚频数目为1；若虚频数目大于1为高阶鞍点。当实际计算得到的虚频数目与预期值不符时，需要调整结构并重新优化。
+Geometric optimization requires not only convergence of the structure (i.e., gradient and step size meet the convergence limits), but also the number of
+imaginary frequencies of the resulting structure to meet the expected value, i.e., 0 when optimizing the structure of the minima, 1 when optimizing the transition
+state, and higher order saddle points if the number of imaginary frequencies is greater than 1. When the actual number of virtual frequencies calculated does not
+match the expected value, the structure needs to be adjusted and re-optimized.
 
- * 当实际计算得到的虚频数目小于预期值，也即优化过渡态得到虚频数量为0的结构时：此时一般说明得到的过渡态结构定性错误，需要根据化学常识重新准备初猜结构。
- * 当实际计算得到的虚频数目大于预期值时，此时存在两种可能情况：（1）虚频是因为计算的数值误差所导致的，并非真实存在。此时可以通过加大格点、减小积分截断阈值、减小各类收敛阈值（如SCF收敛阈值、结构优化收敛阈值等）等方法解决。（2）体系确实存在虚频。此时应当从输出文件查看虚频对应的简正模，并沿着该简正模方向对收敛的结构进行扰动，然后以扰动后的结构为初猜结构，重新进行优化。
- * 注意无法仅从频率计算结果判断某个虚频是否是数值误差导致的，但一般而言，虚频的绝对值越小，就越可能是数值误差导致的，反之则越可能是真实存在的。
+ * When the actual calculated number of imaginary frequencies is less than the expected value, i.e., when the optimized transition state gets a structure with the number of imaginary frequencies of 0: this generally means that the obtained transition state structure is wrongly characterized, and the initial guess
+structure needs to be prepared again according to the common sense of chemistry. 
+ * When the actual number of false frequencies is greater than the expected value, there are two possible cases：（1）the false frequencies are caused by the numerical
+error of the calculation, not the real existence. In this case, it can be solved by increasing the grid point, decreasing the integration truncation threshold,
+decreasing various convergence thresholds (such as SCF convergence threshold, structural optimization convergence threshold, etc.), etc.（2）The system does
+have a false frequency. In this case, we should check the simple positive mode corresponding to the false frequency from the output file, and perturb the
+converged structure along the direction of the simple positive mode, and then use the perturbed structure as the first guess to re-optimize the structure.
+ * Note that it is impossible to determine whether a certain imaginary frequency is caused by numerical error from the frequency calculation results alone, but in
+general, the smaller the absolute value of the imaginary frequency, the more likely it is caused by numerical error, and vice versa, the more likely it is real.
 
-对称性问题
+Symmetry problem
 ########################################################
 
-当初始结构具有 :math:`\rm C_1` 群以上的点群对称性时，结构优化有可能会破坏点群对称性，例如优化氨分子，初始结构对称性为 :math:`\rm D_{3h}` 的平面结构时，结构优化可能会得到对称性为 :math:`\rm C_{3v}` 的锥形结构。
-默认情况下BDF会强制保持分子点群对称性，除非体系存在一阶Jahn-Teller效应。如果用户希望BDF破坏分子的对称性，可以采取以下方法之一：
+When the initial structure has a point group symmetry above group :math:`\rm C_1` , the structure
+optimization may break the point group symmetry, e.g., when optimizing an ammonia
+molecule with a planar structure with initial structure symmetry  :math:`\rm D_{3h}` , the structure optimization may result in a conical structure with symmetry :math:`\rm C_{3v}` .
+By default the BDF forces the molecular point group symmetry to be maintained unless the system has a first order Jahn-Teller effect. If the user wants the BDF to break the
+symmetry of the molecules, one of the following approaches can be taken：
 
- * 仍然在高对称性下优化至收敛，然后计算频率。若存在虚频，按照上一小节方法扰动分子结构来消除虚频。如果分子可以通过破坏对称性来进一步降低能量，那么此时应该发现扰动后的分子结构的对称性已有所降低，继续以该结构为初始结构进行优化即可。
- * 在COMPASS模块中指定采用分子点群的某一个子群，此时程序只会保持该子群对称性不被破坏。若指定的是 :math:`\rm C_1` 群，则程序允许以任何方式破坏分子对称性，可以最大程度上提高得到低能量结构的概率，但代价为无法利用点群对称性加速计算，导致计算量增加。
+ * Still optimize at high symmetry until convergence, and then calculate the frequencies. If false frequencies are present, perturb the molecular structure as
+in the previous subsection to eliminate them. If the molecule can be further reduced in energy by breaking the symmetry, then the perturbed molecular structure
+should be found to have reduced symmetry at this point, and the optimization should continue with that structure as the initial structure.
+ * If a subgroup of the molecular point group is specified in the COMPASS module, the program will only keep the subgroup symmetry unbroken. If a  :math:`\rm C_1` group is
+specified, the program allows breaking the molecular symmetry in any way, maximizing the probability of obtaining a low-energy structure at the cost of not
+being able to use the point group symmetry to speed up the computation, resulting in increased computational effort.
 
-几何优化不收敛
+Geometric optimization does not converge
 ########################################################
 
-导致几何优化不收敛的因素有很多，包括：
+There are many factors that lead to the non-convergence of geometric optimization, including：
 
- * 能量、梯度存在数值噪声；
- * 势能面过于平缓；
- * 分子有不止一个稳定波函数，结构优化时波函数在各个稳定解之间来回跳跃，不能稳定地始终收敛到同一个解；
- * 分子结构不合理，如坐标单位错误（如坐标的单位本来是Bohr，但输入文件里指定的单位是Angstrom，或反之），多画或漏画原子，非成键原子之间的距离太近，等等。
+ * The presence of numerical noise in the energy, gradients;
+ * The potential energy surface is too flat;
+ * The molecule has more than one stable wave function, and the wave function jumps back and forth between the various stable solutions during structural optimization,
+and does not converge stably and consistently to the the same solution；
+ * unreasonable molecular structure, e.g. wrong units of coordinates (e.g. the unit of coordinates is supposed to be Bohr, but the unit specified in the input file
+is Angstrom or vice versa), overdrawing or missing atoms, too close distances between non-bonded atoms, etc.
 
-如遇到几何优化不收敛，或虽然尚未达到最大收敛次数但毫无收敛趋势的情形，经反复检查分子三维结构无误且合理、波函数收敛正常以后，可依次尝试以下各方法解决：
+If the geometric optimization does not converge, or if there is no trend of convergence even though the maximum number of convergences has not been reached,
+after repeatedly checking that the three-dimensional structure of the molecule is correct and reasonable, and that the wave function is not too close to the atom,
+then the geometry of the molecule should be optimized. After repeatedly checking that the three-dimensional structure of the molecule is correct and reasonable,
+and that the wave function converges normally, the following methods can be tried in turn:
  
- * 以优化不收敛的任务的最后一帧结构为初始结构，重新开始优化。除了手动将最后一帧的结构坐标复制到输入文件里以外，一个更简单的办法是在COMPASS模块里加入 ``restart`` 关键词，如：
+ * Use the last frame of the task that does not converge as the initial structure and start the optimization again. In addition to manually copying the structure
+coordinates of the last frame into the input file, a In addition to manually copying the structural coordinates of the last frame into the input file, a simpler way is to add the ``restart`` keyword to the COMPASS module, e.g.
+ 
  
 .. code-block:: bdf
 
@@ -909,9 +1002,15 @@ BDF还支持在结构优化中限制一个或多个内坐标的值，方法是�
     restart
     $end
 
-假设输入文件的文件名为 ``CH3Cl-opt.inp`` ，则此时程序自动读取 ``CH3Cl-opt.optgeom`` 里的坐标作为初始结构（注意此时程序虽然不会用到 ``geometry`` 字段里的分子坐标，但该分子坐标不能删去）。乍看起来，这样做似乎与简单地增加几何优化最大迭代步数无异，但实际上这样做的效果往往比单纯增加最大迭代步数更好，例如优化100步后重新读取结构再优化50步，收敛概率常常比连续迭代150步更高，这是因为重新读取结构继续优化时，程序重新产生了初始Hessian，进而避免了准牛顿法连续多步近似构建Hessian所累积的误差。
+Suppose the input file is named ``CH3Cl-opt.inp`` ，then the program automatically reads the coordinates in ``CH3Cl-opt.optgeom`` as the initial structure at this point
+(note that the program does not use the molecular coordinates in the ``geometry`` field at this point, but the molecular coordinates cannot be deleted). At first
+glance, this may seem to be the same as simply increasing the maximum number of iterations for geometry optimization, but in fact it often works better than
+simply increasing the maximum number of iterations, e.g., if the structure is reread after 100 steps of optimization and then re-optimized for 50 steps, the
+convergence probability is often higher than if the structure is re-read for 150 consecutive steps. This is because the program regenerates the initial Hessian
+when the structure is re-read to continue the optimization, thus avoiding the error accumulated by the quasi-Newton method of constructing the Hessian in multiple successive steps.
 
- * 减小优化步长，或称置信半径（trust radius）。方法为使用trust关键词，如
+
+ * Decreasing the optimization step length, or trust radius. This is done by using the trust keyword, e.g.
 
 .. code-block:: bdf
 
@@ -922,7 +1021,8 @@ BDF还支持在结构优化中限制一个或多个内坐标的值，方法是�
      0.05
     $end
  
-默认的置信半径为0.3，因此新设置的置信半径应当小于0.3。注意程序如果检测到置信半径太小，会动态地增加置信半径，为了避免这一行为，可以将置信半径设为负值，如
+The default confidence radius is 0.3, so the new confidence radius should be less than 0.3. Note that the program will dynamically increase the confidence radius
+if it detects that the confidence radius is too small. To avoid this behavior, the confidence radius can be set to a negative value, e.g.
   
 .. code-block:: bdf
 
@@ -933,9 +1033,10 @@ BDF还支持在结构优化中限制一个或多个内坐标的值，方法是�
      -0.05
     $end
   
-即表示，初始置信半径设为0.05，且在整个结构优化过程中禁止置信半径超过0.05。
+To avoid this behavior, the confidence radius can be set to a negative value, e.g., the initial confidence radius is set to 0.05, and the confidence radius is
+forbidden to exceed 0.05 during the entire structural optimization process.
 
- * 对于过渡态优化，可用 ``recalchess`` 关键词指定每隔若干步重新计算精确Hessian。如
+ * For transition state optimization, the ``recalchess`` keyword can be used to specify that the exact Hessian is recalculated at several steps.
 
 .. code-block:: bdf
 
@@ -950,6 +1051,7 @@ BDF还支持在结构优化中限制一个或多个内坐标的值，方法是�
      10
     $end
 
-表示除在结构优化之前计算精确Hessian外，每隔10步结构优化重新计算一次精确Hessian。
+It indicates that the exact Hessian is recalculated every 10 steps of structural optimization, in addition to the exact Hessian calculated before structural optimization.
 
- * 加大格点，减小积分截断阈值及SCF等的收敛阈值，以减小数值误差。注意该方法只在结构优化几乎收敛但无法完全收敛时有用。
+ * The lattice points are increased and the convergence thresholds of the integration truncation and SCF, etc., are decreased to reduce the numerical errors.
+Note that this method only works when the structural optimization is almost convergence but not full convergence.
