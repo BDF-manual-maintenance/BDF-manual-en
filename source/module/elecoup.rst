@@ -1,50 +1,50 @@
-能量及电荷转移 - ELECOUP模块
+Energy and Charge Transfer - ELECOUP Module
 ================================================
-ELECOUP主要功能有：
+Energy and Charge Transfer - ELECOUP Module：
 
-#. 基于HF计算同一分子的两个电子态之间的耦合积分； 
-#. 计算两个分子片之间的电荷迁移积分； 
-#. 计算两个分子片激发态间的能量迁移积分。
+#. Calculating the coupling integral between two electronic states of the same molecule based on HF； 
+#. Calculate the charge migration integral between two molecular sheets； 
+#. Calculate the energy migration integral between the excited states of two molecular sheets.
 
 .. note::
 
-    **基于HF计算同一分子两个激发态之间耦合积分，需要使用ΔSCF方法，通常利用SCF模块中的mom功能。**
+    **The HF-based calculation of the coupling integral between two excited states of the same molecule requires the use of the ΔSCF method, usually using the mom function in the SCF module.**
 
-:guilabel:`Iprt` 参数类型：整型
+:guilabel:`Iprt` parameter type: integer
 ------------------------------------------------
-打印控制参数，仅用于调试程序。
+Print control parameters for debugging programs only.
 
-:guilabel:`UHF` 参数类型：Bool型
+:guilabel:`UHF` parameter type: Bool type
 ------------------------------------------------
-两个电子态之间耦合积分基于UHF波函数。
+The coupling integral between the two electronic states is based on the UHF wave function.
 
-:guilabel:`Nexcit` 参数类型：整型
+:guilabel:`Nexcit` parameter type: integer
 ------------------------------------------------
-指定每个分子激发态的数目。
+Specify the number of excited states per molecule.
 
-:guilabel:`GSApr` 参数类型：Bool型
+:guilabel:`GSApr` parameter type: Bool type
 ------------------------------------------------
-指定是否对基态近似处理。
+Specifies whether to approximate the base state processing.
 
-**计算电荷迁移积分关键词**
+**Calculate charge migration integral keywords**
 
-:guilabel:`Electrans` 参数类型：整型数组
+:guilabel:`Electrans` parameter type: integer array
+----------------------------------------------------
+This parameter is a multi-line parameter that specifies a number of pairs of Donor and Acceptor molecular orbitals and calculates the charge migration integral between them. Format as follows.
+
+First line: enter the integer n, specifying that the migration integral between n pairs of orbits is to be calculated
+
+Line 2 to line n+1: input three integers i j k, i is the i-th track of Donor, j is the j-th track of acceptor, and parameter k is 1 or 2, specifying alpha or beta tracks, respectively.
+
+:guilabel:`Dft` parameter type: String
 ------------------------------------------------
-本参数是多行参数，用于指定若干对Donor与Acceptor分子轨道，计算它们之间的电荷迁移积分。格式如下：
+Specifies what exchange-dependent general function is used to calculate the charge migration integral. If you do not enter this parameter, the same functional is used by default as when Kohr-Sham is calculated.
 
-第一行： 输入整数n，指定要计算n对轨道之间的迁移积分
+**Localized excited states**
 
-第二行到第n+1行：输入三个整数 i j k, i为Donor的第i个轨道，j为acceptor的第j个轨道，参数k为1或者2，分别指定alpha轨道或beta轨道。
-
-:guilabel:`Dft` 参数类型：字符串
+:guilabel:`locales` parameter type: integer
 ------------------------------------------------
-指定计算电荷迁移积分使用什么交换相关泛函。如果不输入该参数，默认用与Kohr-Sham计算时相同的泛函。
+Specify the method to obtain the excited state of the localization.
 
-**定域化激发态**
-
-:guilabel:`locales` 参数类型：整型
-------------------------------------------------
-指定获得定域化激发态的方法。
-
- * 默认值： 0  
- * 可选值： 0， 1； 0 Boys定域化方法， 1 Ruedenberg 定域化方法
+ * Default value： 0  
+ * Optional values： 0， 1； 0 Boys definite domain method， 1 Ruedenberg localization methods

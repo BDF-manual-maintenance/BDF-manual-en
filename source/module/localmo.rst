@@ -1,120 +1,120 @@
-分子轨道定域化 - LOCALMO模块
+Molecular orbital localization - LOCALMO module
 ================================================
-LOCALMO模块用于产生定域化的分子轨道，包含了Boys，Pipek-Mezey，以及改进的Boys定域化等方法。localmo还用于为FLMO方法产生初始的分子片定域轨道。
+The LOCALMO module is used to generate delocalized molecular orbitals and contains methods such as Boys, Pipek-Mezey, and a modified Boys delocalization. LOCALMO is also used to generate the initial molecular slice delocalized orbitals for the FLMO method.
 
-**基本控制参数**
+**Basic control parameters**
 
-:guilabel:`Boys` 参数类型：Bool型
+:guilabel:`Boys` parameter type: Bool type
 ------------------------------------------------
-指定使用Boys定域化方法定域轨道。Boys是Localmo模块默认的方法。
+Specifies to use the Boys delocalization method to delocalize the track. boys is the default method for the LOCALMO module.
 
-:guilabel:`Mboys` 参数类型：整型
+:guilabel:`Mboys` parameter type: Integer type
 ------------------------------------------------
-指定使用改进的Boys定域化方法，下一行为一个整数，指定改进Boys方法的指数因子。
+Specifies the use of the improved Boys delocalization method, the next row is an integer, and the exponential factor for the improved Boys method is specified.
 
-:guilabel:`Pipek` 参数类型：Bool型
+:guilabel:`Pipek` parameter type: Bool type
 ------------------------------------------------
-指定使用Pipek-Mezey定域化方法。默认用Mulliken电荷，如果设置了Lowdin参数，则Pipek-Mezey方法用Lowdin电荷而非默认的Mulliken电荷。本方法默认用雅可比旋转定域化轨道，如果需要指定用Trust-Region方法 ，需要使用关键词Trust。
+Specifies to use the Pipek-Mezey delocalization method. The default is Mulliken charge, if the Lowdin parameter is set, then the Pipek-Mezey method uses Lowdin charge instead of the default Mulliken charge. This method defaults to the Jacobi rotation domainization track, if you need to specify the Trust-Region method, you need to use the keyword Trust.
 
-:guilabel:`Mulliken` 参数类型：Bool型
+:guilabel:`Mulliken` parameter type: Bool type
 ------------------------------------------------
-指定Pipek-Mezey方法使用Mulliken电荷。默认选项。
+Specifies that the Pipek-Mezey method uses Mulliken charges. Default option.
 
-:guilabel:`Lowdin` 参数类型：Bool型
+:guilabel:`Lowdin` parameter type: Bool type
 ------------------------------------------------
-参数指定Pipek-Mezey方法使用Lowdin电荷。
+The parameter specifies that the Pipek-Mezey method uses the Lowdin charge.
 
-:guilabel:`Jacobi` 参数类型：Bool型
+:guilabel:`Jacobi` parameter type: Bool type
 ------------------------------------------------
-指定Pipek-Mezey方法利用雅可比旋转定域轨道。
+Specifies that the Pipek-Mezey method utilizes Jacobi rotational fixed-domain orbits.
 
-:guilabel:`Trust` 参数类型：Bool型
+:guilabel:`Trust` parameter type: Bool type
 ------------------------------------------------
-指定Pipek-Mezey方法利用Trust Region方法定域轨道。
+Specifies that the Pipek-Mezey method utilizes the Trust Region method for domaining tracks.
 
-:guilabel:`Hybridboys` 参数类型：整型
+:guilabel:`Hybridboys` parameter type: Integer type
 ------------------------------------------------
-可选值：-100、100
+Selectable values：-100、100
 
-指定Pipek-Mezey或Boys定域化方法混合使用雅可比旋转与Trust Region方法定域轨道。默认不使用混合方法，如果加入了这个参数，下一行输入必须为整数。
--100: 仅将虚轨道先用雅可比旋转定域化100次或者定域化达到收敛阈值Hybridthre后，转换为Trust Region方法继续定域化。
-100: 将占据轨道与虚轨道都先利用雅可比旋转定域化100次或者定域化达到收敛阈值Hybridthre后，转换为Trust Region方法继续定域化。
+Specifies that the Pipek-Mezey or Boys localization method mixes Jacobi rotation with the Trust Region method to localize the track. By default, the hybrid method is not used, if this parameter is added, the next input line must be an integer.
+-100: Converts the virtual orbit to the Trust Region method to continue domaining only after the virtual orbit has first been domained 100 times with Jacobi rotation or after the domaining has reached the convergence threshold Hybridthre.
+100: Converts the occupied and virtual orbit to the Trust Region method to continue domaining after the occupied orbit has first been domained 100 times with Jacobi rotation or after the domaining has reached the convergence threshold Hybridthre.
 
-:guilabel:`Hybridthre` 参数类型：浮点型
+:guilabel:`Hybridthre` parameter type: floating point
 ------------------------------------------------
-指定混合定域化方法的转换阈值。
+Specifies the conversion threshold for the hybrid localization method.
 
-:guilabel:`Thresh` 参数类型：浮点型
+:guilabel:`Thresh` parameter type: floating point
 ------------------------------------------------
-指定定域化方法收敛的阈值，输入为两个浮点数。
+Specify the threshold for the convergence of the fixed-domain method, the input is two floating-point numbers.
 
-:guilabel:`Tailcut` 参数类型：浮点型
+:guilabel:`Tailcut` parameter type: floating point
 ------------------------------------------------
- * 默认值：1.D-2
+ * Default value: 1.D-2
 
-指定忽略FLMO尾巴的阈值。
+Specifies the threshold value for ignoring FLMO tails.
 
-:guilabel:`Threshpop` 参数类型：浮点型
+:guilabel:`Threshpop` parameter type: floating point
 ------------------------------------------------
- * 默认值：1.D-1
+ * Default value: 1.D-1
 
-指定Lowdin布居的阈值。
+Specifies the threshold value for Lowdin placement.
 
-:guilabel:`Maxcycle` 参数类型：整型
+:guilabel:`Maxcycle` parameter type: Integer type
 ------------------------------------------------
-指定Boys定域化允许的最大循环次数。
+Specifies the maximum number of cycles allowed for Boys domainization.
 
-:guilabel:`Rohfloc` 参数类型：Bool型
+:guilabel:`Rohfloc` parameter type: Bool type
 ------------------------------------------------
-指定定域化ROHF/ROKS轨道。
+Specify the localized ROHF/ROKS orbit.
 
-:guilabel:`orbital` 参数类型：字符串
+:guilabel:`orbital` parameter type: string
 ------------------------------------------------
-指定文件读入分子轨道。
+Specifies that the file is read into the molecular track.
 
 .. code-block:: bdf
 
      $LocalMO
      Orbital
-     hforb       # 指定从SCF计算存储的hforb读入轨道
+     hforb       # Specifies the hforb read-in track from scaf computing storage
      $End
 
-:guilabel:`Orbread` 参数类型：Bool型
+:guilabel:`Orbread` parameter type: Bool type
 ------------------------------------------------
-指定从 **BDF_TMPDIR** 中的文本文件inporb读入分子轨道。
+Specifies that the molecular tracks are read from the text file inporb in **BDF_TMPDIR**.
 
-:guilabel:`Flmo` 参数类型：Bool型
+:guilabel:`Flmo` parameter type: Bool type
 ------------------------------------------------
-指定投影LMO到pFLMO。
+Specifies the projection LMO to pFLMO.
 
-:guilabel:`Frozocc` 参数类型：整型
+:guilabel:`Frozocc` parameter type: Integer type
 ------------------------------------------------
-指定不定域化的双占据轨道数目。
+Specify the number of double-occupied orbitals for indefinite domainization.
 
-:guilabel:`Frozvir` 参数类型：整型
+:guilabel:`Frozvir` parameter type: Integer type
 ------------------------------------------------
-指定不定域化的虚轨道数目。
+Specify the number of virtual orbitals for indefinite domainization.
 
-:guilabel:`Analyze` 参数类型：Bool型
+:guilabel:`Analyze` parameter type: Bool type
 ------------------------------------------------
-指定分析用户给定的定域轨道，计算占据-空轨道对的数目和MOS（Molecular Orbital Spread）。分析定域轨道需要从BDF_TMPDIR读入名为bdftask.testorb的文件，并进行轨道分析。这一轨道文件与SCF的bdftask.scforb格式相同，均为文本文件。
+Specifies to analyze a user-given fixed-domain orbit, calculating the number of occupied-empty orbital pairs and MOS (Molecular Orbital Spread). To analyze the fixed domain orbits, a file named bdftask.testorb is read from BDF_TMPDIR and the orbits are analyzed. This orbital file is in the same format as SCF's bdftask.scforb, both are text files.
 
-:guilabel:`Iapair` 参数类型：浮点型
+:guilabel:`Iapair` parameter type: floating point
 ------------------------------------------------
-指定统计占据-空轨道对重叠的阈值，默认仅统计重叠绝对值大于1.0×10 :sup:`-4` 的占据-空轨道对。
+Specify the threshold value for counting the overlap of occupied-empty orbital pairs. By default, only occupied-empty orbital pairs with an absolute overlap value greater than 1.0×10 :sup:`-4`  are counted.
 
-:guilabel:`Directgrid` 参数类型：Bool型
-------------------------------------------------
-指定利用直接数值积分的方法计算占据-空轨道对的绝对重叠。
+:guilabel:`Directgrid` parameter type: Bool type
+--------------------------------------------------
+Specifies the calculation of the absolute overlap of the occupied-null orbital pair using the direct numerical integration method.
 
-:guilabel:`Nolmocls` 参数类型：整型
-------------------------------------------------
-指定不定域化SCF的占据轨道。
+:guilabel:`Nolmocls` parameter type: Integer type
+---------------------------------------------------
+Specify the occupancy track of the indefinite SCF.
 
-:guilabel:`Nolmovir` 参数类型：整型
-------------------------------------------------
-指定不定域化SCF的空轨道。
+:guilabel:`Nolmovir` parameter type: Integer type
+--------------------------------------------------
+Specifies the empty orbit of the indefinite SCF.
 
-:guilabel:`Moprt` 参数类型：整型
+:guilabel:`Moprt` parameter type: Integer type
 ------------------------------------------------
-指定打印定域分子轨道的系数。
+Specify the coefficients for printing the domain-definite molecular orbitals.

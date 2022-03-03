@@ -1,29 +1,30 @@
-DFT/TDDFT梯度及响应性质 - RESP模块
-================================================
-resp模块用于计算DFT/TDDFT的梯度，TDDFT理论级别下的非绝热耦合矩阵元（包括基态-激发态之间的非绝热耦合矩阵元，和激发态-激发态之间的非绝热耦合矩阵元），以及激发态偶极矩等响应性质。
+DFT/TDDFT Gradient and Response Properties - RESP Module
+==========================================================
+The resp module is used to calculate the gradient of the DFT/TDDFT, the non-adiabatic coupling matrix elements at the TDDFT theoretical level (including the non-adiabatic coupling matrix elements between the ground-state-excited state, and the non-adiabatic coupling matrix elements between the excited state-excited state), and the response properties such as the excited state dipole moment.
 
-**基本关键词**
+**Basic Keywords**
 
-:guilabel:`Iprt` 参数类型：整型
+:guilabel:`Iprt` parameter type: integer
 ------------------------------------------------
-控制打印输出级别，主要用于程序调试。
+Controls the printout level, mainly used for program debugging.
 
-:guilabel:`NOrder` 参数类型：整型
+:guilabel:`NOrder` parameter type: integer
 ------------------------------------------------
- * 默认值：1
- * 可选值：0、1、2
+ * Default value：1
+ * Optional values：0、1、2
 
-几何坐标导数的阶数，目前仅支持0（不涉及解析梯度的响应性质，如激发态偶极矩）和1（解析梯度），尚不支持2（解析Hessian）。本参数要求必须先指定Geom。
+The order of the geometric derivative is currently supported0 only for (response properties that do not involve analytic gradients, such as excited state dipole moments) and1 (analytic gradients), but not yet for 2(analytic Hessian). This parameter requires that Geom be specified first.
 
-:guilabel:`Geom` 参数类型：Bool型
+:guilabel:`Geom` parameter type: Bool type
 ------------------------------------------------
-本关键词无需提供参数，需要与Norder关键词联用，用于指定计算几何坐标一阶或二阶导数。
+This keyword does not require parameters and needs to be used in conjunction with the Norder keyword to specify the first or second order derivative of the calculated geometric coordinates.
 
-可选值：1.梯度或fo-NACMEs；2.Hessian（正在开发中）
+ptional values: 1. Gradient or fo-NACMEs; 2. Hessian (under development)
 
-:guilabel:`NFiles` 参数类型：整型
+
+:guilabel:`NFiles` parameter type: integer
 ------------------------------------------------
-对于TD-DFT响应性质计算，指定读取哪个$tddft块的计算结果；注意当该参数等于x时，并不简单代表读取第x个$tddft块的计算结果，而是指读取istore值为x的那个$tddft块的计算结果。例如对于某闭壳层分子的以下输入（$compass、$xuanyuan、$scf略去）：
+For TD-DFT response property calculations, specify which $tddft block to read; note that when this parameter is equal to x, it does not simply mean that the xth $tddft block is read, but that the $tddft block with an istore value of x is read. For example, the following input for a closed-shell molecule ($compass, $xuanyuan, $scf omitted)
 
 .. code-block:: bdf
 
@@ -52,20 +53,20 @@ resp模块用于计算DFT/TDDFT的梯度，TDDFT理论级别下的非绝热耦�
      imethod
      2
      nfiles
-     2            #计算最低三重激发态的梯度，而不是最低单重激发态的梯度
-                  #因为nfiles=2，而只有第2个$tddft块（最低三重激发态）的istore=2
+     2            #Calculate the gradient of the lowest triple excited state, not the gradient of the lowest single excited state
+                  #Because nfiles=2, only the second $tddft block (lowest triple excitation state) isore=2
      $end
 
-:guilabel:`Imethod` 参数类型：整型
+:guilabel:`Imethod` parameter type: integer
 ------------------------------------------------
- * 默认值：1
- * 可选值：1、2
+ * Default value：1
+ * Optional values：1、2
 
-指定进行DFT基态计算还是TD-DFT激发态计算。1为基态，如指定2，则为激发态计算。在较老的BDF版本中该关键词写作Method，目前程序既支持Imethod也支持Method，但是未来可能会只支持前者。
+Specifies whether to perform DFT ground state or TD-DFT excited state calculations. 1 is the ground state, if specified2 , then it is the excited state calculation. In older versions of BDF the keyword is written Method, currently the program supports both Imethod and Method, but in the future it may only support the former.
 
 .. code-block:: bdf
 
-     #计算第一个TD-DFT激发态的TD-DFT梯度
+     #Calculate the TD-DFT gradient of the first TD-DFT excited state
      $tddft
      Nroot
      1
@@ -83,55 +84,53 @@ resp模块用于计算DFT/TDDFT的梯度，TDDFT理论级别下的非绝热耦�
 
 .. code-block:: bdf
 
-     #计算基态梯度
+     #Calculate the ground-state gradient
      $resp
      geom
      $end
 
-:guilabel:`Ignore` 参数类型：整型
+:guilabel:`Ignore` parameter type: integer
 ------------------------------------------------
- * 默认值：0
- * 可选值：-1、0、1
+ * Default value：0
+ * Optional values：-1、0、1
 
-用于TDDFT梯度计算的数据一致性检查，主要用于调试程序。
+Data consistency check for TDDFT gradient calculation, mainly for debugging programs.
 
--1：重新计算TDDFT的激发能，用于检查Resp和TDDFT模块对能量计算是否一致。仅供调试程序使用。
+-1：Recalculates the TDDFT excitation energy, used to check that the Resp and TDDFT modules agree on the energy calculation. For debugger use only.
 
-0: 检查Wmo矩阵是不是对称矩阵。理论上，Wmo矩阵应该是对称矩阵，但如果TDDFT或者Z-Vector迭代没有完全收敛，Wmo矩阵会表现出明显的不对称，此时程序报错退出，并告诉用户Wmo矩阵不对称的较可能原因是TDDFT没有完全收敛还是Z-Vector方程求解没有完全收敛。注意有时Wmo矩阵不对称也可能是用户某些关键词输入错误导致的。
+0: Check if the Wmo matrix is a symmetric matrix. Theoretically, the Wmo matrix should be symmetric, but if the TDDFT or Z-Vector iterations do not converge completely, the Wmo matrix will show significant asymmetry, and the program will exit with an error and tell the user whether the Wmo matrix is asymmetric because the TDDFT did not converge completely or the Z-Vector equation did not converge completely. Note that sometimes the asymmetry of the Wmo matrix can also be caused by some keyword input errors by the user.
 
-1: 忽略Wmo矩阵对称性检查。仅当用户确认其设置的TDDFT和Z-vector收敛阈值足够严，不会对计算结果精度造成不可接受的影响，且输入文件各关键词输入正确，但程序仍然因对称性检查不通过而报错时，才应将ignore设置为1。
+1: Ignore the Wmo matrix symmetry check. The ignore setting should only be1 set if the user has confirmed that the TDDFT and Z-vector convergence thresholds are tight enough to not affect the accuracy of the computation unacceptably, and that the keywords in the input file have been entered correctly, but the program still reports an error due to a failed symmetry check， the ignoore should be set to 1.
 
-:guilabel:`IRep` & :guilabel:`IRoot` 参数类型：整型
+:guilabel:`IRep` & :guilabel:`IRoot` parameter type: integer
 -----------------------------------------------------
-这两个关键词指定计算哪个/哪些态的TD-DFT梯度或激发态偶极矩。分4种情况：
+These two keywords specify which/which state(s) of TD-DFT gradient or excited state dipole moment is/are to be calculated. There are 4 cases：
 
-a.	既指定IRep，又指定IRoot：如以下的输入
+a.	Specify both IRep and IRoot: e.g. the following input
 
 .. code-block:: bdf
 
-     #计算第2个不可约表示（irrep）下的第3个根的梯度或偶极矩
+     #Calculates the gradient or dipole moment of the 3rd root under the 2nd irreducible representation (irrep).
      irep
      2
      iroot
      3
 
-b.	只指定IRep：计算该不可约表示下的所有根的梯度或偶极矩。
+b.	Specify IRep only: Compute the gradient or dipole moment of all roots under this integrable representation.
 
-c.	只指定IRoot：例如
+c.	Specify IRoot only: for example
 
 .. code-block:: bdf
 
-     #将所有不可约表示下计算的根按照能量从低到高排序，然后计算第3个根的梯度或偶极矩
+     #All the roots under irreducible representation are sorted by energy from low to high, and then the gradient or dipole moment of the 3rd root is calculated
      iroot
      3
      
-d.	两者都不指定：计算tddft得到的所有态的梯度或偶极矩。
+d.	Neither is specified: calculate the gradient or dipole moment of all states obtained by tddft.
 
-:guilabel:`JahnTeller` 参数类型：字符串
+:guilabel:`JahnTeller` Parameter type: String
 ------------------------------------------------
-对于具有一定对称性的分子，如果分子所属点群是高阶点群，则TDDFT结构优化可能会导致分子出现Jahn-Teller畸变，但畸变方向可能有多个。例如，假设一个具有Ih对称性的分子有一个三重简并的激发态T2g，则该态发生Jahn-Teller畸变后，几何结构的对称性可能会降低为D2h，D3d，D5d或这些群的子群。
-因此在TDDFT结构优化中，从第二步优化开始分子结构的对称性可能会降低。
-当Jahn-Teller畸变得到的点群不唯一时，可以用JahnTeller关键词指定具体的Jahn-Teller畸变方式。例如：
+For molecules with certain symmetries, TDDFT structure optimization may lead to Jahn-Teller distortion of the molecule if the point group to which the molecule belongs is a higher-order point group, but the distortion may have multiple directions. For example, assuming that a molecule with Ih symmetry has a triple-simplex excited state T2g, the symmetry of the geometry of this state may be reduced to D2h, D3d, D5d or subgroups of these groups after the Jahn-Teller distortion. Therefore, in the TDDFT structure optimization, the symmetry of the molecular structure may decrease from the second optimization step. When the point group obtained by Jahn-Teller distortion is not unique, the specific Jahn-Teller distortion can be specified by the JahnTeller keyword. For example，
 
 .. code-block:: bdf
 
@@ -141,46 +140,46 @@ d.	两者都不指定：计算tddft得到的所有态的梯度或偶极矩。
       D(2h)
      $End
    
-上例指定当存在Jahn-Teller畸变且畸变方式不唯一时，优先选择畸变后结构属于D2h群的畸变方式。如果由群论可以推出该分子在当前电子态下不会发生Jahn-Teller畸变，或虽然会发生Jahn-Teller畸变但不会得到属于D2h群的结构，则程序会打印警告信息，并忽略用户输入。
-如果当前分子会发生Jahn-Teller畸变，但用户没有指定JahnTeller关键词，则程序会在Jahn-Teller畸变时尽量保持分子的高阶对称轴。仍以上述Ih群的T2g态为例，若不指定JahnTeller关键词，则分子会畸变为D5d结构，因为只有这样才能保持Ih群的五重对称轴。
+The above example specifies that when there is a Jahn-Teller aberration and the aberration mode is not unique, preference is given to the aberration mode in which the aberrated structure belongs to the D2h group. If it can be deduced from group theory that the molecule will not undergo a Jahn-Teller aberration in the current electronic state, or that a Jahn-Teller aberration will occur but will not result in a structure belonging to the D2h group, the program prints a warning message and ignores the user input. If the current molecule will undergo a Jahn-Teller distortion but the user does not specify a JahnTeller keyword, the program tries to maintain the higher order symmetry axis of the molecule during the Jahn-Teller distortion. Still using the T2g state of the Ih group above as an example, if the JahnTeller keyword is not specified, the molecule will distort to a D5d structure because this is the only way to maintain the fivefold symmetry axis of the Ih group.
 
-:guilabel:`Line` 参数类型：Bool型
+:guilabel:`Line` parameter type: Bool type
 ------------------------------------------------
-执行resp进行线性响应计算。
+Perform resp for linear response calculation.
 
-:guilabel:`Quad` 参数类型：Bool型
+:guilabel:`Quad` parameter type: Bool type
 ------------------------------------------------
-指定resp进行二次响应计算。
+Specify resp for secondary response calculation.
 
-:guilabel:`Fnac` 参数类型：Bool型
+:guilabel:`Fnac` parameter type: Bool type
 ------------------------------------------------
-指定resp计算一阶非绝热耦合（first-oder noadibatic couplings）向量，需要与Single或者Double参数联用，分别指定计算基态-激发态、激发态-激发态非绝热耦合向量。
+Specify resp to calculate the first-oder noadibatic couplings vectors, which need to be used in conjunction with the Single or Double parameters to specify the calculation of the ground-state-excited state and excited-state-excited state noadibatic couplings vectors, respectively.
 
-:guilabel:`Single` 参数类型：Bool型
+:guilabel:`Single` parameter type: Bool type
 ------------------------------------------------
-指定计算基态-激发态非绝热耦合向量。
+Specify the calculation of the ground-state-excited state non-adiabatic coupling vector.
 
-:guilabel:`States` 参数类型：整型数组
+:guilabel:`States` parameter type: integer数组
 ------------------------------------------------
-指定计算哪些态与基态的非绝热耦合向量。本参数是多行参数：
+Specifies which states are calculated for the non-adiabatic coupling vector to the ground state. This parameter is a multi-line parameter.
 
-第一行：输入整数n, 指定要计算基态与n个激发态之间的非绝热耦合向量。
+First line: Enter the integer n, specifying the non-adiabatic coupling vector between the ground state and the n excited states to be calculated.
 
-第二行至第n+1行，指定电子态，格式为 m i l 三个整数，m为先前的TDDFT计算istore指定存储的文件编号，i为第i个不可约表示，l是该不可约表示的第l个根。
+The second line to line n+1 specifies the electronic state in the format of three integers m i l. m is the file number of the previous TDDFT calculation istore specified storage, i is the i-th integrable representation, and l is the l-th root of that integrable representation.
 
-:guilabel:`Double` 参数类型：Bool型
+
+:guilabel:`Double` parameter type: Bool type
 ------------------------------------------------
-指定计算激发态-激发态非绝热耦合向量。
+Specify the excited-state excited-state non-adiabatic coupling vector for calculation.
 
-:guilabel:`Pairs` 参数类型：整型数组
+:guilabel:`Pairs` parameter type: integer数组
 ------------------------------------------------
-指定计算哪两组激发态之间的非绝热耦合向量。本参数是多行参数：
+Specifies which set of two excited states to calculate the non-adiabatic coupling vector between. This parameter is a multi-line parameter：
 
-第一行：输入整数n, 指定要计算n对激发态之间的非绝热耦合向量。
+First line: Enter an integer n, specifying that the non-adiabatic coupling vector between n pairs of excited states is to be calculated.
 
-第二行至第n+1行，指定电子态，格式为 m1 i1 l1 m2 i2 l2 六个整数，每三个整数指定一个激发态。m1为先前的TDDFT计算istore指定存储的文件编号，i1为第i1个不可约表示，l1是该不可约表示的第l1个根。另三个整数同理。
+The second to n+1 lines specify the electronic states in the format m1 i1 l1 m2 i2 l2 six integers, with each three integers specifying an excited state. m1 is the file number of the storage specified by the previous TDDFT calculation istore, i1 is the i1st integrable representation, and l1 is the l1st root of that integrable representation. The other three integers are the same.
 
-:guilabel:`Noresp` 参数类型：Bool型
+:guilabel:`Noresp` parameter type: Bool type
 ------------------------------------------------
-指定在Double和FNAC计算中忽略跃迁密度矩阵的响应项。推荐使用该关键词。
+Specifies that the response term of the leap density matrix is ignored in Double and FNAC calculations. This keyword is recommended.
 

@@ -1,23 +1,23 @@
-Møller–Plesset二阶微扰 - MP2模块
-================================================
-Møller-Plesset二阶微扰理论计算模块，主要用于实现双杂化DFT计算。
-对于基于积分非直接的对称匹配轨道SCF算法（见 :ref:`Saorb<compass.saorb>` 关键词），MP2支持RHF和UHF参考波函；
-对于积分直接SCF算法（默认情况，见 :ref:`Skeleton<compass.skeleton>` 关键词），MP2仅支持RHF参考波函。
+Møller–Plesset Second Order Perturbation - MP2 Module
+=======================================================
+Møller-Plesset second-order perturbation theory calculation module, mainly for implementing two-hybrid DFT calculations. 
+MP2 supports both RHF and UHF reference wavefunctions for the integral undirected symmetric matched-orbit SCF-based algorithm (see :ref:`Saorb<compass.saorb>`  keyword) and only RHF reference wavefunctions for the integral direct SCF algorithm (by default, see  :ref:`Skeleton<compass.skeleton>`  keyword).
 
-:guilabel:`Nature` 参数类型：Bool型
+
+:guilabel:`Nature` parameter type: Bool type
 ------------------------------------------------
-计算约化密度矩阵并输出自然轨道。
+Calculate the approximate density matrix and output the natural orbit.
 
-:guilabel:`Molden` 参数类型：Bool型
+:guilabel:`Molden` parameter type: Bool type
 ---------------------------------------------------
-输出自然轨道为molden格式文件。
+Output natural tracks as molden format files.
 
-:guilabel:`Iprtmo` 参数类型：整型
+:guilabel:`Iprtmo` parameter type: Integer
 ------------------------------------------------
-控制轨道输出打印模式。
+Controls the track output print mode.
 
-:guilabel:`Fss, Fos` 参数类型：浮点型
+:guilabel:`Fss, Fos` parameter type: floating point
 ------------------------------------------------
- * 默认值：1.0
+ * Default value：1.0
 
-SCS-MP2以及某些双杂化泛函使用的自旋组分调节（spin component scaling）参数。程序在计算完MP2能量以后，会将其中的同自旋（same-spin）成分乘以Fss，将反自旋（opposite-spin）成分乘以Fos。
+SCS-MP2 and the spin component scaling parameter used in some two-hybrid generalized functions. After calculating the MP2 energy, the program multiplies the same-spin component by Fss and the opposite-spin component by Fos.
