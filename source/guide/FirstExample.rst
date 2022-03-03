@@ -1,3 +1,5 @@
+This chapter introduces the basic use of the various functions of the BDF, and gives basic examples of calculations and analysis of data readings for specific calculation functions.
+
 .. _FirstExample:
 
 First example :math:`\ce{H2O}` RHF calculation for H2O molecules
