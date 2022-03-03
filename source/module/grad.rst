@@ -1,33 +1,33 @@
-Hartree-Fock梯度 - GRAD模块
+Hartree-Fock Gradient - GRAD Module
 ================================================
-GRAD模块用于计算HF/MCSCF的解析梯度。
+The GRAD module is used to calculate the resolved gradients of HF/MCSCF.
    
-**基本关键词**   
+**Basic Keywords**   
 
-:guilabel:`Nrootgrad` 参数类型：整型
+:guilabel:`Nrootgrad` parameter type: integer
 ------------------------------------------------
-指定计算MCSCF的那个根的梯度。
+Specifies the gradient of that root for calculating MCSCF.
 
-:guilabel:`Maxiter` 参数类型：整型
+:guilabel:`Maxiter` Parameter type: integer
 ------------------------------------------------
-指定CPMCHF的最大迭代次数。
+Specifies the maximum number of iterations of CPMCHF.
 
-:guilabel:`IntCre` 参数类型：整型
+:guilabel:`IntCre` Parameter type: integer
 ------------------------------------------------
-用于增加存储AO积分的内存大小为：intcre*256*1024*1024Bytes。
+The memory size used to increase the storage of AO points is: intcre*256*1024*1024Bytes.
 
-:guilabel:`Ishell` 参数类型：整型
+:guilabel:`Ishell` Parameter type: integer
 ------------------------------------------------
 
 
-:guilabel:`Cutcpm` 参数类型：浮点型
+:guilabel:`Cutcpm` parameter type: floating point
 ------------------------------------------------
- * 默认值：1.D-6
+ * Default value：1.D-6
 
-指定求解CPMCHF方程的收敛阈值。
+Specifies the convergence threshold for solving the CPMCHF equation.
 
-:guilabel:`Printgrad` 参数类型：整型
+:guilabel:`Printgrad` parameter type: floating point
 ------------------------------------------------
- * 可选值：0、3、>99
+ * Selectable values：0、3、>99
 
-控制梯度打印。0为最小输出；3为输出单电子项对梯度的贡献；>99仅用于调试模式。
+Controls gradient printing. 0 is the minimum output; 3 is the contribution of the output single-electron term to the gradient; >99 is for debug mode only.
