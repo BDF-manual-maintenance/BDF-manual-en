@@ -2,19 +2,19 @@ Exchange-dependent generalized functions supported by BDF
 ===============================================
 The density flooding theory (DFT) of the BDF supports restricted, unrestricted and restricted open-shell Kohn-Sham calculations, referred to as RKS, UKS and ROKS, respectively. The inputs are close to those of RHF, UHF and ROHF. The key is to specify the exchange-related generic functions. bdf supports a variety of generic functions such as LDA, GGA, Meta-GGA, Hybrid, RS Hybrid and Hyrid Meta-GGA.
 
-.. table:: BDF中支持的泛函
+.. table:: Functionals supported by BDF
     :widths: 40 60
 
     ========================================  ====================================================
-     泛函类型                                  泛函
+     Functional type                                  Functionals
     ========================================  ====================================================
-     局域密度近似（LDA）                       LSDA, SVWN5, SAOP
-     广义梯度近似（GGA）                       BP86, BLYP, PBE, PW91, OLYP, KT2
-     含动能密度的广义梯度近似（meta-GGA）      TPSS, M06L, M11L, MN12L, MN15L, SCAN, r2SCAN
-     杂化GGA泛函（Hybrid GGA）                 B3LYP, GB3LYP, BHHLYP, PBE0, B3PW91, HFLYP, VBLYP
-     范围分离GGA泛函（RS Hybrid GGA）          wB97, wB97X, CAM-B3LYP, LC-BLYP
-     杂化含动能密度泛函（Hybrid Meta-GGA）     TPSSh, M062X, PW6B95
-     双杂化泛函（Double Hybrid）               B2PLYP
+     Local-density approximation,LDA（LDA）    LSDA, SVWN5, SAOP
+     Generalized gradient approximation（GGA） BP86, BLYP, PBE, PW91, OLYP, KT2
+     meta-GGA                                  TPSS, M06L, M11L, MN12L, MN15L, SCAN, r2SCAN
+     Hybrid GGA                                B3LYP, GB3LYP, BHHLYP, PBE0, B3PW91, HFLYP, VBLYP
+     Range-separated Hybrid GGA                wB97, wB97X, CAM-B3LYP, LC-BLYP
+     Hybrid Meta-GGA                           TPSSh, M062X, PW6B95
+     Double Hybrid                             B2PLYP
     ========================================  ====================================================
 
 .. attention::
@@ -38,7 +38,7 @@ Note that while all general functions support (without dispersion correction) si
      Ground state gradient                 All LDA、GGA、hybrid GGA functional、meta-GGA and hybrid meta GGA functional except SAOP、PW91、KT2、B3PW91、VBLYP、SF5050
      Excited state gradient、NAC         all LDA、GGA and hybrid GGA functional except SAOP、PW91、KT2、B3PW91、VBLYP、SF5050
      Energy transfer / electron transfer integral    All functionals are supported, but the results of B2PLYP do not include the contribution of MP2 related terms, so they are approximate
-     NMR                      All LDA, GGA and hybrid GGA functionals
+     NMR                           All LDA, GGA and hybrid GGA functionals
      Dispersion correction                 BP86, BLYP, PBE, B3LYP, GB3LYP, BHHLYP, B3PW91, PBE0, CAM-B3LYP, B2PLYP
     ======================== ===================================================================================================
     
