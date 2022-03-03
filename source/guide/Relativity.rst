@@ -72,14 +72,12 @@ core-layer orbital properties.
 
 It includes two treatments：
 
-1. the spin-orbit coupling pseudopotential, which requires the addition of an additional SO potential function to the scalar ECP (SOECP; see the :ref:`spin-orbit coupling pseudopotential basis set<soecp-bas>` in the basis set library)
+1. the spin-orbit coupling pseudopotential, which requires the addition of an additional SO potential function to the scalar ECP (SOECP; see the :ref:`spin-orbit coupling pseudopotential basis set<soecp-bas>`  in the basis set library)
 2. the effective nuclear charge :cite:`zeff1995,zeff1998` 。
 
 Since the effect of the two-electron spin-orbit interaction is already included in the fitting parameters of the SO potential or in the empirical parameters of the effective nuclear charge,
 it is sufficient to calculate the single-electron spin-orbit integral. In the BDF, the atoms described by SOECP and the atoms described by scalar ECP or all-electron non-relativity can be used separately, by setting ``hsoc`` to 10 in the :ref:`xuanyuan<xuanyuan>` module. 
-由于双电子自旋轨道相互作用的影响已经包含在SO势的拟合参数或有效核电荷的经验参数中，只要计算单电子自旋轨道积分即可。
-在BDF中可以对SOECP描述的原子以及标量ECP或全电子非相对论描述的原子分别使用这两种处理方法，
-只需要在 :ref:`xuanyuan<xuanyuan>` 模块中设定 ``hsoc`` 为10。
+
 
 需要注意的是，有效核电荷支持的元素和基组类型有限。对于全电子基组，仅支持Xe之前的主族元素，且较重的稀有气体元素Ne、Ar、Kr除外。
 对于标量ECP基组，虽然支持的元素更多，但是芯电子数必须一致，见下表；
