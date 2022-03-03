@@ -76,7 +76,7 @@ It includes two treatments：
 2. the effective nuclear charge :cite:`zeff1995,zeff1998` 。
 
 Since the effect of the two-electron spin-orbit interaction is already included in the fitting parameters of the SO potential or in the empirical parameters of the effective nuclear charge,
-it is sufficient to calculate the single-electron spin-orbit integral in the xuanyuan module (so1e; hsoc = 0).
+it is sufficient to calculate the single-electron spin-orbit integral. In the BDF, the atoms described by SOECP and the atoms described by scalar ECP or all-electron non-relativity can be used separately, by setting ``hsoc`` to 10 in the :ref:`xuanyuan<xuanyuan>` module. 
 由于双电子自旋轨道相互作用的影响已经包含在SO势的拟合参数或有效核电荷的经验参数中，只要计算单电子自旋轨道积分即可。
 在BDF中可以对SOECP描述的原子以及标量ECP或全电子非相对论描述的原子分别使用这两种处理方法，
 只需要在 :ref:`xuanyuan<xuanyuan>` 模块中设定 ``hsoc`` 为10。
