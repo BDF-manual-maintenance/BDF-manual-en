@@ -1,33 +1,29 @@
 
 .. _relativity:
 
-相对论效应
+Relativistic effects
 ================================================
-相对论效应主要包括标量相对论效应和旋轨耦合作用两部分。
-相对论效应在有机发光机理研究十分重要，例如旋轨耦合作用导致电子态发生系间窜跃，以及过渡态、产物的自旋发生改变。
-原子最内层的芯电子一方面受相对论效应的影响最强，另一方面对化学变化不敏感，因此有不同的处理方式，主要有全电子相对论和有效芯势（ECP）两类方法。
+The relativistic effect mainly includes two parts: scalar relativistic effect and spin-orbit coupling effect. Relativistic effects are important in the study of organic light-emitting mechanisms, such as inter-system scattering of electronic states due to spin-track coupling, and changes in the spin of transition states and products. The innermost core electrons of the atom are most strongly affected by relativistic effects on the one hand, and insensitive to chemical changes on the other hand, so there are different ways to deal with them, mainly all-electron relativistic and effective core potential (ECP) two types of methods.
 
-1. **全电子方法** 所有的内层电子均做变分处理。常见的全电子相对论哈密顿量有：零阶正则近似（ZORA），二阶Douglas-Kroll-Hess（DKH2），
-刘文剑等人提出的精确二分量（X2C），等。ZORA和DKH2在精度和效率上没有优势，不建议使用。
+1. **All-electron methods** all the inner layer electrons are made variational treatment. The common all-electron relativistic Hamiltonians are: the zero-order regular approximation (ZORA), the second-order Douglas-Kroll-Hess (DKH2), the exact dichotomy (X2C) proposed by Wenjian Liu et al. ZORA and DKH2 have no advantages in terms of accuracy and efficiency and are not recommended.
 
-2. **ECP** 重原子的芯层电子用事先拟合好的有效势函数替代。当重原子较多的情况下，ECP能够大幅降低变分自由度，提高计算效率。根据价电子波函数在芯层有无节点，
-ECP又分为赝势（PP）和模型芯势（MCP）两大类，其中MCP为了正确地重现价电子波函数节点，必须结合大量的高斯函数，导致计算效率的提升不明显，因此应用较少。
-BDF程序中的ECP均指PP。
+2. The core electrons of **ECP** heavy atoms are replaced by a pre-fitted effective potential function. When there are more heavy atoms, ECP can significantly reduce the variational degrees of freedom and improve the computational efficiency. The ECP is divided into two categories, pseudopotential (PP) and model core potential (MCP), depending on whether the valence electron wave function has nodes in the core layer or not, where MCP has to combine a large number of Gaussian functions in order to reproduce the valence electron wave function nodes correctly, leading to an insignificant improvement in computational efficiency, and is therefore less used.ECP in BDF programs refers to PP.
 
-BDF基组库提供大量的 :ref:`全电子相对论基组<all-e-bas>` 和 :ref:`ECP基组<ecp-bas>` 。
+The BDF basis set library provides a large number of :ref:` all-electron relativistic basis sets<all-e-bas>` and :ref:`ECP basis sets<ecp-bas>` .
+
 
 .. warning::
 
-    1. X2C哈密顿与ECP基组不要混用
-    2. X2C相对论计算必须采用非收缩基组或专门优化的收缩基组，但前18号元素不强求
+    1. Do not mix X2C Hamiltonian and ECP basis sets
+    2. X2C relativistic calculations must use non-shrinking basis sets or specially optimized shrinking basis sets, but the first 18 elements are not mandatory.
 
 
-标量相对论效应
+Scalar relativistic effects
 ------------------------------------------------
 
-* **全电子方法**
+* **All-electron methods**
 
-BDF可以通过无自旋X2C哈密顿（sf-X2C）及其局域近似变体sf-X2C-AXR、sf-X2C-AU，考虑标量相对论效应。例如：
+The BDF can consider scalar relativistic effects through the spinless X2C Hamiltonian (sf-X2C) and its local approximation variants sf-X2C-AXR, sf-X2C-AU. For example：
 
 .. code-block:: bdf
 
@@ -38,47 +34,50 @@ BDF可以通过无自旋X2C哈密顿（sf-X2C）及其局域近似变体sf-X2C-A
     1
   $end
 
-在以上输入中， ``heff`` 调用标量相对论哈密顿，如sf-X2C（3，4，或21），sf-X2C-AXR（原子X矩阵近似，22），
-sf-X2C-AU（原子U变换近似，23），其中21，22，23具有解析导数。
-对于不涉及5d以上重元素—重元素成键的分子体系，sf-X2C-AU具有最高的效率且不损失精度，是推荐方法。否则用sf-X2C-AXR或sf-X2C。
+
+In the above input, ``heff`` calls scalar relativistic Hamiltonians such as sf-X2C (3, 4, or 21), sf-X2C-AXR (atomic X-matrix approximation, 22), and sf-X2C-AU (atomic
+U-transformation approximation, 23), where 21, 22, 23 have analytic derivatives. For molecular systems not involving heavy element-heavy element bonding above 5d,
+sf-X2C-AU has the highest efficiency without loss of precision and is the recommended method. Otherwise, sf-X2C-AXR or sf-X2C is used.
 
 .. _finite-nuclear:
 
-``nuclear`` 选项设为1表示使用有限核模型，一般不是必须的。但是有些相对论收缩基组考虑了原子核尺寸效应，或者当计算原子核附近的电子性质时，这些情况下要使用有限核模型。
+The ``nuclear`` option set to 1 indicates the use of a finite nuclear model, which is generally not required. However, some relativistic shrinkage basis groups take
+into account nucleus size effects, or when calculating the electronic properties near the nucleus, in these cases the finite nuclear model is used.
 
-sf-X2C及其局域变体支持的计算类型有：单点能，结构优化，以及部分 :ref:`一阶单电子性质<1e-prop>` 。解析Hessian和二阶单电子性质正在开发中。
+The types of calculations supported by sf-X2C and its local variants are: single point energies, structure optimization, and some :ref:`first-order single electron
+properties<1e-prop>` . Analytic Hessian and second-order single-electron properties are under development.
+
 
 * **ECP**
 
-ECP必须与非相对论哈密顿相结合，相对论效应隐含在赝势参数中。
-BDF支持的ECP计算类型有：单点能以及部分 :ref:`单电子性质<1e-prop>` 。ECP的梯度和Hessian正在开发中。
+ECP must be combined with a non-relativistic Hamiltonian, where relativistic effects are implicit in the pseudopotential parameters.
+The types of ECP calculations supported by the BDF are:  single-point energy and some :ref:`single electron properties<1e-prop>` . Gradient and Hessian for ECP are under development.
 
-旋轨耦合作用
+Spin-orbit coupling interactions
 ------------------------------------------------
-BDF可以通过态相互作用（SI）方法，在TDDFT单点计算中处理不同自旋多重度电子态之间的自旋轨道耦合。需要在 ``xuanyuan`` 模块中通过
-``hsoc`` 关键词指定如何计算自旋轨道积分。参见TDDFT部分的示例。
+BDF can handle spin-orbit coupling between different spin multiplet electronic states in TDDFT single-point calculations by means of the state interaction (SI)
+method. It needs to be specified in the ``xuanyuan`` module via the ``hsoc`` keyword how to calculate the spin-orbit integrals. See the TDDFT section for an example.
 
-根据采用的哈密顿的不同，自旋轨道耦合也可分为全电子和ECP两类。
+Depending on the adopted Hamiltonian, spin-orbit coupling can also be divided into two categories: all-electron and ECP.
 
-* **全电子方法**
+* **All-electron methods**
 
-虽然双电子自旋轨道积分的贡献小于单电子自旋轨道积分，但是对旋轨耦合作用的影响可能达到1/5~1/3，因此不能忽略。
-建议采用单电子自旋轨道积分+单中心近似的分子平均场双电子自旋轨道积分（so1e + SOMF-1c； ``hsoc`` = 2）。
-它可以与sf-X2C标量相对论哈密顿结合，对于轻元素体系也可以与非相对论哈密顿结合。
-此外，还可以对单电子自旋轨道积分进行屏蔽原子核 :cite:`snso2000,msnso2013` 或有效核电荷 :cite:`zeff1995` 校正，近似考虑双电子自旋轨道积分的影响，但是这对芯层轨道性质可能会造成无法预料的误差。
+Although the contribution of the two-electron spin-orbit integral is smaller than that of the single-electron spin-orbit integral, the effect on the spin-orbit coupling effect may reach 1/5~1/3, and therefore cannot be neglected. A singleelectron spin-orbit integral + a molecular mean-field two-electron spin-orbit
+integral with a single-center approximation （so1e + SOMF-1c； ``hsoc`` = 2）is suggested. It can be combined with the sf-X2C scalar relativistic Hamiltonian and, for the light element system, with the non-relativistic Hamiltonian. In addition, it is possible to correct the single-electron spin-orbit integrals for shielded nuclei :cite:`snso2000,msnso2013` or effective nuclear charges :cite:`zeff1995` , approximating the effect of the twoelectron spin-orbit integrals, but this may cause unpredictable errors on the
+core-layer orbital properties.
 
 .. _so1e-zeff:
 
 * **ECP**
 
-包括两种处理方法：
+It includes two treatments：
 
-1. 旋轨耦合赝势，需要在标量ECP中加入额外的SO势函数（SOECP；见基组库中的 :ref:`旋轨耦合赝势基组 <soecp-bas>` ），以及
-2. 有效核电荷 :cite:`zeff1995,zeff1998` 。
+1. the spin-orbit coupling pseudopotential, which requires the addition of an additional SO potential function to the scalar ECP (SOECP; see the :ref:`spin-orbit coupling pseudopotential basis set<soecp-bas>`  in the basis set library)
+2. the effective nuclear charge :cite:`zeff1995,zeff1998` 。
 
-由于双电子自旋轨道相互作用的影响已经包含在SO势的拟合参数或有效核电荷的经验参数中，只要计算单电子自旋轨道积分即可。
-在BDF中可以对SOECP描述的原子以及标量ECP或全电子非相对论描述的原子分别使用这两种处理方法，
-只需要在 :ref:`xuanyuan<xuanyuan>` 模块中设定 ``hsoc`` 为10。
+Since the effect of the two-electron spin-orbit interaction is already included in the fitting parameters of the SO potential or in the empirical parameters of the effective nuclear charge,
+it is sufficient to calculate the single-electron spin-orbit integral. In the BDF, the atoms described by SOECP and the atoms described by scalar ECP or all-electron non-relativity can be used separately, by setting ``hsoc`` to 10 in the :ref:`xuanyuan<xuanyuan>` module. 
+
 
 需要注意的是，有效核电荷支持的元素和基组类型有限。对于全电子基组，仅支持Xe之前的主族元素，且较重的稀有气体元素Ne、Ar、Kr除外。
 对于标量ECP基组，虽然支持的元素更多，但是芯电子数必须一致，见下表；
