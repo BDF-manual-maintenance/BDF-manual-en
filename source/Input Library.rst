@@ -1,7 +1,7 @@
-模块功能
+Module Functions
 ************************************
 
-BDF各模块的调用关系参见 :ref:`BDF模块及计算流程图<BDFpromodules>` 。
+See :ref:`the flowchart of BDF modules and calculations<BDFpromodules>` for the invocation of each BDF module.
 
 .. include:: module/autofrag.rst
 

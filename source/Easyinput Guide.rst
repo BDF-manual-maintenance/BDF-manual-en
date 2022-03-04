@@ -1,6 +1,6 @@
-简洁输入
+Simple input
 ************************************
 
-本章将介绍BDF简洁输入控制关键词。
+This chapter will introduce BDF simple input control keywords.
 
 .. include:: easyinput/controlkeywords.rst

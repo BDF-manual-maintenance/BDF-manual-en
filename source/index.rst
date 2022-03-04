@@ -6,24 +6,24 @@
 
 
 ================
-BDF用户手册
+BDF User manual
 ================
 
 .. toctree::
-   :caption: 软件简介
+   :caption: Software Introduction
 
    Introduction
 
 .. toctree::
    :maxdepth: 3
-   :caption: 快速开始
+   :caption: Quick Start
 
    Installation
    Input and Output
 
 .. toctree::
    :maxdepth: 3
-   :caption: 用户指导
+   :caption: User Guide
 
    User Guide
    Easyinput Guide
@@ -34,7 +34,7 @@ BDF用户手册
 
 .. toctree::
    :maxdepth: 3
-   :caption: 杂项
+   :caption: Miscellaneous
    
    FQA
    Cite

@@ -1,7 +1,7 @@
-快速入门
+Quick Start
 ************************************
 
-本章将介绍BDF的各种功能的基本使用，针对具体的计算功能给出基本的算例和数据读取分析说明。
+This chapter introduces the basic use of the various functions of the BDF, and gives basic examples of calculations and analysis of data readings for specific calculation functions.
 
 .. include:: guide/FirstExample.rst
 
