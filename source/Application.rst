@@ -1,4 +1,4 @@
-应用案例
+Applications
 ************************************
 
 .. include:: app/moss.rst
