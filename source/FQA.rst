@@ -1,12 +1,12 @@
-常见问题
+Frequently Asked Questions
 ************************************
 
-**重启中断的计算任务？**
-=================================
+**Restart an interrupted computing task？**
+===============================================
 
-BDF支持一部分常见任务的断点续算，包括：
+The BDF supports breakpoints for a selection of common tasks, including:
   
-1. SCF单点能：用 ``guess`` 关键词读取中断任务的最后一步SCF迭代的分子轨道作为初猜。具体而言，只需在$scf模块中指定初猜为 ``readmo`` ，并且重新运行该输入文件即可。
+1. SCF single point energy：Use the ``guess`` keyword to read the molecular orbital of the last SCF iteration of the interrupted task as the initial guess. Specifically, just specify the first guess as ``readmo`` in the $scf module, and rerun the input file.
 
   .. code-block:: bdf
 
@@ -17,10 +17,10 @@ BDF支持一部分常见任务的断点续算，包括：
     $end
 
 
-2. TDDFT单点能：当TDDFT任务中断，且idiag不等于2时，可以读取该任务最后一步TDDFT迭代（当idiag=1时为Davidson迭代，当idiag=3时为iVI迭代）的TDDFT激发矢量作为初猜。其中当idiag=3时，只有采用C(1)对称性的计算允许断点续算。
+2. TDDFT single-point energy：When the TDDFT task is interrupted and idiag is not equal to 2, the TDDFT excitation vector of the last TDDFT iteration (Davidson iteration when idiag=1, iVI iteration when idiag=3) of the task can be read as a first guess. In this case, when idiag=3, only the computation with C(1) symmetry allows for breakpoint sequencing.
 
-   TDDFT任务断点续算的方式是：在$scf模块里用 ``guess`` 关键词读取被中断的任务的收敛的SCF波函数，并在$tddft模块里用 ``iguess`` 指定读取被中断的任务的TDDFT激发矢量。假设输入文件为
-
+   The way to continue the calculation of the TDDFT task breakpoint is as follows:：The TDDFT task is broken by reading the converged SCF wave function of the interrupted task with the ``guess`` keyword in the $scf module and specifying the TDDFT excitation vector of the interrupted task with ``iguess`` in the $tddft module. Assume that the input file is
+   
    .. code-block:: bdf
    
      $scf
@@ -33,7 +33,7 @@ BDF支持一部分常见任务的断点续算，包括：
       21
      $end
 
-   其中iguess=21的十位数2表示选择tight-binding初始猜测（但这对于这个例子而言不是必要的，也就是说以下的讨论对iguess=1或iguess=11也是适用的），而个位数1表示将每步的TDDFT激发矢量写到文件（当idiag=1时，激发矢量保存在后缀为.dvdsonvec*的文件中；当idiag=3时，激发矢量保存在后缀为.tdx的文件中）。如该任务中断，断点续算的方法为将该输入文件改成：
+   where the tens digit 2 of iguess=21 indicates the selection of the tight-binding initial guess (but this is not necessary for this example, i.e. the following discussion also applies to iguess=1 or iguess=11), and the single digit 1 indicates that the TDDFT excitation vector for each step is written to a file (when idiag=1, the excitation vector is saved (when idiag=1, the excitation vector is stored in a file with the suffix .dvdsonvec*; when idiag=3, the excitation vector is stored in a file with the suffix .tdx). If the task is interrupted, the breakpoint will be continued by changing the input file to:
 
    .. code-block:: bdf
    
@@ -49,27 +49,27 @@ BDF支持一部分常见任务的断点续算，包括：
       11 # or 10, if the user is sure that the job will not be interrupted again
      $end
 
-   其中 ``guess readmo`` 是为了读取之前SCF迭代的轨道，从而避免浪费时间重新进行SCF迭代；而iguess=11的十位数1表示从.dvdsonvec*或.tdx文件内读取TDDFT激发矢量作为初猜。关于iguess各种取值的意义，详见 :doc:`tddft` 小节。
+   where ``guess readmo`` is to read the tracks of the previous SCF iteration, thus avoiding wasting time to re-run the SCF iteration, and iguess=11 with a decimal 1 means to read the TDDFT excitation vector from within the .dvdsonvec* or .tdx file as a first guess. See  :doc:`tddft`  subsection for details on the meaning of the various values of iguess.
+   
+   Note that: (1) due to the characteristics of the Davidson and iVI methods, the number of TDDFT iterations saved by the above methods is less than the number of iterations saved by SCF breakpoint sequencing under the same conditions, so unless the TDDFT iteration of the previously interrupted task is close to convergence, breakpoint sequencing may not save as many iterations as computing from scratch; (2) TDDFT does not by default The TDDFT excitation vector in the iteration is saved to the hard disk; you must specify iguess of 1, 11 or 21 to save the TDDFT excitation vector in the iteration to the hard disk. If the previously interrupted computation does not contain this keyword, it is not possible to perform a breakpoint continuation. The main reason why the program does not save the excitation vector for each step by default is that the resulting hard disk read/write time may not be negligible, so the user needs to weigh the need to specify saving the excitation vector when performing the calculation.
 
-   需要注意的是：（1）由于Davidson和iVI方法的特点，以上方法节省的TDDFT迭代次数比同等条件下SCF断点续算节省的迭代次数要少，因此除非之前已经中断的那个任务的TDDFT迭代已经接近收敛，否则断点续算可能并不比从头计算节省迭代次数；（2）TDDFT默认不将迭代当中的TDDFT激发矢量保存到硬盘，必须指定iguess为1、11或21才能将迭代当中的TDDFT激发矢量保存到硬盘。如果此前中断的计算没有包含该关键词，则无法进行断点续算。之所以程序没有默认保存每步的激发矢量，主要是因为这样导致的硬盘读写时间可能不可忽略，因此用户在执行计算时需要权衡是否需要指定保存激发矢量。
+3. Structure Optimization: just add the ``restart`` keyword to the $compass module, see :doc:`compass` subsection.
+4. Numerical Frequency Calculation：add ``restarthess`` keyword in the $bdfopt module, see the :doc:`bdfopt` subsection.
 
-3. 结构优化：在$compass模块中加入 ``restart`` 关键词即可，具体参见 :doc:`compass` 小节。
-4. 数值频率计算：在$bdfopt模块中加入 ``restarthess`` 关键词即可，具体参见 :doc:`bdfopt` 小节。
-
-**BDF如何引用？**
+**How is BDF referenced？**
 =================================
 
-使用BDF首先要引用BDF程序的原文 :cite:`doi:10.1007/s002140050207,doi:10.1063/1.5143173,doi:10.1142/S0219633603000471,doi:10.1142/9789812794901_0009` 。除此以外，使用BDF的不同功能还应当同时引用对应方法的文章，参见 :doc:`Cite` 小节。
+The first step in using a BDF is to cite the original text of the BDF program :cite:`doi:10.1007/s002140050207,doi:10.1063/1.5143173,doi:10.1142/S0219633603000471,doi:10.1142/9789812794901_0009` 。In addition to this, the different functions of a BDF should also be used with references to the corresponding method's article, see the section on  :doc:`Cite` instructions.
 
-**TDDFT计算的虚激发能/复激发能问题**
-=================================================================
+**False excitation energy/complex excitation energy problem for TDDFT calculations**
+======================================================================================
 
-如果基态波函数不稳定或者SCF收敛得到的态并非真正的基态，TDDFT计算会提示出现虚激发能, 极少情况下甚至出现复激发能。虚激发能和复激发能无物理意义。当使用Davidson方法时，程序会给出警告**Warning: Imaginary Excitation Energy!**，并在迭代收敛后给出所有虚/复激发能的模；当使用iVI方法时，程序会给出警告**Error in ETDVSI: ABBA mat is not positive! Suggest to use nH-iVI.**，且后续计算不会尝试继续求解虚/复激发能，而是只求解实激发能（因此当使用iVI方法时，不能仅根据最终收敛的激发能全部是实数就断定体系不存在虚/复激发能的激发态）。这时，应重新优化基态波函数，寻找稳定的解，或采用TDA计算激发能。
+If the ground state wave function is unstable or if the SCF converges to a state that is not the true ground state, the TDDFT calculation will suggest the appearance of false excitation energy and, rarely, even complex excitation energy. The false and complex excitation energies have no physical significance. When using the Davidson method, the program gives a warning **Warning: Imaginary Excitation Energy!** and gives the modes of all imaginary/complex excitation energies after convergence of the iterations; when using the iVI method, the program gives a warning **Error in ETDVSI: ABBA mat is not positive! Suggest to use nH-iVI.**, and the subsequent calculation does not try to continue solving for the imaginary/complex excitation energy, but only for the real excitation energy (so when using the iVI method, one cannot conclude that the system does not have excited states with imaginary/complex excitation energy just because the final converged excitation energy is all real). In this case, the ground state wave function should be re-optimized to find a stable solution, or the TDA should be used to calculate the excitation energy.
 
-**TDDFT的J、K算符可用内存与计算效率**
-=================================================================
+**Available Memory and Computational Efficiency of J and K Operators for TDDFT**
+==================================================================================
 
-如果TDDFT计算要求解的根的数目较多，程序默认的内存不够，造成TDDFT计算效率降低。TDDFT模块的关键词 **MEMJKOP** 可用来设置TDDFT计算J、K算符时最大可用内存。例如要求计算 **4** 个根，TDDFT给出了如下输出：
+The keyword **MEMJKOP** of TDDFT module can be used to set the maximum available memory for TDDFT to compute J and K operators if the number of roots required to be solved by TDDFT is large and the default memory of the program is not enough, which makes TDDFT computation less efficient. For example, if **4** roots are required to be computed, TDDFT gives the following output.
 
 .. code-block:: bdf
 
@@ -77,20 +77,20 @@ BDF支持一部分常见任务的断点续算，包括：
      Allow to calculate    2 roots at one pass for RPA ...
      Allow to calculate    4 roots at one pass for TDA ...
 
-提示计算JK算符最大可用内存为 **1024M** ，这里的单位是兆字节（MB），如果是RPA（即TDDFT）计算，每次积分计算允许算2个根，TDA计算允许算4个根。如果用户要求的是TDA计算，一次积分计算将得到所有根的JK算符，RPA计算需要将积分计算两次，计算效率降低。可以设置 ``MEMJKOP`` 为2048MB，增加内存使得每步迭代只需计算一次积分。注意，实际用到的物理内存大约是 **2048MB*OMP_NUM_THREADS** ，即需要乘以OpenMP线程的数目。
+The maximum available memory for calculating JK operators is **1024M**, where the unit is megabytes (MB). In case of RPA (i.e. TDDFT) calculations, 2 roots are allowed per integration calculation, and 4 roots are allowed for TDA calculations. If the user requires TDA calculation, one integration calculation will get JK operators of all roots, and RPA calculation needs to calculate the integration twice, which reduces the calculation efficiency. You can set ``MEMJKOP`` to 2048MB to increase the memory so that only one integration is computed for each iteration step. Note that the actual physical memory used is about **2048MB*OMP_NUM_THREADS** , i.e. it needs to be multiplied by the number of OpenMP threads.
 
-**计算出现segmentation fault与可用stack区内存**
-=================================================================
+**Calculating segmentation fault with available stack area memory**
+=====================================================================
 
-BDF计算如果出现 **segmentation fault** ，大多数情况下都是用户可用的stack区内存不够造成的，Linux系统下，可通过命令 **ulimit** 设置可用stack区内存大小。
+If a **segmentation fault** occurs in a BDF calculation, most of the time it is caused by the user not having enough memory available in the stack area, and under Linux, the available stack area memory size can be set with the  **ulimit** command.
 
-首先输入命令：
+First enter the command：
 
 .. code-block:: bdf 
 
   $ulimit -a
 
-输出提示如下：
+The output prompt is as follows：
 
 .. code-block:: bdf
 
@@ -111,67 +111,72 @@ BDF计算如果出现 **segmentation fault** ，大多数情况下都是用户�
     virtual memory          (kbytes, -v) unlimited
     file locks                      (-x) unlimited
 
-这里的 ``stack size              (kbytes, -s) 4096`` 表示用户可用的stack区内存大小为4096KB，只有4兆，可通过命令
+Here  ``stack size              (kbytes, -s) 4096`` means that the user has 4096KB of memory available in the stack area, which is only 4 megabytes, and can be accessed with the command
 
 .. code-block:: bdf
 
     ulimit -s unlimited
 
-设置用户可用stack区内存大小不受限。很多Linux发行版都对stack区内存有限制。严格的说，stack区内存限制大小分为 **硬上限** 和 **软限制** ，普通用户仅有权限设置小于 **硬上限** 的stack区内存。如果 ``ulimit -s unlimited`` 提示错误，
+Set an unlimited amount of stack area memory available to the user. Many Linux distributions have limits on the stack area. Strictly speaking, 
+there is **hard limit** and **soft limit** on the size of the stack area memory limit, and normal users only have permission to set the stack area memory 
+smaller than the **hard limit** . If ``ulimit -s unlimited`` prompts an error
 
 .. code-block:: bdf
 
     $ulimit -S
     -bash: ulimit: stack size: cannot modify limit: Operation not permitted
 
-需要用root账户更改可用stack区的内存 **硬上限** 或者联系您的系统管理员解决问题。
+You need to change the **hard limit** of memory in the available stack area with your root account or contact your system administrator to resolve the issue.
 
-**OpenMP并行计算**
+**OpenMP Parallel Computing**
 =================================================================
 
-BDF支持OpenMP并行计算，需要在运行脚本中设置可用的OpenMP线程数目，如下：
+BDF supports OpenMP parallel computing and requires the number of available OpenMP threads to be set in the run script as follows：
 
 .. code-block:: bdf
 
     export OMP_NUM_THREADS=8
 
-这里设置最大可用8个OpenMP线程并行计算。
+Here is set up to have a maximum of 8 OpenMP threads available for parallel computing.
 
-**OpenMP的stack区内存大小**
+**OpenMP's stack area memory size**
 =================================================================
 
-Intel编译器可用stack区内存，特别是使用OpenMP并行计算时，intel编译器将并行区的动态内存放入stack区以获得较高的计算效率。因而，用户需要在BDF的运行脚本中设置OpenMP可用stack区内存大小，如下：
+Intel compiler available stack area memory, especially when using OpenMP parallel computing, the intel compiler puts dynamic memory from the parallel area into the stack area to obtain higher computational efficiency. Therefore, the user needs to set the size of the available stack area memory for OpenMP in the BDF run script as follows：
 
 .. code-block:: bdf
 
     export OMP_STACKSIZE=2048M
 
-这里设置了OpenMP每个线程可用堆区(Stack)内存大小为2048MB. 注意： 如果使用OpenMP做多线程并行，系统使用的总堆区内存为 **OMP_STACKSIZE*OMP_NUM_THREADS** 。
+Here the available stack area memory size of OpenMP is set to 2048MB. Note: If you use OpenMP for multi-thread parallelism, the total heap memory used by the system is **OMP_STACKSIZE*OMP_NUM_THREADS** 。
 
 .. important::
-  环境变量OMP_STACKSIZE是通用环境变量，与其它OpenMP运行库的特殊环境变量之间存在覆盖关系：
+  The environment variable OMP_STACKSIZE is a general environment variable and has an overlay relationship with the special environment variables of other OpenMP runtime libraries：
 
   KMP_STACKSIZE（Intel OpenMP） > GOMP_STACKSiZE（GNU OpenMP） > OMP_STACKSIZE
 
-  因此如果在脚本中设置了优先级更高的环境变量，会覆盖OMP_STACKSIZE的值。
+  Therefore, if a higher priority environment variable is set in the script, the value of OMP_STACKSIZE will be overwritten.
 
-**Intel 2018版Fortran编译器**
+**Intel 2018 Edition Fortran Compiler**
 =================================================================
 
-Intel 2018版的Fortran编译器Bug较多，编译BDF应避免使用该版本的编译器。
+The Intel 2018 version of the Fortran compiler is buggy and should be avoided for compiling BDFs.
 
 
-**SCF不收敛**
+**SCF non-convergence**
 =================================================================
 
-参见 :doc:`SCFTech` 章节的 :ref:`处理自洽场计算的不收敛问题<SCFConvProblems>` 小节。
+See the section on :ref:`dealing with non-convergence in self-consistent field calculations<SCFConvProblems>` in the :doc:`SCFTech` chapter
 
-**SCF能量远低于预期值（较预期值低1 Hartree以上），或SCF能量显示为一串星号**
-=============================================================================
+**SCF energy is far below the expected value (more than 1 Hartree below the expected value) or SCF energy is displayed as a string of asterisks**
+====================================================================================================================================================
 
-一般是基组线性相关问题导致的。参见 :doc:`SCFTech` 章节的 :ref:`处理自洽场计算的不收敛问题<SCFConvProblems>` 小节关于基组线性相关问题的讨论。注意虽然该章节主要讨论的是基组线性相关问题导致SCF不收敛的问题的解决方法，但是这些方法对于基组线性相关问题仅导致SCF能量错误、而并未导致不收敛的情形也是适用的。
+This is usually caused by the basis group linear correlation problem. See the discussion of basis group linear correlation problems in the section on dealing with nonconvergence 
+in self-consistent field calculations in the :doc:`SCFTech` chapter. Note that while this section focuses on :ref:`solutions to problems where the SCF does not converge<SCFConvProblems>` due to basis group linear 
+correlation problems, these methods are also applicable in cases where the basis group linear correlation problem only causes errors in the SCF energy and does not lead to non-convergence.
 
-**如何使用自定义基组**
+**How to use custom base groups**
 =================================================================
 
-参见 :doc:`Gaussian-Basis-Set` 里的 :ref:`自定义基组文件<SelfdefinedBasis>` 小节。
+See the section :ref:`Custom Basis File<SelfdefinedBasis>` in :doc:`Gaussian-Basis-Set` .
+
