@@ -1,167 +1,160 @@
-安装和运行
+Installation and Operation
 ************************************
 
 .. attention::
 
-   普通用户不需要阅读安装和编译有关的内容，可以直接跳到 :ref:`BDF程序运行<run-bdfpro>` 和 :ref:`BDF图形界面<run-bdfgui>` 。
+   Ordinary users do not need to read the installation and compilation related content, and can directly skip to :ref:`BDF program running<run-bdfpro>` and :ref:`BDF graphical interface<run-bdfgui>` 。
 
 
-安装说明
+Installation instructions
 ================================================
 
-硬件环境
+Hardware environment
 -------------------------------------------------
-原则上说，BDF可以在任何Unix和类Unix操作系统上进行编译安装。我们已经在一些常见的软硬件环境下进行了编译测试，
-对于其他硬件平台，由于操作系统和编译器版本的限制和缺陷，用户可能会遇到一些问题。
-绝大多数况下，用户根据自己的硬件环境，设置正确的编译器标志和系统软件路径等，最终可以成功编译安装BDF软件。
+In principle, BDF can be compiled and installed on any Unix and Unix-like operating system. We have tested compilation on some common hardware and software environments. For other hardware platforms, users may encounter some problems due to limitations and defects of the operating system and compiler version. In most cases, users can eventually compile and install BDF software successfully by setting the correct compiler flags and system software paths according to their hardware environment.
 
-要编译BDF软件，至少需要 2 GB 的可用磁盘空间，具体取决于您的安装方式（例如，CMake 保留目标文件），
-编译后的实际大小约为 1.3 GB。要运行BDF的测试算例，应该提供至少 1 GB 的磁盘空间用于缓存计算的中间数据，
-具体需要的缓存空间取决于计算体系大小和使用的积分方式（采用积分直接算法需要的磁盘空间远小于传统的存储双电子积分的模式）。通常来说，对于采用积分直接算法的计算，应当提供4 GB以上的磁盘空间用于数据缓存。
+To compile the BDF software, one needs at least 2 GB of free disk space, depending on the installation method (e.g., CMake keeps the target file), and the actual size after compilation is about 1.3 GB. To run the test cases of the BDF, one should provide at least 1 GB of disk space for caching the intermediate data of the calculation, depending on the size of the calculation system and the integration method used. The amount of cache space required depends on the size of the computational system and the integration method used (the disk space required for the direct integration algorithm is much smaller than for the traditional mode of storing two-electron integrals). In general, for calculations using the direct integration algorithm, more than 4 GB of disk space should be provided for data caching.
 
-软件环境配置
+Software environment configuration
 ------------------------------------------------------------------------
 
-从BDF的源代码直接编译安装，对于编译器和数学库的最低要求是：
+The minimum requirements for compilers and mathematical libraries for direct compilation and installation from the source code of a BDF are：
 
- * Fortran编译器（支持Fortran 95及以上版本的语法）
- * C++ 编译器（支持C++03及以上版本的语法）
- * C 编译器
- * BLAS/LAPACK 数学库，接口需为64位整数
- * CMake 3.15版本及以上（使用cmake进行编译）
- * Python 2.7及以上版本。Python 2与Python 3不兼容，Python 3目前还未完全适配
+ * CMake version 3.15 and above (compile with cmake)
+ * C++ compiler (supports C++03 and above syntax)
+ * C compiler
+ * BLAS/LAPACK math library, the interface needs to be a 64-bit integer
+ * CMake version 3.15 and above (compile with cmake)
+ * Python 2.7 and above. Python 2 is not compatible with Python 3, and Python 3 is not yet fully adapted
  
-通常使用GCC 4.6及以上的版本即可正常编译。
+Usually use GCC 4.6 and above to compile normally.
 
-可选配置：
- * Intel Parallel Studio XE Cluster版C/C++、Fortran编译器
- * 优化的BLAS/LAPACK 库（如Intel的MKL，AMD的ACML，OpenBLAS等）
- * 编译并行版本的BDF，需要Openmpi 1.4.1或以上版本
- * 编译GPU版的BDF，需要OpenCL 1.5或以上版本，以及AMD的Rocm或Nvidia的Cuda
+Optional:
+  * C/C++, Fortran compiler for Intel Parallel Studio XE Cluster
+  * Optimized BLAS/LAPACK library (such as Intel's MKL, AMD's ACML, OpenBLAS, etc.)
+  * To compile the parallel version of BDF, Openmpi 1.4.1 or above is required
+  * Compiling BDF for GPU requires OpenCL 1.5 or above, and AMD's Rocm or Nvidia's Cuda
 
-cmake编译BDF
+Cmake compile BDF
 ==========================================================================
 
-1. Intel Fortran编译器、GNU gcc/g++编译器混合使用，链接MKL数学库，支持OpenMP并行
---------------------------------------------------------------------------------
+1. Intel FORTRAN compiler and GNU GCC / G + + compiler are mixed, linked to MKL math library, and OpenMP parallel support
+-------------------------------------------------------------------------------------------------------------------------------
 
 .. code-block:: shell
 
-    # 设置编译器
+    # Set up the compiler
     $ export FC=ifort
     $ export CC=gcc
     $ export CXX=g++
-    # cmake由setup命令自动执行
+    # cmake is automatically executed by the setup command
     $ ./setup --fc=${FC} --cc=${CC} --cxx=${CXX} --bdfpro --omp --int64 --mkl sequential $1
-    # 在build目录下构建BDF
+    # Build the BDF in the build directory
     $ cd build
-    # 使用make命令编译BDF，利用-j4参数指定使用4个CPU并行编译 
+    # Use the make command to compile BDF, specifying 4 CPUs in parallel with the -j4 parameter
     $ make -j4
-    # 安装BDF
+    # Install BDF
     $ make install
-    # 将build下bdf-pkg-pro复制至任意路径后，在bdfrc中写入正确路径，如：
+    # After copying BDF PKG Pro under build to any path, write the correct path in bdfrc, such as:
     $ BDFHOME=/home/user/bdf-pkg-pro
-    # 运行命令
+    # Run command
     $ $BDFHOME/sbin/bdfdrv.py -r **.inp
 
-2. GNU编译器gfortran/gcc/g++，链接MKL数学库，支持OpenMP并行
--------------------------------------------------------------------
+2. GNU compiler gfortran/gcc/g++, links to MKL mathematical libraries, OpenMP parallel support
+--------------------------------------------------------------------------------------------------------
 
 .. code-block:: shell
 
-    # 设置编译器
+    # Set up the compiler
     $ export FC=gfortran
     $ export CC=gcc
     $ export CXX=g++
-    # cmake由setup命令自动执行
+    # cmake is automatically executed by the setup command
     $ ./setup --fc=${FC} --cc=${CC} --cxx=${CXX} --bdfpro --omp --int64 --mkl sequential $1
-    # 在build目录下构建BDF
+    # Build the BDF in the build directory
     $ cd build
-    # 使用make命令编译BDF，利用-j4参数指定使用4个CPU并行编译 
+    # Use the command make to compile BDF, specifying 4 CPUs in parallel with the -j4 parameter 
     $ make -j4
-    # 安装BDF
+    # Install BDF
     $ make install
-    # 将build下bdf-pkg-pro复制至任意路径后，在bdfrc中写入正确路径，如：
+    # After copying BDF PKG Pro under build to any path, write the correct path in bdfrc, such as:
     $ BDFHOME=/home/user/bdf-pkg-pro
-    # 运行命令
+    # Run command
     $ $BDFHOME/sbin/bdfdrv.py -r **.inp
 
-3. Intel编译器ifort/icc/icpc，链接MKL数学库，支持OpenMP并行
+3. Intel compiler ifort/icc/icpc, linking MKL mathematical libraries, OpenMP parallel support
 -------------------------------------------------------------------
 
 .. code-block:: shell
 
-    # 设置编译器
+    # Set up the complier
     $ export FC=ifort
     $ export CC=icc
     $ export CXX=icpc
-    # cmake由setup命令自动执行
+    # cmake is automatically executed by the setup command
     $ ./setup --fc=${FC} --cc=${CC} --cxx=${CXX} --bdfpro --omp --int64 --mkl sequential $1
-    # 在build目录下构建BDF
+    # Build the BDF in the build directory
     $ cd build
-    # 使用make命令编译BDF，利用-j4参数指定使用4个CPU并行编译 
+    # Use the command make to compile BDF, specifying 4 CPUs in parallel with the -j4 parameter 
     $ make -j4
-    # 安装BDF
+    # Install BDF
     $ make install
-    # 将build下bdf-pkg-pro复制至任意路径后，在bdfrc中写入正确路径，如：
+    # After copying BDF PKG Pro under build to any path, write the correct path in bdfrc, such as:
     $ BDFHOME=/home/user/bdf-pkg-pro
-    # 运行命令
+    # Run command
     $ $BDFHOME/sbin/bdfdrv.py -r **.inp
 
 .. Warning::
-   1. gcc编译器9.0及以上版本，与Intel Fortran编译器混合使用，链接程序出错，原因是Intel Fortran编译器的OpenMP版本落后于GNU编译器。因而，GNU 9.0及以上版本编译器目前不支持GNU与Intel编译器混合编译。
-   2. Intel Fortran 2018版编译器Bug较多，应避免使用。
+   1. Gcc compiler version 9.0 and above, mixed with Intel FORTRAN compiler, link program error, because the OpenMP version of Intel FORTRAN compiler lags behind GNU compiler. Therefore, GNU 9.0 and above compilers currently do not support mixed compilation of GNU and Intel compilers.
+   2. Intel FORTRAN version 2018 compiler has many bugs and should be avoided.
 
-4  编译BDFpro，并要求生成鸿之微License文件
+4  Compile bdfpro and require to generate HZW license file
 -------------------------------------------------------------------
 
-主要步骤同前面3种情况，在运行setup命令时，需要加入参数 ``--hzwlic``，如：
+The main steps are the same as those in the previous three cases. When running the setup command, you need to add a parameter ``--hzwlic``, such as: 
 
 .. code-block:: bdf
 
-    #cmake由setup命令自动执行
+    #Cmake is automatically executed by the setup command
     $./setup --fc=${FC} --cc=${CC} --cxx=${CXX} --bdfpro --hzwlic --omp --int64 --mkl sequential $1
 
-在运行完安装命令 ``make install`` 后，最后会给出如下的输出：
+After running the  ``make install`` command, the following output will be given: 
 
 .. code-block:: bdf
 
-    Please run command '/home/bsuo/bdf-pkg-pro/bdf-pkg-pro/bin/hzwlic.x /home/bsuo/bdf-pkg-pro/build/bdf-pkg-pro' to generate Hongzhiwei license!
+    Please run command '/home/bsuo/bdf-pkg-pro/bdf-pkg-pro/bin/hzwlic.x /home/bsuo/bdf-pkg-pro/build/bdf-pkg-pro' to generate HZW license!
 
-这里， ``/home/bsuo/bdf-pkg-pro`` 是BDFpro源文件目录， ``/home/bsuo/bdf-pkg-pro/build/bdf-pkg-pro`` 是BDFpro的二进制代码安装目录。运行命令：
+Here, ``/home/bsuo/bdf-pkg-pro`` is the bdfpro source file directory, ``/home/bsuo/bdf-pkg-pro/build/bdf-pkg-pro`` is the binary installation directory of bdfpro. Run command:
 
 .. code-block:: bdf
 
     /home/bsuo/bdf-pkg-pro/bdf-pkg-pro/bin/hzwlic.x /home/bsuo/bdf-pkg-pro/build/bdf-pkg-pro
 
-后，目录 ``/home/bsuo/bdf-pkg-pro/build/bdf-pkg-pro/license`` 中，生成文件 **LicenseNumber.txt** 。
+After that, **LicenseNumber.txt** is generated in the ``/home/bsuo/bdf-pkg-pro/build/bdf-pkg-pro/license`` directory.
 
 
 .. _run-bdfpro:
 
-程序运行
+Program operation
 ==========================================================================
 
-BDF需在Linux终端下运行。运行BDF，需要先准备输入文件，输入文件的具体格式在手册后几节详述。
-在BDF安装目录的tests/input下包含了一些BDF输入算例。这里我们利用BDF自带的测试算例作为例子，先简述如何运行BDF。
+BDF needs to run under a Linux terminal. To run BDF, one needs to prepare an input file, the exact format of which is described in later sections of the manual. The BDF installation directory under tests/input contains some BDF input examples. Here we will use the test cases that come with BDF as an example and briefly explain how to run BDF first.
 
-运行BDF会使用一些环境变量：
+Running BDF will use a number of environment variables：
 
-+---------------------+---------------------------------------------------+----------------------+
-|环境变量             | 说明                                              |  是否必须设置        |
-+---------------------+---------------------------------------------------+----------------------+
-|BDFHOME              | 指定BDF的安装目录                                 | 是                   |
-+---------------------+---------------------------------------------------+----------------------+
-|BDF_WORKDIR          | BDF的工作目录，即当前任务的执行目录               | 否，自动设置         |
-+---------------------+---------------------------------------------------+----------------------+
-|BDF_TMPDIR           | 指定BDF的缓存文件存储目录                         | 是                   |
-+---------------------+---------------------------------------------------+----------------------+
-|BDFTASK              | BDF的计算任务名，如果输入为h2o.inp, 任务名为 h2o  | 否，自动设置         |
-+---------------------+---------------------------------------------------+----------------------+
+.. table::
 
-单机运行BDF，用Shell脚本执行作业
----------------------------------------------
-假设用户目录为 /home/user，BDF被安装在 /home/user/bdf-pkg-pro中。准备好输入文件 ``ch2-hf.inp`` 之后，需要再准备一个shell脚本，输入如下内容
+   =======================  ===================================================================================== ========================== 
+    Environment variable     Instructions                                                                           Must be set or not
+    BDFHOME                  Specify the installation directory of BDF                                              Yes     
+    BDF_WORKDIR              The working directory of BDF, that is, the execution directory of the current task     No, set automatically                      
+    BDF_TMPDIR               Specifies the cache file storage directory for BDF                                     Yes          
+    BDFTASK                  BDF calculation task name, if entered as h2o.inp, task name is h2o                     No, set automatically         
+   =======================  ===================================================================================== ========================== 
+
+Run BDF standalone and execute the job with a shell script
+------------------------------------------------------------
+Assuming that the user directory is /home/user, BDF is installed in /home/user/bdf-pkg-pro. After prepare the input file ``ch2-hf.inp`` ,you need to prepare a shell script and enter the following
 
 .. code-block:: shell
 
@@ -179,25 +172,25 @@ BDF需在Linux终端下运行。运行BDF，需要先准备输入文件，输入
 
     $BDFHOME/sbin/bdfdrv.py -r $1
 
-并命名为run.sh，利用 "chmod +x run.sh" 赋予脚本执行权限，然后按照如下方法执行。 
+Name the script run.sh, use "chmod +x run.sh" to give permission to execute the script, and then execute it as follows.
 
 .. code-block:: shell
 
-    # 在/home/user中新建一个文件夹test
+    # Create a new folder named test in /home/user
     $ mkdir test
     $ cd test
-    # 拷贝/home/user/bdf-pkg-pro/tests/easyinput/ch2-hf.inp到test文件夹
+    # Copy /home/user/bdf-pkg-pro/tests/easyinput/ch2-hf.inp to test folder
     $ cp /home/user/bdf-pkg-pro/tests/easyinput/ch2-hf.inp
-    # 在test目录中运行提交命令
+    # Run the submit command in the test directory
     $ ./run.sh ch2-hf.inp &> ch2-hf.out&
 
 .. hint::
-    BDF将输出打印至标准输出，需要用重定向命令 ``>`` 定向到文件ch2-hf.out中。
+    When BDF prints the output to standard output, you need to use the redirection command ``>`` to direct to the file ch2-hf.out.
 
-利用PBS作业管理系统提交BDF作业
-------------------------------------------------
+Submitting BDF jobs using the PBS job management system
+----------------------------------------------------------
 
-PBS提交BDF作业的脚本示例如下：
+An example script for a PBS submission BDF job is as follows：
 
 .. code-block:: shell
 
@@ -216,13 +209,13 @@ PBS提交BDF作业的脚本示例如下：
     #### Set the PATH to find your applications #####
     export BDFHOME=/home/bbs/bdf-pkg-pro
     
-    # 指定BDF运行的临时文件存储目录
+    # Specify the temporary file storage directory where BDF runs
     export BDF_TMPDIR=/tmp/$RANDOM
     
-    # 指定OpenMP的Stack内存大小
+    # Specify the Stack memory size for OpenMP
     export OMP_STACKSIZE=2G
     
-    # 指定OpenMP可用线程数，应该等于ppn定义的数目
+    # Specify the number of available OpenMP threads, which should be equal to the number defined by ppn
     export OMP_NUM_THREADS=4
     
     #### Do not modify this section ! #####
@@ -231,10 +224,10 @@ PBS提交BDF作业的脚本示例如下：
     $BDFHOME/sbin/bdfdrv.py -r jobname.inp
 
 
-利用Slurm作业管理系统提交BDF作业
-------------------------------------------------
+Submit BDF jobs using Slurm job management system
+----------------------------------------------------
 
-Slurm提交BDF作业的脚本示例如下：
+An example script for slurm to submit a BDF job is as follows：
 
 .. code-block:: shell
 
@@ -252,14 +245,14 @@ Slurm提交BDF作业的脚本示例如下：
     #### Set the PATH to find your applications #####
     export BDFHOME=/home/bbs/bdf-pkg-pro
     
-    # 指定BDF运行的临时文件存储目录
+    # Specify the temporary file storage directory where BDF runs
     export BDF_WORKDIR=./
     export BDF_TMPDIR=/tmp/$RANDOM
     
-    # 指定OpenMP的Stack内存大小
+    # Specify the Stack memory size for OpenMP
     export OMP_STACKSIZE=2G
     
-    # 指定OpenMP可用线程数，应该等于ppn定义的数目
+    # Specify the number of available OpenMP threads, which should be equal to the number defined by ppn
     export OMP_NUM_THREADS=4
     
     #### Do not modify this section ! #####
@@ -268,31 +261,31 @@ Slurm提交BDF作业的脚本示例如下：
 
 
 .. important::
-    1. stacksize的问题。Intel Fortran编译器对程序运行的堆区（stack）内存要求较大，Linux系统默认的stacksize的大小通常太小，需要通过ulimit -s unlimited指定堆区内存大小。
-    2. OpenMP并行的线程数。OMP_NUM_THREADS用于设定OpenMP的并行线程数。BDF依赖于OpenMP并行提高计算效率。如果用户使用了Bash Shell，可以用命令 ``export OMP_NUM_THREADS=N`` 指定使用N个OpenMP线程加速计算。
-    3. OpenMP可用堆区内存，用户可以用 ``export OMP_STACKSIZE=1024M`` 指定OpenMP每个线程可用的堆区内存大小，总的堆区内存大小为 ``OMP_STACKSIZE*OMP_NUM_THREADS`` .
+    1. The problem with stacksize.The Intel Fortran compiler requires a large amount of stack memory for programs to run, and the default stacksize is usually too small and needs to be specified by ``ulimit -s unlimited`` .
+    2. OpenMP Number of threads in parallel. OMP_NUM_THREADS is used to set the number of threads in parallel for OpenMP. BDF relies on OpenMP parallelism to improve computational efficiency. If you are using the Bash Shell, you can use the command ``export OMP_NUM_THREADS=N`` to specify the number of OpenMP parallel threads to use. to use N OpenMP threads to accelerate the computation.
+    3. OpenMP available heap memory, users can use ``export OMP_STACKSIZE=1024M`` to specify the size of the heap memory available to each thread of OpenMP, and the total heap memory size is ``OMP_STACKSIZE*OMP_NUM_THREADS`` .
 
 
 
-QM/MM计算环境配置
+QM/MM Computing Environment Configuration
 -------------------------------------------------
 .. _qmmmsetup:
 
-推荐使用Anaconda管理和配置QM/MM计算环境（ `详见官网 <https://www.anaconda.com>`_ ）。
+We recommend using Anaconda to manage and configure the QM/MM computing environment ( `see <https://www.anaconda.com>`_ ).
 
-*  在anaconda中配置运行环境
+*  Configure the runtime environment in anaconda
 
 .. code-block:: shell
 
   conda create –name yourEnvname python=2.7
   conda activate yourEnvname
-  #配置Cython和PyYAML
-  conda install pyyaml #或者 pip install pyyaml
+  #Configure Cython and PyYAML
+  conda install pyyaml #or pip install pyyaml
   conda install cython 
 
-*  pDynamo-2的安装与配置
+*  Installation and configuration of pDynamo-2
 
-BDF中pDynamo-2已经内置于安装目录的sbin目录下，在sbin目录下依次运行如下命令进行安装和配置：
+BDF pDynamo-2 has been built into the sbin directory of the installation directory, so run the following commands in the sbin directory to install and configure in the sbin directory to install and configure：
 
 .. code-block:: shell
 
@@ -300,29 +293,25 @@ BDF中pDynamo-2已经内置于安装目录的sbin目录下，在sbin目录下依
   cd installation
   python ./install.py
 
-安装脚本运行后，会生成 environment_bash.com，environment_cshell.com两个环境配置文件。用户可以在自己的 ``.bashrc`` 通过source加载这个
-环境文件，设置运行环境。
+After the installation script is run, two environment configuration files, environment_bash.com，environment_cshell.com are generated. Users can load this environment file in their ``.bashrc`` via source to set up the runtime environment. 
 
 .. note::
 
-  编译过程会自动选择C编译器，对于MAC系统，建议使用 ``homebrew`` 安装GCC编译器，并添加 CC=gcc-8。其它版本的gcc编译器分别对应 gcc-6 或者 gcc-7等。
-  高于gcc-8版本目前没有测试。 
-
-pDynamo-2运行时，默认调用sbin目录下的 ``qmmmrun.sh`` 文件进行QM计算。环境配置时，需要确保sbin目录在系统PATH中。
-可以用如下命令添加。
+  The compilation process automatically selects the C compiler, for MAC systems it is recommended to install the GCC compiler using ``homebrew`` and add CC=gcc-8. Other versions of the gcc compiler correspond to gcc-6 or gcc-7, etc. Other versions of the gcc compiler correspond to gcc-6 or gcc-7, respectively. The version above gcc-8 is not tested at the moment.
+  
+When pDynamo-2 is run, the ``qmmmrun.sh`` file in the sbin directory is called by default to perform QM calculations. When configuring the environment, you need to make sure that the sbin directory is in the system PATH. You can add it with the following command.
 
 .. code-block:: shell
 
   export PATH=/BDFPATH/sbin:$PATH
 
-*  最后一步，指定BDF程序临时文件存储文件夹，可以运行如下命令指定，也可以将该变量设置在环境变量中。
+*  The final step is to specify the BDF program temporary file storage folder, either by running the following command, or by setting the variable in the environment variable in the environment variable.
 
 .. code-block:: shell
   
   export PDYNAMO_BDFTMP=YourBDF_tmpPATH
 
-若要检测pDynamo是否正确安装，可以运行软件自带的算例进行检测，算例文件位于 **pDynamo_2.0.0/book/examples** 目录中，
-可以运行以下命令测试：
+To check if pDynamo is installed correctly, you can run the examples that come with the software, which are located in the  **pDynamo_2.0.0/book/examples** directory, by running the following command
 
 .. code-block:: shell
 
