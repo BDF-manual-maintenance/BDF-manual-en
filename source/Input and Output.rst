@@ -369,7 +369,7 @@ BDF output files
 .. table:: BDF advanced input description table
     :widths: auto
   
-  =================================    ============================================================================================================================================================================== 
+   =================================    ============================================================================================================================================================================== 
     File extension                      Description                                                                               
     .out                                Master output file                                                                      
     .out.tmp                            Sub-output files for structural optimization and numerical frequency tasks (output containing calculation steps for energy, gradient, etc.)       
@@ -387,7 +387,7 @@ BDF output files
     .global.scforb                      FLMO/iOI calculates the molecular orbitals of the last SCF iteration                                          
     .fragment*.*                        Output file related to the subsystem calculation of the FLMO/iOI calculation                                             
     .ioienlarge.out                      iOI calculation of subsystem composition information for step 1 and subsequent macro iterations                                       
-  =================================    ============================================================================================================================================================================== 
+   =================================    ============================================================================================================================================================================== 
 
 
 
