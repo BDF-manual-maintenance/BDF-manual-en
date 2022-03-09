@@ -1,57 +1,57 @@
-输入输出格式
+Input and output formats
 ************************************
 
-BDF的输入格式
+Input format of BDF
 ==========================================================================
 
-BDF输入文件格式有三种，分别为：简洁输入（easy input）；高级输入（advanced input）；混合输入（mixed input）。 **简洁输入** 易用性强，用户无需对计算细节太了解，使用门槛低，面向初级用户。 **高级输入** 提供了对BDF计算强大的控制功能，对每个计算模块都可以精确控制。 **混合输入** 是在BDF简洁输入中，添加部分高级输入模式定义的内容。 BDF的混合输入，是希望在保持BDF简洁输入便利、对初学者友好的基础上，通过增加按照高级输入格式定义的、精确控制BDF计算模块行为的字段，来完成一些高级的计算功能。简而言之，BDF的混合输入是BDF简洁输入与高级输入的组合。对于初学者，只需用BDF简洁输入即可完成大多数计算任务。对于有量子化学理论基础的用户，想深入学习和使用BDF更高级的功能，可以学习采用BDF的高级输入。
+There are three types of BDF input file formats: easy input, advanced input, and mixed input. **Easy input** is easy to use and does not require the user to know much about the details of the calculation, which is a low threshold for beginners. **Advanced input** provides powerful control over BDF calculations, with precise control over each calculation module. **Mixed input** of BDF is a way to add some advanced computational functions to the BDF simple input and add fields that precisely control the behavior of BDF computational modules as defined by the advanced input format, while keeping the BDF simple input convenient and beginner-friendly. In short, BDF hybrid input is a combination of BDF simple input and advanced input. For beginners, most computational tasks can be accomplished using only BDF simple inputs. For users who have a basic understanding of quantum chemistry theory and want to learn and use the more advanced features of BDF in depth, they can learn to use the advanced input of BDF.
 
 .. note::
 
-   * 输入中除 **文件名**、 **shell命令** 及 **环境变量名** 外，其它输入，如BDF的 **模块名** 、 **关键词** 及 **关键词的值** 等都不区分大小写字母。
+   *Inputs other than **file names** , **shell** commands and **environment variable names** , such as BDF **module names** , **keywords** and **keyword values** , are not case sensitive. 
+   
 
 ..
 
 
-BDF的简洁输入（easy input）
+Easy input for BDF
 --------------------------------------------------------------------------
 
-以水分子的单点能计算为例来详细描述BDF简洁输入格式：
+The BDF simple input format is described in detail using the single-point energy calculation of water molecules as an example：
 
 .. code-block:: bdf
 
   #!H2O.bdf
   B3lyp/3-21G 
 
-  Geometry  # 输入原子坐标，单位 Angstrom
+  Geometry  # Enter atomic coordinates, in unit Angstrom
   O 0.00000    0.00000    0.36827
   H 0.00000   -0.78398   -0.18468
   H 0.00000    0.78398   -0.18468
   End Geometry
 
-BDF简洁输入包含3个输入块：
+The BDF easy input consists of 3 input blocks:
 
-**第一输入块** 
+**First input block** 
 
-只有一行，以 ``#!`` 开始，后面是输入脚本的名字，例如 ``#!name.bdf`` , 可以是说明文字。
+The first input block is a single line, starting with ``#!`` followed by the name of the input script, e.g. ``#!name.bdf`` , which can be a description text.
 
-**第二输入块** 
+**Second input block** 
 
-从第二行开始，到 ``Geometry`` 前一行结束。这一输入块，可以由多行组成，是BDF的命令控制行，用于指定BDF做什么计算任务，可以由多行组成，可以用于指定计算方法，基组、泛函、电荷数及自旋多重度的等一些基本的计算控制参数。命令行内容以空格分开不同的关键词。关键词及其值用等号分开，一个关键词如果没有值，关键词本身即为控制关键词。关键词可以有一个值，也可以有用逗号分开的多个值。
-关键词可以有多行，如果一行中出现了 ``#`` ，则 ``#`` 后的行为注释语句。
+starts with the second line and ends with the line before ``Geometry`` . This input block, which can consist of multiple lines, is the command control line of the BDF, and is used to specify what computational tasks the BDF does. It can consist of multiple lines, and can be used to specify some basic computational control parameters such as basis group, generalization, charge number and spin multiplicity. The content of the command line is separated by spaces for the different keywords. The keywords and their values are separated by equal signs. A keyword without a value is itself a control keyword. Keywords can have one value or multiple values separated by commas. Keywords can have multiple lines. If ``#`` appears in a line, the line after ``#`` is a comment statement.
 
-**第三输入块** 
+**Third input block** 
 
-从 ``Geometry`` 行开始，到 ``End Geometry`` 行结束，输入分子的几何结构，具体格式见分子结构的输入格式说明。
+Starting from the ``Geometry`` line and ending at the ``End Geometry`` line, enter the geometry of the molecule, as described in the input format of the molecular structure.
 
 .. tip:: 
 
-  * 本算例的第三行是空行，BDF输入中的空白行,除了在定义分子坐标 ``Geometry ... End geometry`` 之间的，其它的空行都是非必要的，但为了输入的可读性，强烈建议用户用空行分割不同的输入块和不同的模块。
+  * The third line in this example is an empty line, a blank line in the BDF input, except between the defined molecular coordinates ``Geometry ... End geometry`` , all other blank lines are non-essential, but for readability, it is strongly recommended that users use blank lines to separate different input blocks and different modules.
 
-BDF的高级输入（advanced input）
+ Advanced input for BDF
 --------------------------------------------------------------------------
 
-BDF高级输入是最初开发BDF时设置的输入模式，特点是 **模块引导计算+模块参数控制**，格式如下：
+The BDF advanced input is the input mode set during the initial development of the BDF and is characterized by **module-guided computation + module parameter control** in the following format
 
 .. code-block:: bdf
 
@@ -73,14 +73,15 @@ BDF高级输入是最初开发BDF时设置的输入模式，特点是 **模块�
       ...
     $end
 
-说明如下：
-  - 这个输入包含了两个BDF的计算模块，分别为 ``bdfmodule1`` 和 ``bdfmodule2`` (此处仅为举例，并非真的存在名为 ``bdfmodule1`` 和 ``bdfmodule2`` 的模块)。一个计算任务可能包含多个BDF模块。 
-  - **模块引导计算**: 指完成该计算将顺序执行两个计算模块。每个模块的输入从 ``$bdfmodule`` 开始，至随后第一次出现的 ``$end`` 关键词结束, ``$bdfmodule`` 与 ``$end`` 之间是该模块的控制关键词及其值。其中 ``bdfmodule`` 是BDF的计算模块名，如 ``COMPASS``、 ``XUANYUAN`` 、 ``SCF`` 等。
-  - **模块参数控制**: 指每个模块通过自有的关键词来控制其计算行为，参数控制输入采用 **关键词+值** 的模式，关键词的值从关键词所在行的下一行开始，根据具体的关键词，可以是单行、也可以是多行。BDF每个计算模块读取并处理自己模块所属的关键词及值。
+The description is as follows.
+  - This input contains two BDF computation modules, ``bdfmodule1`` and ``bdfmodule2`` (this is only an example, there are not really modules named ``bdfmodule1`` and ``bdfmodule2`` 的模块). A computation task may contain more than one BDF module. 
+  - **Module-directed computation**: means that two computation modules are executed sequentially to complete the computation. The input to each module starts with ``$bdfmodule`` and ends with the first subsequent occurrence of the ``$end`` keyword, and between ``$bdfmodule`` and ``$end`` are the control keywords and their values for that module. where  ``bdfmodule`` is the name of the BDF calculation module, such as ``COMPASS`` , ``XUANYUAN`` , ``SCF`` , etc.
+  - **BDF module parameter control**: Each module controls its computation behavior by its own keywords, and the parameter control input uses the **keyword + value** , where the keyword value starts from the next line of the line where the keyword is located, and can be a single line or multiple lines depending on the specific keyword.
 
-BDF的高级输入格式需要对量子化学理论有一定了解，也需要知道BDF每个计算模块具体的功能。BDF将不同的计算功能尽可能的独立出来，编译为单独的可执行文件，相当于一个个小工具，然后通过用python语言写的 **bdfdrv.py** 按照计算流程依次调用不同的计算模块来完成复杂的计算任务，各模块之间通过临时文件和环境变量交换数据。
+The advanced input format of BDF requires a certain understanding of quantum chemical theory and the specific functions of each calculation module of BDF. **bdfdrv.py** written in python language, calls different calculation modules sequentially to complete complex calculation tasks. to complete the complex computational tasks, each module through the temporary files and environment variables to exchange data between.
 
-这里，我们以水分子为例来详细描述BDF高级输入格式：
+Here, we take water molecules as an example to describe in detail the BDF advanced input format.
+
 
 .. code-block:: bdf
 
@@ -93,9 +94,9 @@ BDF的高级输入格式需要对量子化学理论有一定了解，也需要�
   H 0.00000   -0.78398   -0.18468
   H 0.00000    0.78398   -0.18468
   End geometry
-  Basis # 基组
+  Basis # basis sets 
    3-21G
-  Group # C2v点群，可不输入，程序会自动判断，常用于对高阶群指定D2h及其子群计算。
+  Group # C2v point groups, which can be entered without input, are automatically judged by the program, and are often used to specify D2h and its subgroup calculations for higher-order groups.
    C(2v)
   $end
 
@@ -115,15 +116,14 @@ BDF的高级输入格式需要对量子化学理论有一定了解，也需要�
    Readmo    # Read orbital from inporb as the initial guess orbital
   $end
 
-上面所示的输入文件包含四个计算模块，分别为 **COMPASS**、 **XUANYUAN** 和两个 **SCF** 。 **COMPASS** 用于读入输入分子坐标，基函数等信息，并存储为BDF内部的数据结构。 **COMPASS** 的一个重要任务是对分子点群的处理，包括判断分子对称性，产生对称匹配的轨道（symmetry-adapted orbital）等。 **XUANYUAN** 用于计算单、双电子积分。然后调用两次 **SCF** 模块执行自洽场（self-consistent field）计算，一次为RHF（Restricted Hatree-Fock），另一次为RKS（Restricted Kohn-Sham）。
+The input file shown above contains four computational modules, **COMPASS**、 **XUANYUAN** and two **SCF** . **COMPASS** is used to read in the input molecular coordinates, basis functions and other information, and store them as data structures inside BDF. An important task of **COMPASS** is the processing of molecular point groups, including the determination of molecular symmetry and the generation of symmetry-adapted orbitals. **XUANYUAN** is used to calculate single and double electron integrals. The **SCF**  module is then called twice to perform self-consistent field calculations, once for the RHF (Restricted Hatree-Fock) and RKS (Restricted Kohn-Sham).
 
-每个计算模块的输入遵循 **“关键词+值”** 的格式，即给出一个关键词，如 **COMPASS** 中的 ``Group``，紧接着一行为该关键词的值，这里是 ``C(2v)``。有的关键词本身即用于逻辑控制，
-如第一个 **SCF** 模块中的 ``RHF``，指定 **SCF** 模块执行 ``RHF`` 计算，这类关键词不需要额外的输入值。而有的关键词的值需要多行输入，具体参见各个模块的关键词说明。
+The input to each computation module follows the **“keyword + value”** format, i.e., a keyword, such as ``Group`` in **COMPASS** , is given followed by a value for that keyword, in this case ``C(2v)``。. Some keywords are used for logical control, such as  ``RHF`` in the first **SCF** module, which specifies that the **SCF** module performs the  ``RHF`` calculation, and no additional input values are needed for such keywords. Some of the keywords require multiple lines of input, as described in the keyword descriptions for each module.
 
-在第一个和第二个 **SCF** 模块之间，有一个 ``%`` 开头的行。这里，我们插入了一条shell命令，执行一个拷贝文件的任务。将第一个 **SCF** 计算产生的放在 **BDF_WORKDIR** 中的 **$BDFTASK.scforb** 文件拷贝到 **BDF_TMPDIR** ，并更名为 **$BDFTASK.inporb** 。
-在第二个 **SCF** 模块中，我们指定了关键词 ``guess`` ，值为 ``readmo`` ，即读入分子轨道作为初始猜测。在BDF高级输入中，以 ``%`` 起始的行为shell命令行。输入中以 ``#`` 号开头的行或者行中包含 ``#`` 号，所有的 ``#`` 号后面的内容都是注释语句。
+Between the first and second  **SCF**  module, there is a line starting with  ``%`` . Here, we insert a shell command that performs a task of copying a file. The **$BDFTASK.scforb** file generated by the first  **SCF**  calculation and placed in **BDF_WORKDIR** is copied to **BDF_TMPDIR** and renamed to **$BDFTASK.inporb** . In the second  **SCF**  module, we specify the keyword ``guess`` , with the value ``readmo``, i.e., read in the molecular orbitals as an initial guess. In the BDF advanced input, the lines starting with ``%`` are shell command lines. The lines starting with  ``#``  or containing  ``#``  in the input, all the contents after the  ``#``  are comment statements.
 
-下面的 **BDF模块及计算流程图** 给出了各模块的调用顺序，
+The **following flowchart of BDF modules and calculations** gives the order in which each module is called.
+
 
 .. _BDFpromodules:
 
@@ -131,68 +131,69 @@ BDF的高级输入格式需要对量子化学理论有一定了解，也需要�
    :width: 400
    :align: center
 
-   BDF模块及计算流程图
+   the BDF module and calculation flow diagram
 
 .. tip::
 
-  - 一个完整的计算任务需调用多个BDF计算模块。高级输入中各模块出现的顺序由 **BDF模块及计算流程图** 给出。一般的计算任务只会涉及上图所示模块中的一小部分，例如大部分计算任务不需要 ``AUTOFRAG`` 模块，第一个计算模块实际上是 ``COMPASS`` ；只有对于 **iOI-SCF** 和 **FLMO** 计算，才应该出现 ``AUTOFRAG`` 模块（并放到 ``COMPASS`` 之前），用以对分子进行自动分片，然后再调用 ``COMPASS`` 等其他计算模块完成工作。
-  - 有的计算逻辑较复杂，例如 **分子结构优化** ， 如果利用Kohn-Sham方法优化分子结构， ``COMPASS`` 模块对分子结构，基组等预处理后， ``BDFOPT`` 模块将多次顺序调用 ``XUANYUAN->SCF->RESP`` 三个模块，分别计算单电子积分、自洽场能量及能量对原子核坐标的的梯度优化分子结构。 
-  - 实际计算中，BDF的简洁输入文件被翻译为BDF的高级输入格式，存储在 **BDF_ΤΜPDIR** 指定的临时文件夹中的隐藏文件 **.bdfinput** 中。
+  - A complete computational task requires multiple calls to the BDF computational modules. The order in which the modules appear in the advanced input is given by **the BDF module and calculation flow diagram** . The general calculation task will only involve a small part of the module shown in the figure above, for example, most calculation tasks do not require the ``AUTOFRAG`` module, and the first calculation module is actually ``COMPASS`` ; Only for **iOI-SCF** and **FLMO** calculations should the ``AUTOFRAG`` module appear (and be placed before ``COMPASS`` ) to automatically slice the numerator, and then ``COMPASS`` and other computational modules should be called to finish the job.
+  - For example, if the **molecular structure is optimized** by the Kohn-Sham method, the ``COMPASS`` module preprocesses the molecular structure and the basis group, and then the ``BDFOPT`` module calls the ``XUANYUAN->SCF->RESP`` modules several times in sequence to optimize the molecular structure by calculating the single electron integral, the self-consistent field energy and the gradient of energy to the nucleus coordinates.
+  - For the actual calculation, the concise input file of the BDF is translated into the advanced input format of the BDF and stored in a hidden file  **.bdfinput**  in a temporary folder specified by **BDF_ΤΜPDIR** .
 
-下面的 **BDF模块及功能表** 给出了BDF的模块名及功能。
+The following **BDF modules and menus** give the names and functions of the BDF modules.
 
-.. table:: BDF模块及功能表
+.. table:: BDF Module and menu
     :widths: auto
 
-    ============== =========================================
-       模块名          功能 
-    ============== =========================================
-       AUTOFRAG      分子自动分片，驱动iOI-SCF和FLMO计算
-       COMPASS       分子结构、基组及对称性预处理 
-       XUANYUAN      原子轨道积分
-       BDFOPT        分子几何结构优化
-       SCF           Hartree-Fock及Kohn-Sham自洽场 
-       TDDFT         含时密度泛函计算
-       RESP          Hartree-Fock、Kohn-Sham及TDDFT梯度
-       GRAD          Hartree-Fock梯度 
-       LOCALMO       分子轨道定域化
-       NMR           核磁屏蔽常数计算
-       ELECOUP       电子迁移积分，能量迁移积分，定域化激发态
-       MP2           Møller-Plesset二级微扰理论 
-    ============== =========================================
+    ============== ==================================================================================
+      Module name          Function 
+    ============== ==================================================================================
+       AUTOFRAG      Automatic molecular fragmentation, driving IOI-SCF and flmo calculations
+       COMPASS       Molecular structure, basis set and symmetry pretreatment 
+       XUANYUAN      Atomic orbital integral
+       BDFOPT        Molecular geometry optimization
+       SCF           Hartree-Fock and Kohn sham self consistent fields
+       TDDFT         Time dependent density functional calculation
+       RESP          Hartree-Fock, Kohn sham and TDDFT gradients
+       GRAD          Hartree-Fock gradients
+       LOCALMO       Molecular orbital localization
+       NMR           Calculation of nuclear magnetic shielding constant
+       ELECOUP       Electron transfer integral, energy transfer integral, localized excited state
+       MP2           Møller-Plesset second-order perturbation theory
+    ============== ==================================================================================
 
-.. table:: BDF高级输入说明表
+.. table:: BDF advanced input description table
     :widths: auto
 
-    ===================== ==============================================================================================================
-       输入内容             说明
-    ===================== ==============================================================================================================
-     $modulename...$end     modulename为BDF计算模块的控制输入,所有的modulename在$BDFHOME/database/program.dat文件中查询
-     #号                    #号开始的行或者每行中#号后续的内容均为注释语句
-     \*号                   \*号只放于行首，以*号开始的行为注释行
-     %号                     %号开始的行，%号后的内容为Shell命令，通常用于处理中间文件
-     &database...&end       有些复杂的计算，如FLMO，需要定义分子片段等信息，这通常放于&database与&end之间。请参考 :ref:`test062<test062>`
-    ===================== ==============================================================================================================
+    ===================== ================================================================================================================================================================================================================================
+       Input               Description
+    ===================== ================================================================================================================================================================================================================================
+     $modulename...$end    modulename is the control input for the BDF calculation module, all modulenames are available in the $BDFHOME/database/program.dat file
+     #                    Lines starting with # or following # in each line are comment statements
+     \*                   \*is placed at the beginning of the line only, and the lines starting with * are commented out
+     %                     The lines starting with % and ending with % are shell commands, usually used to process intermediate files
+     &database...&end      Some complex calculations, such as FLMO, require information such as the definition of molecular fragments, which is usually placed between &database and &end. Please refer to :ref:`test062<test062>`
+    ===================== ================================================================================================================================================================================================================================
 
-BDF的混合输入（mixed input）
+Mixed input for BDF
 --------------------------------------------------------------------------
 
-混合输入结合了BDF的简洁输入与高级输入格式，既可享有BDF简洁输入的便利性，又可对BDF的计算模块进行精准的控制，这在执行复杂的计算时非常有用。
+Mixed input combines the simplicity of BDF input with the advanced input format, providing the convenience of BDF simple input and the precise control of BDF computational modules, which is useful when performing complex computations.。
 
-BDF混合输入文件的基本结构如下：
+The basic structure of a BDF Mixed input file is as follows：
 
 .. code-block:: bdf
 
   #!name.bdf
-  方法/泛函/基组 关键词 关键词=选项 关键词=选项1,选项2
-  关键词=选项
+  Method/functional/basis sets Keyword Keyword = option Keyword = option 1, option 2
+  Keywords = Options
+
 
   Geometry
-  分子结构信息
+  Molecular structure information
   End Geometry 
 
   $modulename1
-  ...       # 注释语句
+  ...       # Comment statements
   $End
 
   $modulename2
@@ -200,9 +201,9 @@ BDF混合输入文件的基本结构如下：
   $End
 
 
-一个混合输入文件可分为4个输入块， **其中前三个输入块是BDF的简洁输入模式的格式** ，第四个输入块， 是 ``End geometry`` 后剩余的内容，与BDF高级输入的格式相同，用于对具体的BDF计算模块的行为进行精确控制，这些参数被加入相应的BDF计算模块中，具有最高的控制优先级。
+A mixed input file can be divided into 4 input blocks,  **the first three of which are formatted for the simple input mode of BDF** and the fourth input block, which is what remains after ``End geometry`` , is in the same format as the advanced BDF input and is used to provide precise control over the behavior of specific BDF calculation modules, and these parameters are added to the corresponding BDF calculation modules with the highest control priority.
 
-以水的阳离子为例来详细描述BDF混合输入格式：
+The BDF hybrid input format is described in detail using the cation of water as an example.
 
 .. code-block:: bdf
 
@@ -216,23 +217,23 @@ BDF混合输入文件的基本结构如下：
   End Geometry
 
   $scf
-  Charge # 指定电荷数为+1
+  Charge # Specify the charge number as +1
    1
-  molden # 输出分子轨道为molden格式文件
+  molden # Export molecular tracks as molden format files
   $end
 
-上例除了BDF简洁输入的必要内容外，还加入了以 ``$scf`` 开始，到 ``$end`` 结束的行，用以控制 **SCF** 模块。该输入混合了BDF简洁输入和高级输入的内容，在 **SCF** 模块的输入中，加入了关键词 ``charge`` ，设定值为 ``1`` ，用于计算 :math:`\ce{H2O+}` 离子， ``molden`` 关键词控制将SCF收敛后的轨道输出为 **molden** 格式文件，可用于分子结构、轨道、电子密度的可视化，分析波函数，或计算单电子性质。
-需指出的是，在混合输入格式的第二行命令行，可以用 ``charge = -1`` 来控制计算 :math:`\ce{H2O+}` 阴离子，但若在后面的scf模块输入中，也使用了 ``charge`` 关键词，则后者具有最高的控制优先级，将覆盖命令行中的输入。换言之，在混合输入格式下，每个BDF计算模块的高级输入关键词具有最高的控制优先级。
+The above example adds a line starting with ``$scf`` and ending with ``$end`` to control the **SCF** module, in addition to the required BDF simple input. This input is a mix of BDF simple and advanced inputs, and in the input of the **SCF** module, with the keyword ``charge`` set to ``1`` for calculating  :math:`\ce{H2O+}`  ions and the ``molden`` keyword controlling the output of the converged SCF track to a  **molden**  format file, can be used to visualize molecular structure, orbitals, electron density, analyze wave functions, or calculate single-electron properties. It should be noted that in the second command line of the hybrid input format,  ``charge = -1`` can be used to control the calculation of  :math:`\ce{H2O+}`  anions, but if the  ``charge``  keyword is also used in the later input of the scf module, the latter has the highest control priority and will override the input in the command line. In other words, in the mixed input format, the advanced input keyword for each BDF calculation module has the highest control priority.
 
-分子结构的输入格式
+
+Input format of molecular structure
 ==========================================================================
 
-BDF的分子结构输入从 ``Geometry`` 开始，到 ``End geometry`` 结束，可以按照直角坐标，内坐标，或者指定xyz文件格式的三种方式输入。
+The molecular structure input of BDF starts from ``Geometry`` and ends at ``End geometry`` , and can be entered in three ways: Cartesian, Internal, or specified xyz file format.
 
 .. Warning::
-    BDF输入坐标的默认单位为埃（Å），如果需要使用原子单位输入分子结构，需用关键词 ``unit=Bohr`` 来指定。BDF的简洁输入模式下， ``unit=Bohr`` 放在第二行控制行。 如果是高级输入模式，在Compass模块使用关键词 ``unit`` ，并指定值为Bohr。具体见下面的示例。
-
-在简洁输入的控制行指定分子坐标单位，输入的 :math:`\ce{H2}` 分子键长为1.50 Bohr。
+    The default unit for BDF input coordinates is Å. If you need to enter the molecular structure in atomic units, you need to use the keyword ``unit=Bohr`` . In BDF's simple input mode, ``unit=Bohr`` is placed in the second control line. In case of advanced input mode Use the keyword ``unit`` in the Compass module and specify the value as Bohr, see the example below.
+    
+Specify the molecular coordinate units in the control line of the concise input, and enter a bond length of 1.50 Bohr for the :math:`\ce{H2}` molecule.
 
 .. code-block:: bdf
 
@@ -244,7 +245,7 @@ BDF的分子结构输入从 ``Geometry`` 开始，到 ``End geometry`` 结束，
     H  0.00 0.00 1.50
   End geometry
 
-高级输入模式下，控制分子坐标单位
+In the advanced input mode, control the molecular coordinate units
 
 .. code-block:: bdf
 
@@ -259,7 +260,7 @@ BDF的分子结构输入从 ``Geometry`` 开始，到 ``End geometry`` 结束，
     Bohr
   $end
   
-分子结构的直角坐标格式输入
+Input of Cartesian Coordinate Format for Molecular Structure
 --------------------------------------------------------------------------
 
 .. code-block:: bdf
@@ -272,24 +273,25 @@ BDF的分子结构输入从 ``Geometry`` 开始，到 ``End geometry`` 结束，
 
 .. _Internal-Coord:
 
-分子结构的内坐标格式输入 
+Input of internal coordinate format for molecular structure 
 --------------------------------------------------------------------------
 
-内坐标采用定义键长、键角、二面角的格式输入，其中键长的单位为埃，键角和二面角的单位为度。输入模式举例如下：
+The internal coordinates are entered in the format of defined key length, key angle, and dihedral angle, where the key length is in angstroms and the key angle and dihedral angle are in degrees. Input Examples of input modes are as follows.
 
 .. code-block:: bdf
 
    Geometry
    atom1
-   atom2 1   R12                  # R12为原子2、1之间键长
-   atom3 1   R31  2 A312          # R31为原子3、1之间键长， A312为原子3、1、2定义的键角
-   atom4 3   R43  2 A432 1 D4321  # R43为原子4、3之间键长， A432为原子4、3、2定义的键角，D4321为原子4、3、2、1定义的二面角
-   atom5 3   R53  4 A534 1 D5341  # R53为原子5、3之间键长， A534为原子5、3、4定义的键角，D5341为原子5、4、3、1定义的二面角 
+   atom2 1   R12                  # R12 is the bond length between atoms 2 and 1
+   atom3 1   R31  2 A312          # R31 is the bond length between atoms 3 and 1, and A312 is the bond angle defined by atoms 3, 1 and 2
+   atom4 3   R43  2 A432 1 D4321  # R43 is the bond length between atoms 4 and 3, and a432 is the bond angle defined by atoms 4, 3 and 2, D4321 is the dihedral angle defined by atoms 4, 3, 2 and 1
+   atom5 3   R53  4 A534 1 D5341  # R53 is the bond length between atoms 5 and 3, and a534 is the bond angle defined by atoms 5, 3 and 4, D5341 is the dihedral angle defined by atoms 5, 4, 3 and 1
+
    ...
    ...
    End Geometry
 
-具体的，对于水分子，内坐标输入如下：
+Specifically, for water molecules, the internal coordinates are entered as follows.
 
 .. code-block:: bdf
  
@@ -299,38 +301,39 @@ BDF的分子结构输入从 ``Geometry`` 开始，到 ``End geometry`` 结束，
  H  1   0.9 2 109.0
  End geometry
 
-内坐标输入，利用变量定义内坐标数值如下（ **目前仅简洁输入支持坐标变量！** ）：
+Internal coordinate input, using variables to define the value of internal coordinates as follows ( **目前仅简洁输入支持坐标变量！** ) : 
 
 .. code-block:: bdf
  
  Geometry
  O
  H  1   R1
- H  1   R1  2  A1        # 定义分子内坐标，坐标值用变量代替
+ H  1   R1  2  A1        # Define the intramolecular coordinates, and the coordinate values are replaced by variables
 
- R1 = 0.9                # 定义坐标变量的值
+
+ R1 = 0.9                # Defines the value of the coordinate variable
  A1 = 109.0
  End geometry
 
 .. warning::
 
-    * 内坐标定义注意要保留空白行，内坐标和坐标变量的值之间通过空行分割。
+    * Note that the definition of internal coordinates should be kept on a blank line, and the values of internal coordinates and coordinate variables should be separated by a blank line.
 
-内坐标格式输入，势能面扫描如下（ **目前仅简洁输入支持势能面扫描！** ）：
+Internal coordinate format input, potential energy surface scan as follows（ **currently only simple input supports potential energy surface scan!** ）：
 
-例1： :math:`\ce{H2O}` 的坐标输入，势能面扫描，键长从0.75埃开始，按照0.05埃的步长，键长由小到大计算20个点。
+Example 1: Coordinate input for :math:`\ce{H2O}` , potential energy surface scan, bond length starting at 0.75 Å. The bond length is calculated in steps of 0.05 Å, with 20 points from smallest to largest.
 
 .. code-block:: bdf
  
  Geometry
  O
  H  1   R1
- H  1   R1  2  109    # 定义分子内坐标，OH键长定义为变量R1
+ H  1   R1  2  109    # The intramolecular coordinates are defined, and the OH bond length is defined as the variable R1
 
- R1  0.75 0.05 20    # R1的起始值, 扫描步长,扫描点数。 注意保留上一行的空白行
+ R1  0.75 0.05 20    # Starting value of R1, scanning step size, number of scanning points.  Note to keep the blank line of the previous line
  End geometry
 
-例2： :math:`\ce{H2O}` 势能面扫描的简洁输入，键长从0.75埃开始，按照0.05埃的步长，键长由小到大计算20个点。SCF通过Read获取初始猜测轨道。
+Example 2：Concise input for :math:`\ce{H2O}` potential surface scan with bond length starting at 0.75 Å. The bond length is calculated in 0.05 Å steps from smallest to largest 20 points. SCF takes the initial guess track via Read.
 
 .. code-block:: bdf
 
@@ -340,83 +343,88 @@ BDF的分子结构输入从 ``Geometry`` 开始，到 ``End geometry`` 结束，
  Geometry
  O
  H  1   R1
- H  1   R1  2  A1   # 定义分子内坐标，OH键长定义为变量R1, HOH键角为A1
+ H  1   R1  2  A1   # The intramolecular coordinates are defined, the OH bond length is defined as the variable R1, and the Hoh bond angle is A1
 
- A1 = 109.0        # 定义键角的值，注意保留上一行空白行
+ A1 = 109.0        # Define the value of the key angle, taking care to leave the previous line blank
 
- R1 0.75 0.05 20   # 定义OH键长R1的起始值，扫描步长及扫描点数。
+ R1 0.75 0.05 20   # Define the starting value of OH bond length R1, scanning step size and scanning points.
+
  End geometry
 
 
-从指定文件中读入分子坐标
+Read the molecular coordinates from the specified file
 --------------------------------------------------------------------------
 
 .. code-block:: bdf
  
  Geometry
- file=filename.xyz    # 需为当前工作下的文件 filename.xyz，只支持xyz格式的输入。
+ file=filename.xyz    # Needs to be the file filename.xyz under the current job, only xyz format is supported for input.
+
  End geometry
 
 
-BDF输出文件
+BDF output files
 ==========================================================================
 
-+------------------------------------+------------------------------------------------------------------------------------------+
-|            文件扩展名              |     说明                                                                                 |
-+====================================+==========================================================================================+
-|                  .out              |           主输出文件                                                                     |  
-+------------------------------------+------------------------------------------------------------------------------------------+
-|                  .out.tmp          |               结构优化及数值频率任务的副输出文件（包含能量、梯度等计算步骤的输出）       |  
-+------------------------------------+------------------------------------------------------------------------------------------+
-|                  .pes1             | 结构优化及数值频率任务各步的分子结构（埃）、能量（Hartree）及梯度（Hartree/Bohr）        |  
-+------------------------------------+------------------------------------------------------------------------------------------+
-|                  .egrad1           |           结构优化及数值频率任务最后一步的能量（Hartree）及梯度（Hartree/Bohr）          |  
-+------------------------------------+------------------------------------------------------------------------------------------+
-|                  .hess             |                                    Hessian矩阵（Hartree/Bohr^2）                         |  
-+------------------------------------+------------------------------------------------------------------------------------------+
-|                  .unimovib.input   |                                    UniMoVib输入文件，可用于热化学分析                    |  
-+------------------------------------+------------------------------------------------------------------------------------------+
-|                  .nac              |                      非绝热耦合矢量（Hartree/Bohr）                                      |  
-+------------------------------------+------------------------------------------------------------------------------------------+
-|                  .chkfil           |            临时文件                                                                      |  
-+------------------------------------+------------------------------------------------------------------------------------------+
-|                  .datapunch        |            临时文件                                                                      |
-+------------------------------------+------------------------------------------------------------------------------------------+
-|                  .optgeom          |  标准取向下的分子坐标（Bohr）。其中对于结构优化任务，为结构优化最后一步的分子坐标        |
-+------------------------------------+------------------------------------------------------------------------------------------+
-|                  .finaldens        |           最后一步SCF迭代的密度矩阵                                                      | 
-+------------------------------------+------------------------------------------------------------------------------------------+
-|                  .finalfock        |           最后一步SCF迭代的Fock矩阵                                                      | 
-+------------------------------------+------------------------------------------------------------------------------------------+
-|                  .scforb           |           最后一步SCF迭代的分子轨道                                                      |  
-+------------------------------------+------------------------------------------------------------------------------------------+
-|                  .global.scforb    |           FLMO/iOI计算最后一步SCF迭代的分子轨道                                          |  
-+------------------------------------+------------------------------------------------------------------------------------------+
-|                  .fragment*.*      |           FLMO/iOI计算的子体系计算相关输出文件                                           |  
-+------------------------------------+------------------------------------------------------------------------------------------+
-|                  .ioienlarge.out   |           iOI计算第1步及之后的宏迭代的子体系组成信息                                     |  
-+------------------------------------+------------------------------------------------------------------------------------------+
+.. table:: BDF advanced input description table
+    :widths: auto
+  
+  =================================    ============================================================================================================================================================================== 
+          File extension                 Description                                                                               
+  =================================    ============================================================================================================================================================================== 
+                  .out                     Master output file                                                                      
+  =================================    ============================================================================================================================================================================== 
+                  .out.tmp             Sub-output files for structural optimization and numerical frequency tasks (output containing calculation steps for energy, gradient, etc.)       
+  =================================    ============================================================================================================================================================================== 
+                  .pes1                Molecular structure (E), energy (Hartree) and gradient (Hartree/Bohr) for each step of the structure optimization and numerical frequency task
+  =================================    ============================================================================================================================================================================== 
+                  .egrad1              Energy (Hartree) and gradient (Hartree / Bohr) of the last step of structural optimization and numerical frequency task       
+  =================================    ============================================================================================================================================================================== 
+                 .hess                                              Hessian matrix（Hartree/Bohr^2）                           
+  =================================    ============================================================================================================================================================================== 
+                  .unimovib.input                                     Unimovib input file for thermochemical analysis            
+  =================================    ============================================================================================================================================================================== 
+                  .nac                                 Non-adiabatic coupling vector（Hartree/Bohr）                                         
+  =================================    ============================================================================================================================================================================== 
+                  .chkfil                       Temporary documents                                                                        
+  =================================    ============================================================================================================================================================================== 
+                  .datapunch                    Temporary documents                                                                      
+  =================================    ============================================================================================================================================================================== 
+                  .optgeom            Molecular coordinates in standard orientation (Bohr). For the task of structural optimization, it is the molecular coordinate of the last step of structural optimization
+  =================================    ============================================================================================================================================================================== 
+                  .finaldens                   Density matrix for the last step of SCF iteration                                                 
+  =================================    ============================================================================================================================================================================== 
+                  .finalfock                   Fock matrix for the last SCF iteration                                                      
+  =================================    ============================================================================================================================================================================== 
+                  .scforb                      Molecular orbitals for the last SCF iteration                                                       
+  =================================    ============================================================================================================================================================================== 
+                  .global.scforb               FLMO/iOI calculates the molecular orbitals of the last SCF iteration                                          
+  =================================    ============================================================================================================================================================================== 
+                  .fragment*.*                Output file related to the subsystem calculation of the FLMO/iOI calculation                                             
+  =================================    ============================================================================================================================================================================== 
+                  .ioienlarge.out              iOI calculation of subsystem composition information for step 1 and subsequent macro iterations                                       
+  =================================    ============================================================================================================================================================================== 
 
 
 
-某些计算任务可能会产生以上所未列举的其他输出文件，这些文件一般为临时文件。
+Some computational tasks may produce other output files not listed above, which are generally temporary files.
 
 
-量子化学常用单位及换算
+Common units and conversions in quantum chemistry
 ==========================================================================
 
-量子化学程序大部分内部运算使用原子单位制（atomic unit, a.u.）。这使得各种计算公式中不需要涉及单位转换，既使得代码简洁，也避免额外的运算和精度损失。量化程序输出中间数据时一般也用原子单位制，但输出有化学意义的数据时大多还是会转换成常用的单位。
+Most of the internal operations of quantum chemistry programs use the atomic unit (a.u.) system. This eliminates the need for unit conversions in various computational formulas, making the code simple and avoiding additional operations and loss of precision. Quantitative programs also generally use the atomic unit system when outputting intermediate data, but most of the data with chemical significance are converted to the usual units.
 
- * 能量 1 a.u. = 1 Hartree
- * 质量 1 a.u. = 1 m :sub:`e` （电子质量）
- * 长度 1 a.u. = 1 Bohr = 0.52917720859 Å
- * 电量 1 a.u. = 1 e = 1.6022×10 :sup:`-19` C
- * 电子密度 1 a.u. = 1e/Bohr :sup:`3`
- * 偶极矩 1 a.u. = 1 e · Bohr = 0.97174×10 :sup:`22` V/m :sup:`2` = 2.5417462 Debye
- * 静电势 1 a.u. = 1 Hartree/e
- * 电场 1 a.u. = 1 Hartree/(Bohr · e) = 51421 V/Å
+ * Energy  1 a.u. = 1 Hartree
+ * Mass  1 a.u. = 1 m :sub:`e` (electron mass)
+ * Length 1 a.u. = 1 Bohr = 0.52917720859 Å
+ * Electricity 1 a.u. = 1 e = 1.6022×10 :sup:`-19` C
+ * Electron density 1 a.u. = 1e/Bohr :sup:`3`
+ * Dipole moment 1 a.u. = 1 e · Bohr = 0.97174×10 :sup:`22` V/m :sup:`2` = 2.5417462 Debye
+ * Electrostatic potential 1 a.u. = 1 Hartree/e
+ * Electric field 1 a.u. = 1 Hartree/(Bohr · e) = 51421 V/Å
 
-能量单位换算
+Energy unit conversions
 ----------------------------------------------
 
 +-------------------+---------------------+---------------------+---------------------+---------------------+-------------------+
@@ -433,7 +441,7 @@ BDF输出文件
 |    cm :sup:`-1`   | 4.5563×10 :sup:`-6` | 1.1963×10 :sup:`-2` | 2.8591×10 :sup:`-3` | 1.2398×10 :sup:`-4` |       1           |
 +-------------------+---------------------+---------------------+---------------------+---------------------+-------------------+
 
-长度单位换算
+Length unit conversions
 ----------------------------------------------
 
 +-------------------+---------------------+---------------------+---------------------+
