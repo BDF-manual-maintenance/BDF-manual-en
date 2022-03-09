@@ -169,9 +169,9 @@ The following **BDF modules and menus** give the names and functions of the BDF 
     ===================== ================================================================================================================================================================================================================================
      $modulename...$end    modulename is the control input for the BDF calculation module, all modulenames are available in the $BDFHOME/database/program.dat file
      #                    Lines starting with # or following # in each line are comment statements
-     \*                   \*is placed at the beginning of the line only, and the lines starting with * are commented out
+     \*                   \* is placed at the beginning of the line only, and the lines starting with * are commented out
      %                     The lines starting with % and ending with % are shell commands, usually used to process intermediate files
-     &database...&end      Some complex calculations, such as FLMO, require information such as the definition of molecular fragments, which is usually placed between &database and &end. Please refer to :ref:`test062<test062>`
+     &database...&end      Some complex calculations, such as FLMO, require information such as the definition of molecular fragments, which is usually placed between &database and &end. Please refer to :ref:`test062<test062>` 
     ===================== ================================================================================================================================================================================================================================
 
 Mixed input for BDF
@@ -301,7 +301,7 @@ Specifically, for water molecules, the internal coordinates are entered as follo
  H  1   0.9 2 109.0
  End geometry
 
-Internal coordinate input, using variables to define the value of internal coordinates as follows ( **目前仅简洁输入支持坐标变量！** ) : 
+Internal coordinate input, using variables to define the value of internal coordinates as follows ( **Coordinate variables are currently only supported for simple input!** ) : 
 
 .. code-block:: bdf
  
@@ -370,39 +370,23 @@ BDF output files
     :widths: auto
   
   =================================    ============================================================================================================================================================================== 
-          File extension                 Description                                                                               
-  =================================    ============================================================================================================================================================================== 
-                  .out                     Master output file                                                                      
-  =================================    ============================================================================================================================================================================== 
-                  .out.tmp             Sub-output files for structural optimization and numerical frequency tasks (output containing calculation steps for energy, gradient, etc.)       
-  =================================    ============================================================================================================================================================================== 
-                  .pes1                Molecular structure (E), energy (Hartree) and gradient (Hartree/Bohr) for each step of the structure optimization and numerical frequency task
-  =================================    ============================================================================================================================================================================== 
-                  .egrad1              Energy (Hartree) and gradient (Hartree / Bohr) of the last step of structural optimization and numerical frequency task       
-  =================================    ============================================================================================================================================================================== 
-                 .hess                                              Hessian matrix（Hartree/Bohr^2）                           
-  =================================    ============================================================================================================================================================================== 
-                  .unimovib.input                                     Unimovib input file for thermochemical analysis            
-  =================================    ============================================================================================================================================================================== 
-                  .nac                                 Non-adiabatic coupling vector（Hartree/Bohr）                                         
-  =================================    ============================================================================================================================================================================== 
-                  .chkfil                       Temporary documents                                                                        
-  =================================    ============================================================================================================================================================================== 
-                  .datapunch                    Temporary documents                                                                      
-  =================================    ============================================================================================================================================================================== 
-                  .optgeom            Molecular coordinates in standard orientation (Bohr). For the task of structural optimization, it is the molecular coordinate of the last step of structural optimization
-  =================================    ============================================================================================================================================================================== 
-                  .finaldens                   Density matrix for the last step of SCF iteration                                                 
-  =================================    ============================================================================================================================================================================== 
-                  .finalfock                   Fock matrix for the last SCF iteration                                                      
-  =================================    ============================================================================================================================================================================== 
-                  .scforb                      Molecular orbitals for the last SCF iteration                                                       
-  =================================    ============================================================================================================================================================================== 
-                  .global.scforb               FLMO/iOI calculates the molecular orbitals of the last SCF iteration                                          
-  =================================    ============================================================================================================================================================================== 
-                  .fragment*.*                Output file related to the subsystem calculation of the FLMO/iOI calculation                                             
-  =================================    ============================================================================================================================================================================== 
-                  .ioienlarge.out              iOI calculation of subsystem composition information for step 1 and subsequent macro iterations                                       
+    File extension                      Description                                                                               
+    .out                                Master output file                                                                      
+    .out.tmp                            Sub-output files for structural optimization and numerical frequency tasks (output containing calculation steps for energy, gradient, etc.)       
+    .pes1                               Molecular structure (E), energy (Hartree) and gradient (Hartree/Bohr) for each step of the structure optimization and numerical frequency task
+    .egrad1                             Energy (Hartree) and gradient (Hartree / Bohr) of the last step of structural optimization and numerical frequency task       
+    .hess                                 Hessian matrix（Hartree/Bohr^2）                           
+    .unimovib.input                      Unimovib input file for thermochemical analysis            
+    .nac                                 Non-adiabatic coupling vector（Hartree/Bohr）                                         
+    .chkfil                              Temporary documents                                                                        
+    .datapunch                           Temporary documents                                                                      
+    .optgeom                             Molecular coordinates in standard orientation (Bohr). For the task of structural optimization, it is the molecular coordinate of the last step of structural optimization
+    .finaldens                          Density matrix for the last step of SCF iteration                                                 
+    .finalfock                          Fock matrix for the last SCF iteration                                                      
+    .scforb                             Molecular orbitals for the last SCF iteration                                                       
+    .global.scforb                      FLMO/iOI calculates the molecular orbitals of the last SCF iteration                                          
+    .fragment*.*                        Output file related to the subsystem calculation of the FLMO/iOI calculation                                             
+    .ioienlarge.out                      iOI calculation of subsystem composition information for step 1 and subsequent macro iterations                                       
   =================================    ============================================================================================================================================================================== 
 
 
