@@ -366,8 +366,7 @@ Read the molecular coordinates from the specified file
 BDF output files
 ==========================================================================
 
-.. table:: BDF advanced input description table
-    :widths: auto
+.. table:: 
   
    =================================    ============================================================================================================================================================================== 
     File extension                      Description                                                                               
